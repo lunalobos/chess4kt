@@ -119,21 +119,39 @@ In **Match** mode, these nodes form a **simple linked list** (variations are typ
 
 ```mermaid
 
+---
+config:
+  theme: neo-dark
+  layout: dagre
+  look: classic
+---
 flowchart LR
-    subgraph Game Tree
-        A["Node(Start position of the game)"] -->|children 0: Main line| B["MoveNode(1. e4 - First move)"]
-        B -->|children 0: Main line| C["Node(1... c5 - Black's response)"]
-        C -->|children 0: Main line| D["Node(2. Nf3 - Next main move)"]
-        C -->|children 1: Variation | E["Node(2. d4 - Alternative move by White)"]
-        E -->|children 0: Main line of the variation| F["Node(2... cxd4 - Black's response in variation)"]
-    end
+ subgraph subGraph0["Game Tree"]
+        B["MoveNode
+        (1. e4 - First move)"]
+        A["Node
+        (Start position of the game)"]
+        C@{ label: "Node\n        (1... c5 - Black's response)" }
+        D["Node
+        (2. Nf3 - Next main move)"]
+        E["Node
+        (2. d4 - Alternative move by White)"]
+        F@{ label: "Node\n        (2... cxd4 - Black's response in variation)" }
+  end
+    A -- children 0: Main line --> B
+    B -- children 0: Main line --> C
+    C -- children 0: Main line --> D
+    C -- children 1: Variation --> E
+    E -- children 0: Main line of the variation --> F
 
-    style A fill:#f9f,stroke:#333
-    style B fill:#ccf,stroke:#333
-    style C fill:#ccf,stroke:#333
-    style D fill:#ccf,stroke:#333
-    style E fill:#ffc,stroke:#333
-    style F fill:#ffc,stroke:#333
+    C@{ shape: rect}
+    F@{ shape: rect}
+    style B fill:#424242,stroke:#333
+    style A fill:#424242,stroke:#424242
+    style C fill:#424242,stroke:#333
+    style D fill:#424242,stroke:#333
+    style E fill:#424242,stroke:#333
+    style F fill:#424242,stroke:#333
 
 ```
 
