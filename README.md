@@ -1,6 +1,6 @@
 ![License](https://img.shields.io/github/license/lunalobos/chess4kt)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.lunalobos/chess4kt)](https://central.sonatype.com/artifact/io.github.lunalobos/chess4kt)
-[![KDoc](https://img.shields.io/badge/kdoc-1.0.0--beta.1-yellow)](https://chess4kt.lunalobosmiguel.workers.dev/)
+[![KDoc](https://img.shields.io/badge/kdoc-1.0.0--beta.1-green)](https://chess4kt.pages.dev/)
 
 # Chess4kt
 
@@ -16,11 +16,11 @@ The types and functions are designed for **intuitive and fluid use**. The librar
 
 ## Guide
 
-The following is an overview of the library's most important types and functions. For more details, see the [documentation](https://chess4kt.lunalobosmiguel.workers.dev/).
+The following is an overview of the library's most important types and functions. For more details, see the [documentation](https://chess4kt.pages.dev/).
 
 ### Square
 
-[`Square`](https://chess4kt.lunalobosmiguel.workers.dev/core/io.github.lunalobos.chess4kt/-square/) class is an **enum that represents a square on the chessboard**. The **ordinal** property of each instance is highly relevant, as the library uses its integer ordinal value (Int) as the internal equivalent of a square. The standard index order is **file-major**, where A1 is 0, B1 is 1, up to H8 which is 63.
+[`Square`](https://chess4kt.pages.dev/core/io.github.lunalobos.chess4kt/-square/) class is an **enum that represents a square on the chessboard**. The **ordinal** property of each instance is highly relevant, as the library uses its integer ordinal value (Int) as the internal equivalent of a square. The standard index order is **file-major**, where A1 is 0, B1 is 1, up to H8 which is 63.
 
 ```kotlin
 val a1 = Square.A1.ordinal // A1 -> 0
@@ -31,7 +31,7 @@ val h8 = Square.H8.ordinal // H8 -> 63
 
 ### Piece
 
-[`Piece`](https://chess4kt.lunalobosmiguel.workers.dev/core/io.github.lunalobos.chess4kt/-piece/) class is an **enum that represents a chess piece** on the board. The **ordinal** property of each instance is relevant, since the library uses this ordinal value (Int) as the internal piece identifier. The order starts with `EMPTY` (0), followed by White pieces, then Black pieces:
+[`Piece`](https://chess4kt.pages.dev/core/io.github.lunalobos.chess4kt/-piece/) class is an **enum that represents a chess piece** on the board. The **ordinal** property of each instance is relevant, since the library uses this ordinal value (Int) as the internal piece identifier. The order starts with `EMPTY` (0), followed by White pieces, then Black pieces:
 
 ```kotlin
 val empty = Piece.EMPTY.ordinal // empty -> 0
@@ -51,8 +51,8 @@ val bk = Piece.BK.ordinal // black king -> 12
 
 ### Position
 
-The [`Position`](https://chess4kt.lunalobosmiguel.workers.dev/core/io.github.lunalobos.chess4kt/-position/) 
-class allows you to represent a specific chess position. It is **immutable**, which simplifies state management. To create a position, you can use the factory function [`positionOf`](https://chess4kt.lunalobosmiguel.workers.dev/core/io.github.lunalobos.chess4kt/position-of) with or without argument.
+The [`Position`](https://chess4kt.pages.dev/core/io.github.lunalobos.chess4kt/-position/) 
+class allows you to represent a specific chess position. It is **immutable**, which simplifies state management. To create a position, you can use the factory function [`positionOf`](https://chess4kt.pages.dev/core/io.github.lunalobos.chess4kt/position-of) with or without argument.
 
 ```kotlin
 val startpos = positionOf() // without argument, the function returns the initial position
@@ -73,7 +73,7 @@ val enPassant = position.enPassant // the square (as an integer index) of the en
 val whiteMove = position.whiteMove // a boolean value: true if it's White's turn to move; false if it's Black's turn.
 ```
 
-A very important feature of this class is the extension property **`children`**. It is a list of [tuples](https://chess4kt.lunalobosmiguel.workers.dev/core/io.github.lunalobos.chess4kt/-tuple/) (`Position`, `Move`) that encompasses all **legal moves** derived from the position.
+A very important feature of this class is the extension property **`children`**. It is a list of [tuples](https://chess4kt.pages.dev/core/io.github.lunalobos.chess4kt/-tuple/) (`Position`, `Move`) that encompasses all **legal moves** derived from the position.
 
 ```kotlin
 val position = positionOf()
@@ -90,17 +90,17 @@ val afterE4 = position.move("e2e4")
 
 The move above was executed using the **UCI notation** (Universal Chess Interface, e.g., `e2e4`), which is the default for the `move` function. This notation only needs the origin and destination squares and the promotion piece, if any.
 
-However, you can also provide the move in **Standard Algebraic Notation (SAN)**. This is possible because the `move` extension function in `Position` has a second parameter, `notation` (of type [`Notation`](https://chess4kt.lunalobosmiguel.workers.dev/core/io.github.lunalobos.chess4kt/-notation/)), which can be set to `Notation.SAN`.
+However, you can also provide the move in **Standard Algebraic Notation (SAN)**. This is possible because the `move` extension function in `Position` has a second parameter, `notation` (of type [`Notation`](https://chess4kt.pages.dev/core/io.github.lunalobos.chess4kt/-notation/)), which can be set to `Notation.SAN`.
 
 ```kotlin
 val afterE4 = position.move("e4", Notation.SAN) // the move is provided in SAN notation
 ```
 
-See the [documentation](https://chess4kt.lunalobosmiguel.workers.dev/core/io.github.lunalobos.chess4kt/-position/) for more features of this class,
+See the [documentation](https://chess4kt.pages.dev/core/io.github.lunalobos.chess4kt/-position/) for more features of this class,
 
 ### Move
 
-The [`Move`](https://chess4kt.lunalobosmiguel.workers.dev/core/io.github.lunalobos.chess4kt/-move/) class represents **a single player's action**. It contains the origin, target, and promotion piece properties (all as integers) and is **immutable**. There are many ways to create an instance of this class using the factory function `moveOf`:
+The [`Move`](https://chess4kt.pages.dev/core/io.github.lunalobos.chess4kt/-move/) class represents **a single player's action**. It contains the origin, target, and promotion piece properties (all as integers) and is **immutable**. There are many ways to create an instance of this class using the factory function `moveOf`:
 
 ```kotlin
 val move = moveOf("e2e4") // Must be provided in UCI notation; SAN notation is not possible due to ambiguity
@@ -110,10 +110,10 @@ val promotionMove = moveOf(Square.G2, Square.G1, Piece.BQ) // Promotion to Black
 
 ### Game
 
-The [`Game`](https://chess4kt.lunalobosmiguel.workers.dev/core/io.github.lunalobos.chess4kt/-game/) class is used to **represent entire games**, whether they are for serious competitive matches or for analysis (with variations, ratings, and comments).
+The [`Game`](https://chess4kt.pages.dev/core/io.github.lunalobos.chess4kt/-game/) class is used to **represent entire games**, whether they are for serious competitive matches or for analysis (with variations, ratings, and comments).
 
-* **Game Mode:** `Game` instances have a game mode represented by the internal enum [`GameMode`](https://chess4kt.lunalobosmiguel.workers.dev/core/io.github.lunalobos.chess4kt/-game/-game-mode/), which has two values: `ANALYSIS` and `MATCH`.
-* **Structure:** Games are composed of **metadata** (PGN tags) and a series of connected **nodes** (of type [`Node`](https://chess4kt.lunalobosmiguel.workers.dev/core/io.github.lunalobos.chess4kt/-game/-node/)) that form a game tree.
+* **Game Mode:** `Game` instances have a game mode represented by the internal enum [`GameMode`](https://chess4kt.pages.dev/core/io.github.lunalobos.chess4kt/-game/-game-mode/), which has two values: `ANALYSIS` and `MATCH`.
+* **Structure:** Games are composed of **metadata** (PGN tags) and a series of connected **nodes** (of type [`Node`](https://chess4kt.pages.dev/core/io.github.lunalobos.chess4kt/-game/-node/)) that form a game tree.
 
 In **Match** mode, these nodes form a **simple linked list** (variations are typically not allowed). In **Analysis** mode, the nodes form a **tree**, enabling the storage of Recursive Annotation Variations (RAVs).
 
@@ -201,10 +201,10 @@ game.toString() // outputs the game in PGN format
 */
 ```
 
-This class has many configuration possibilities and features. For more information see the [documentation](https://chess4kt.lunalobosmiguel.workers.dev/core/io.github.lunalobos.chess4kt/-game/).
+This class has many configuration possibilities and features. For more information see the [documentation](https://chess4kt.pages.dev/core/io.github.lunalobos.chess4kt/-game/).
 
 ### PGN parsing
-Using the [`parseGames`](https://chess4kt.lunalobosmiguel.workers.dev/core/io.github.lunalobos.chess4kt/parse-games) function, you can convert a string containing an arbitrary quantity of games in PGN format into a list of Game objects.
+Using the [`parseGames`](https://chess4kt.pages.dev/core/io.github.lunalobos.chess4kt/parse-games) function, you can convert a string containing an arbitrary quantity of games in PGN format into a list of Game objects.
 ```kotlin
 val petrovDefense = """
         [Event "Jerusalem Masters 2025"]
