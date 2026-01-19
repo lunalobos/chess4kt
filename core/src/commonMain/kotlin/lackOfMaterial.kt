@@ -17,7 +17,7 @@ package io.github.lunalobos.chess4kt
 
 import kotlin.math.sign
 
-private val pieceMask: Array<Int> = arrayOf<Int>(
+internal val pieceMask: Array<Int> = arrayOf<Int>(
     1 shl Piece.EMPTY.ordinal, 1 shl Piece.WP.ordinal,
     1 shl Piece.WN.ordinal, 1 shl Piece.WB.ordinal, 1 shl Piece.WR.ordinal, 1 shl Piece.WQ.ordinal,
     1 shl Piece.WK.ordinal, 1 shl Piece.BP.ordinal, 1 shl Piece.BN.ordinal, 1 shl Piece.BB.ordinal,
@@ -39,7 +39,7 @@ private val material: Array<Int> = arrayOf<Int>(
     pieceMask[Piece.WB.ordinal] or pieceMask[Piece.WK.ordinal] or pieceMask[Piece.BK.ordinal],  // KB k
     pieceMask[Piece.BB.ordinal] or pieceMask[Piece.WK.ordinal] or pieceMask[Piece.BK.ordinal] // K kb
 )
-private val bitCountFunctions: Array<(Int) -> Int> = arrayOf(
+internal val bitCountFunctions: Array<(Int) -> Int> = arrayOf(
     { i -> 0 },
     { i -> i },
     { i -> 1 shl Piece.entries.size },
