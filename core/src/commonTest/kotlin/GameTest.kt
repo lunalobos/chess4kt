@@ -178,7 +178,8 @@ class GameTest {
             [ECO "E57"]
             [Id "$id"]
             [EventDate "2025.11.30"]
-
+            [Opening "E57"]
+            
             1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.e3 O-O 5.Bd3 d5 6.Nf3 c5 7.O-O cxd4 8.exd4 dxc4 9.Bxc4 b6 
             	( 9...Nc6 $6 {Test comment} 10.Bg5 Be7 )
             10.Bg5 Bb7 1/2-1/2
@@ -246,6 +247,7 @@ class GameTest {
             [ECO "B40"]
             [Id "$id"]
             [EventDate "2025.11.30"]
+            [Opening "Kveinis Variation, Sicilian"]
 
             1.e4 c5 2.Nf3 e6 3.d4 cxd4 4.Nxd4 Qb6 5.Nb3 
             	( 5.Nc3 Bc5 6.Na4 Qa5+ 7.c3 Bxd4 8.Qxd4 Nf6 )
@@ -346,7 +348,8 @@ class GameTest {
             [WhiteFideId "1503014"]
             [BlackFideId "1500015"]
             [Fen "r2q1rk1/5pbp/p2pb1p1/1p1N4/3pP3/1B6/PPP1QPPP/R4RK1 w - - 0 17"]
-
+            [Opening "unknown"]
+            
             17.a4 Bd7 18.axb5 axb5 19.Rxa8 Qxa8 20.Nb6 Qa7 21.Nxd7 Qxd7 22.Bd5 h5 23.Ra1 Rb8 24.g3 Bf6 25.Ra6 b4 26.Qc4 Kg7 27.Rc6 Bd8 28.b3 Qa7 29.Rxd6 Bb6 30.Kg2 Rd8 1-0
         """.trimIndent()
 
@@ -409,6 +412,7 @@ class GameTest {
             [BlackTitle "GM"]
             [WhiteFideId "1503014"]
             [BlackFideId "1500015"]
+            [Opening "Swiss Cheese Variation, Sicilian"]
             
             1.e4 c5 2.Nf3 e6 3.d4 cxd4 4.Nxd4 a6 5.Bd3 Nf6 6.Qe2 e5 7.Nf5 Nc6 8.O-O g6 9.Ne3 Bg7 10.Nc3 O-O 11.Ned5 Nxd5 12.Nxd5 d6 13.Be3 Be6 14.Bc4 b5 15.Bb3 Nd4 16.Bxd4 exd4 17.a4 1-0
         """.trimIndent()
@@ -472,6 +476,7 @@ class GameTest {
             [BlackTitle "GM"]
             [WhiteFideId "1503014"]
             [BlackFideId "1500015"]
+            [Opening "Swiss Cheese Variation, Sicilian"]
             
             1.e4 c5 2.Nf3 e6 3.d4 cxd4 4.Nxd4 a6 5.Bd3 Nf6 6.Qe2 e5 7.Nf5 Nc6 8.O-O g6 9.Ne3 Bg7 10.Nc3 O-O 11.Ned5 Nxd5 12.Nxd5 d6 13.Be3 Be6 14.Bc4 b5 15.Bb3 Nd4 16.Bxd4 exd4 1-0
         """.trimIndent()

@@ -195,7 +195,7 @@ class Game : Iterable<Game.Node> {
         this.threeRepetitionsMode = threeRepetitionsMode
         this.fiftyMovesRuleMode = fiftyMovesRuleMode
         this.tags.putAll(tags)
-        this.id = idSupplier()
+        this.id = idSupplier() ?: tags["id"]
         this.tags["id"] = id.toString()
     }
 
@@ -212,7 +212,7 @@ class Game : Iterable<Game.Node> {
         this.threeRepetitionsMode = threeRepetitionsMode
         this.fiftyMovesRuleMode = fiftyMovesRuleMode
         this.tags.putAll(tags)
-        this.id = idSupplier()
+        this.id = idSupplier() ?: tags["id"]
         this.tags["id"] = id.toString()
     }
 
@@ -290,6 +290,7 @@ class Game : Iterable<Game.Node> {
             ecoInfo = ecoInfo(node.position) ?: ecoInfo
         }
         tags["ECO"] = ecoInfo?.eco ?: "unknown"
+        tags["opening"] = ecoInfo?.name ?: "unknown"
     }
 
     internal fun checkGameOver(node: Node) {

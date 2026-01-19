@@ -81,4 +81,33 @@ class LackOfMaterialTest {
         val bitboards = bitboardsOf(WK to E1, BK to E8, WB to F1, WB to C1)
         assertFalse(isLackOfMaterial(bitboards))
     }
+
+    @Test
+    fun initialPos(){
+        val position = positionOf()
+        assertFalse(isLackOfMaterial(position.bitboards))
+    }
+
+    @Test
+    fun onlyWhiteLacksOfMaterial(){
+        val whiteK = positionOf("8/8/8/8/3pk3/8/8/3K4 w - - 0 1")
+        assertTrue(isWhiteLackOfMaterial(whiteK.bitboards))
+        val whiteKB = positionOf("8/8/8/8/3pk3/8/4B3/3K4 w - - 0 1")
+        assertTrue(isWhiteLackOfMaterial(whiteKB.bitboards))
+        val whiteKN = positionOf("8/8/8/8/3pk3/8/4N3/3K4 w - - 0 1")
+        assertTrue(isWhiteLackOfMaterial(whiteKN.bitboards))
+        assertFalse(isWhiteLackOfMaterial(positionOf().bitboards))
+    }
+
+    @Test
+    fun onlyBlackLacksOfMaterial(){
+        val blackK = positionOf("4k3/8/8/3KP3/8/8/8/8 w - - 0 1")
+        assertTrue(isBlackLackOfMaterial(blackK.bitboards))
+        val blackKB = positionOf("4k3/3b4/8/3KP3/8/8/8/8 w - - 0 1")
+        assertTrue(isBlackLackOfMaterial(blackKB.bitboards))
+        val blackKN = positionOf("4k3/3n4/8/3KP3/8/8/8/8 w - - 0 1")
+        assertTrue(isBlackLackOfMaterial(blackKN.bitboards))
+        assertFalse(isBlackLackOfMaterial(positionOf().bitboards))
+    }
+
 }

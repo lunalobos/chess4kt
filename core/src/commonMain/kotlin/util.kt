@@ -816,3 +816,25 @@ fun Game.deleteBefore(node: Node): Node {
     tags["fen"] = newParent.position.fen
     return node
 }
+
+/**
+ * Determines if White has insufficient material to win the game.
+ * Returns true if the current pieces for White cannot potentially lead to a checkmate.
+ * @return `true` if White lacks winning material, `false` otherwise.
+ * @author lunalobos
+ * @since 1.0.0-beta.2
+ */
+fun Position.whiteLacksOfMaterial(): Boolean {
+    return isWhiteLackOfMaterial(bitboards)
+}
+
+/**
+ * Determines if Black has insufficient material to win the game.
+ * Returns true if the current pieces for Black cannot potentially lead to a checkmate.
+ * @return `true` if Black lacks winning material, `false` otherwise.
+ * @author lunalobos
+ * @since 1.0.0-beta.2
+ */
+fun Position.blackLacksOfMaterial(): Boolean {
+    return isBlackLackOfMaterial(bitboards)
+}
