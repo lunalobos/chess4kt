@@ -13,22 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.lunalobos.chess4kt
+package io.github.lunalobos.chess4kt.js
 
 /**
  * This enum represents the two sides (colors) in a chess game: White or Black.
  *
- * @since 1.0.0-beta.1
- * @author lunalobos
+ * This is a facade created to enable exporting the code to JS, though it can also be used directly within the JS modules of any KMP project.
  */
-enum class Side {
-    /**
-     * White Player
-     */
-    WHITE,
-
-    /**
-     * Black Player
-     */
-    BLACK
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+class Side private constructor(val name: String) {
+    companion object {
+        val entries = io.github.lunalobos.chess4kt.Side.entries.map { Side(it.name) }
+        /**
+         * White Player
+         */
+        val WHITE = entries[0]
+        /**
+         * Black Player
+         */
+        val BLACK = entries[1]
+        private val map = io.github.lunalobos.chess4kt.Side.entries.associate { it.name to Side(it.name) }
+        fun get(name: String) = map[name]
+    }
 }

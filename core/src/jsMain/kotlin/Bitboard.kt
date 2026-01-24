@@ -13,24 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.lunalobos.chess4kt
+package io.github.lunalobos.chess4kt.js
 
-
-import kotlin.jvm.JvmInline
 import kotlin.math.max
 
+/**
+ * This class represents a bitboard.
+ *
+ * This is a facade created to enable exporting the code to JS, though it can also be used directly within the JS modules of any KMP project.
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+class Bitboard internal constructor(private val value: Long) {
 
-@JvmInline
-internal value class Bitboard(val value: Long) {
     companion object {
-        internal fun reverseBytes(i: Long): Long {
+        private fun reverseBytes(i: Long): Long {
             var i = i
             i = (i and 0x00ff00ff00ff00ffL) shl 8 or ((i ushr 8) and 0x00ff00ff00ff00ffL)
             return (i shl 48) or ((i and 0xffff0000L) shl 16) or
                     ((i ushr 16) and 0xffff0000L) or (i ushr 48)
         }
 
-        internal fun reverse(i: Long): Long {
+        private fun reverse(i: Long): Long {
             var i = i
             i = (i and 0x5555555555555555L) shl 1 or ((i ushr 1) and 0x5555555555555555L)
             i = (i and 0x3333333333333333L) shl 2 or ((i ushr 2) and 0x3333333333333333L)

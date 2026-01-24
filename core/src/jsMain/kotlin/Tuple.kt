@@ -13,18 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.lunalobos.chess4kt
+package io.github.lunalobos.chess4kt.js
 
-/**
- * Factory function to easily create a new [Tuple] instance.
- *
- * @param v1 The first element of the tuple.
- * @param v2 The second element of the tuple.
- * @return A new [Tuple] instance containing [v1] and [v2].
- */
-internal fun <T1, T2> tupleOf(v1: T1, v2: T2): Tuple<T1, T2> {
-    return Tuple(v1, v2)
-}
+import io.github.lunalobos.chess4kt.genericHashCode
 
 /**
  * Auxiliary generic class to represent a pair of related, heterogeneous elements. It is immutable.
@@ -32,10 +23,21 @@ internal fun <T1, T2> tupleOf(v1: T1, v2: T2): Tuple<T1, T2> {
  * This class provides properties [v1] and [v2], along with overloaded operators
  * [component1] and [component2] to enable destructuring declarations (e.g., `val (position, move) = tuple`).
  *
- * @since 1.0.0-beta.1
- * @author lunalobos
+ * This is a facade created to enable exporting the code to JS, though it can also be used directly within the JS modules of any KMP project.
  */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
 class Tuple<T1, T2> {
+
+    companion object {
+        /**
+         * Factory function to easily create a new [Tuple] instance.
+         *
+         */
+        fun <T1, T2> of(v1: T1, v2: T2): Tuple<T1,T2> {
+            return Tuple(v1, v2)
+        }
+    }
 
     /**
      * The first element of the tuple.
@@ -50,8 +52,6 @@ class Tuple<T1, T2> {
     /**
      * Internal constructor for creating a [Tuple] instance.
      *
-     * @param v1 The first element.
-     * @param v2 The second element.
      */
     internal constructor(v1: T1, v2: T2) {
         this.v1 = v1

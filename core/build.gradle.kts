@@ -1,5 +1,6 @@
 import com.android.build.api.dsl.androidLibrary
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -44,10 +45,21 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
     linuxX64()
-    js {
-        browser()
-        binaries.executable()
+    js(IR) {
+        outputModuleName = "chess4js"
+        browser {
+        }
+
+        compilerOptions {
+            freeCompilerArgs.add("-Xes-long-as-bigint")
+            target = "es2015"
+        }
+
+        binaries.library(
+
+        )
     }
+
     @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
     wasmJs {
         browser()
@@ -102,6 +114,12 @@ mavenPublishing {
             connection = "cm:git:https://github.com/lunalobos/chess4kt.git"
             developerConnection = "scm:git:ssh://git@github.com:lunalobos/chess4kt.git"
         }
+    }
+}
+
+tasks.withType<KotlinJsCompile>().configureEach {
+    compilerOptions {
+        target = "es2015"
     }
 }
 

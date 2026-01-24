@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Miguel Angel Luna Lobos
+ * Copyright 2026 Miguel Angel Luna Lobos
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ private val logger = getLogger("io.github.lunalobos.chess4kt.util")
 
 internal val COLS = arrayOf("a", "b", "c", "d", "e", "f", "g", "h")
 
-internal fun getColLetter(square: Int): String? {
+internal fun getColLetter(square: Int): String {
     val colNum: Int = getCol(square)
     return COLS[colNum]
 }
