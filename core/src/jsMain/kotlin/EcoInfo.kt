@@ -13,39 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.lunalobos.chess4kt
+package io.github.lunalobos.chess4kt.js
+
 
 /**
  * A container class representing the information about a chess opening based on the
  * Encyclopedia of Chess Openings (ECO). **It is immutable.**
  *
- * @since 1.0.0-beta.1
- * @author lunalobos
+ * This is a facade created to enable exporting the code to JS, though it can also be used directly within the JS modules of any KMP project.
  */
-class EcoInfo internal constructor(
-    /**
-     * The ECO code (e.g., "E57", "B40").
-     */
-    val eco: String,
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+class EcoInfo internal constructor(internal val backedEcoInfo: io.github.lunalobos.chess4kt.EcoInfo) {
     /**
      * The name of the opening or variation (e.g., "Nimzo-Indian, 4.e3 O-O 5.Bd3 d5 6.Nf3 c5").
      */
-    val name: String
-) {
+    val name get() = backedEcoInfo.name
 
-    override fun hashCode() = genericHashCode(arrayOf(eco, name))
-
-    override fun equals(other: Any?): Boolean {
-        return if (other == null) {
-            false
-        } else if (other === this) {
-            true
-        } else if (other is EcoInfo) {
-            eco == other.eco && name == other.name
-        } else {
-            false
-        }
-    }
-
-    override fun toString() = "EcoInfo(eco=$eco, name=$name)"
+    /**
+     * The ECO code (e.g., "E57", "B40").
+     */
+    val eco get() = backedEcoInfo.eco
 }

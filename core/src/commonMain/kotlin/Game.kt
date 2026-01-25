@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Miguel Angel Luna Lobos
+ * Copyright 2026 Miguel Angel Luna Lobos
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -368,9 +368,9 @@ class Game : Iterable<Game.Node> {
      * @param idSupplier a lambda that provides different IDs each time it is called
      *
      * @return the analysis deep copy of this [Game]
-     * @since 1.0.0-beta.1
+     * @since 1.0.0-beta.3
      */
-    fun toAnalisis(idSupplier: () -> Any? = { null }): Game {
+    fun toAnalysis(idSupplier: () -> Any? = { null }): Game {
         return Game(
             mutableMapOf<String, String>().apply {
                 putAll(tags)

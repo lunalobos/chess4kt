@@ -1,6 +1,6 @@
 ![License](https://img.shields.io/github/license/lunalobos/chess4kt)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.lunalobos/chess4kt)](https://central.sonatype.com/artifact/io.github.lunalobos/chess4kt)
-[![KDoc](https://img.shields.io/badge/kdoc-1.0.0--beta.2-a97bff)](https://chess4kt.pages.dev/)
+[![KDoc](https://img.shields.io/badge/kdoc-1.0.0--beta.3-a97bff)](https://chess4kt.pages.dev/)
 
 # Chess4kt
 
@@ -126,32 +126,32 @@ config:
   look: classic
 ---
 flowchart LR
- subgraph subGraph0["Game Tree"]
-        B["MoveNode
-        (1. e4 - First move)"]
-        A["Node
-        (Start position of the game)"]
-        C@{ label: "Node\n        (1... c5 - Black's response)" }
-        D["Node
-        (2. Nf3 - Next main move)"]
-        E["Node
-        (2. d4 - Alternative move by White)"]
-        F@{ label: "Node\n        (2... cxd4 - Black's response in variation)" }
-  end
-    A -- children 0: Main line --> B
-    B -- children 0: Main line --> C
-    C -- children 0: Main line --> D
-    C -- children 1: Variation --> E
-    E -- children 0: Main line of the variation --> F
+subgraph subGraph0["Game Tree"]
+B["MoveNode
+(1. e4 - First move)"]
+A["Node
+(Start position of the game)"]
+C@{ label: "Node\n        (1... c5 - Black's response)" }
+D["Node
+(2. Nf3 - Next main move)"]
+E["Node
+(2. d4 - Alternative move by White)"]
+F@{ label: "Node\n        (2... cxd4 - Black's response in variation)" }
+end
+A -- children 0: Main line --> B
+B -- children 0: Main line --> C
+C -- children 0: Main line --> D
+C -- children 1: Variation --> E
+E -- children 0: Main line of the variation --> F
 
-    C@{ shape: rect}
-    F@{ shape: rect}
-    style B fill:#424242,stroke:#333
-    style A fill:#424242,stroke:#424242
-    style C fill:#424242,stroke:#333
-    style D fill:#424242,stroke:#333
-    style E fill:#424242,stroke:#333
-    style F fill:#424242,stroke:#333
+C@{ shape: rect}
+F@{ shape: rect}
+style B fill:#424242,stroke:#333
+style A fill:#424242,stroke:#424242
+style C fill:#424242,stroke:#333
+style D fill:#424242,stroke:#333
+style E fill:#424242,stroke:#333
+style F fill:#424242,stroke:#333
 
 ```
 
