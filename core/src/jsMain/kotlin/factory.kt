@@ -15,6 +15,8 @@
  */
 package io.github.lunalobos.chess4kt.js
 
+import kotlin.js.collections.JsReadonlyArray
+
 private val initialPosition = Position(io.github.lunalobos.chess4kt.positionOf())
 
 /**
@@ -106,8 +108,8 @@ fun customGame(
  * This is a facade created to enable exporting the code to JS, though it can also be used directly within the JS modules of any KMP project.
  *
  */
-@OptIn(ExperimentalJsExport::class)
+@OptIn(ExperimentalJsExport::class, ExperimentalJsCollectionsApi::class)
 @JsExport
-fun parseGames(pgnInput: String, idSupplier: () -> Any? = { null }): List<Game> {
-    return io.github.lunalobos.chess4kt.parseGames(pgnInput, idSupplier).map { Game(it) }
+fun parseGames(pgnInput: String, idSupplier: () -> Any? = { null }): JsReadonlyArray<Game> {
+    return io.github.lunalobos.chess4kt.parseGames(pgnInput, idSupplier).map { Game(it) }.asJsReadonlyArrayView()
 }

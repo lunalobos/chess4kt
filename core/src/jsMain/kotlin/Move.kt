@@ -33,12 +33,11 @@ class Move internal constructor(val backedMove: io.github.lunalobos.chess4kt.Mov
      */
     val origin get() = backedMove.origin
     /**
-     * The ordinal value of the promotion piece, or -1 if no promotion occurs.
-     * The ordinal corresponds to the [Piece] enum.
+     * The zero-based index (0-63) of the move's target square.
      */
     val target get() = backedMove.target
     /**
-     * The zero-based index (0-63) of the move's target square.
+     * The ordinal value of the promotion piece, or -1 if no promotion occurs.
      */
     val promotionPiece get() = backedMove.promotionPiece
 

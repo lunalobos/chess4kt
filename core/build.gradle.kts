@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "io.github.lunalobos"
-version = "1.0.0-beta.2"
+version = "1.0.0-beta.3"
 
 kotlin {
 
@@ -47,17 +47,24 @@ kotlin {
     linuxX64()
     js(IR) {
         outputModuleName = "chess4js"
-        browser {
-        }
+
+        nodejs {}
 
         compilerOptions {
             freeCompilerArgs.add("-Xes-long-as-bigint")
             target = "es2015"
         }
 
-        binaries.library(
+        compilations.getByName("main").packageJson {
+            customField("author", "lunalobos")
+            customField("type", "module")
+            customField("repository", mapOf("type" to "git", "url" to "https://github.com/lunalobos/chess4kt.git"))
+            customField("description", "A chess library for JavaScript transpiled from Kotlin")
+            customField("license", "Apache-2.0")
+        }
 
-        )
+        generateTypeScriptDefinitions()
+        binaries.library()
     }
 
     @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
@@ -121,6 +128,19 @@ tasks.withType<KotlinJsCompile>().configureEach {
     compilerOptions {
         target = "es2015"
     }
+}
+
+tasks.named<Copy>("jsNodeProductionLibraryDistribution") {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    from(project.file("README_js.md")) {
+        rename { "README.md" }
+    }
+
+    from(project.file("LICENSE_js")) {
+        rename { "LICENSE" }
+    }
+
 }
 
 

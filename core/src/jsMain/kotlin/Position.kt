@@ -20,9 +20,14 @@ import io.github.lunalobos.chess4kt.children
 import io.github.lunalobos.chess4kt.draw
 import io.github.lunalobos.chess4kt.enPassantSquare
 import io.github.lunalobos.chess4kt.gameOver
+import io.github.lunalobos.chess4kt.isLegal
+import io.github.lunalobos.chess4kt.move
 import io.github.lunalobos.chess4kt.positionOf
 import io.github.lunalobos.chess4kt.sideToMove
 import io.github.lunalobos.chess4kt.whiteLacksOfMaterial
+import kotlin.js.collections.JsReadonlyArray
+import kotlin.js.collections.toList
+import kotlin.js.json
 
 /**
  * Class to represent a position on the chessboard. **It is immutable.**
@@ -38,14 +43,14 @@ import io.github.lunalobos.chess4kt.whiteLacksOfMaterial
 class Position internal constructor(private val backedPosition: io.github.lunalobos.chess4kt.Position) {
     /**
      * Array of **Bitboards**. The index in the array is equal to the ordinal value minus one
-     * of the corresponding piece (e.g., Black Knight distribution is at index `Piece.BN.ordinal - 1`).
+     * of the corresponding piece (e.g., Black Knight distribution is at index `BN.ordinal - 1`).
      *
-     * Each Long has 64 bits, where each bit represents a square in the board, following the [Square] enum order
+     * Each Bitboard has 64 bits, where each bit represents a square in the board, following the [Square] ordinal order
      * (A1 is bit 0, B1 is bit 1, up to H8 which is bit 63). A bit set to 1 indicates the presence of the piece
      * corresponding to the array index, and 0 indicates absence.
      */
-    val bitboards = backedPosition.bitboards.map { Bitboard(it) }.toTypedArray()
-        get() = field.copyOf()
+    @OptIn(ExperimentalJsCollectionsApi::class)
+    val bitboards: JsReadonlyArray<Bitboard> = backedPosition.bitboards.map { Bitboard(it) }.asJsReadonlyArrayView()
 
     /**
      * True if it is White's turn to move. False if it is Black's turn.
@@ -122,7 +127,7 @@ class Position internal constructor(private val backedPosition: io.github.lunalo
 
     /**
      * A 64-element array where the index corresponds to the square order defined in [Square] (A1=0, H8=63).
-     * The value of each element is the ordinal of the [Piece] occupying that square (0 for [Piece.EMPTY], 1 for [Piece.WP], and so on).
+     * The value of each element is the ordinal of the [Piece] occupying that square (0 for EMPTY, 1 for WP, and so on).
      */
     val squares get() = backedPosition.squares
 
@@ -137,10 +142,12 @@ class Position internal constructor(private val backedPosition: io.github.lunalo
      * (Tuple<Position, Move>). This list effectively defines the legal branches of the game tree from the current position.
      *
      */
+    @OptIn(ExperimentalJsCollectionsApi::class)
     val children
         get() = backedPosition.children.map {
+            val obj = js("{}")
             Tuple.of(Position(it.v1), Move(it.v2))
-        }
+        }.asJsReadonlyArrayView()
 
     /**
      * True if the position is a forced draw. This is true if the position results in a stalemate or lackOfMaterial. False
@@ -178,6 +185,35 @@ class Position internal constructor(private val backedPosition: io.github.lunalo
      */
     fun blackLacksOfMaterial() = backedPosition.blackLacksOfMaterial()
 
+    /**
+     * Retrieves the piece object that occupies the given square.
+     */
+    fun pieceAt(square: Square): Piece {
+        return Piece.entries_[squares[square.ordinal]]
+    }
+
+    /**
+     * Returns true if the evaluated [Move] is legal in the current position, and false otherwise.
+     */
+    fun isLegal(move: Move): Boolean {
+        return backedPosition.isLegal(move.backedMove)
+    }
+
+    /**
+     * Retrieves the new [Position] that results from executing the provided legal [Move]. Throws a MoveException if the
+     * provided move is not legal in the current position.
+     */
+    fun move(move: Move): Position {
+        return Position(backedPosition.move(move.backedMove))
+    }
+
+    /**
+     * Retrieves the new [Position] that results from executing the move specified in the given notation. Throws a
+     * MoveException if the move is not legal. If no notation is provided, UCI notation is assumed.
+     */
+    fun moveFromString(move: String, notation: Notation = UCI): Position {
+        return Position(backedPosition.move(move, io.github.lunalobos.chess4kt.Notation.valueOf(notation.name)))
+    }
 
     override fun hashCode() = backedPosition.hashCode()
 
@@ -190,4 +226,6 @@ class Position internal constructor(private val backedPosition: io.github.lunalo
     }
 
     override fun toString() = backedPosition.toString()
+
+
 }

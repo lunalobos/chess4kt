@@ -15,6 +15,8 @@
  */
 package io.github.lunalobos.chess4kt.js
 
+import io.github.lunalobos.chess4kt.js.Side.Companion.entries_
+
 /**
  * This enum represents the two sides (colors) in a chess game: White or Black.
  *
@@ -24,16 +26,26 @@ package io.github.lunalobos.chess4kt.js
 @JsExport
 class Side private constructor(val name: String) {
     companion object {
-        val entries = io.github.lunalobos.chess4kt.Side.entries.map { Side(it.name) }
-        /**
-         * White Player
-         */
-        val WHITE = entries[0]
-        /**
-         * Black Player
-         */
-        val BLACK = entries[1]
+        internal val entries_ = io.github.lunalobos.chess4kt.Side.entries.map { Side(it.name) }
+
+        @OptIn(ExperimentalJsCollectionsApi::class)
+        val entries = io.github.lunalobos.chess4kt.Side.entries.map { Side(it.name) }.asJsReadonlyArrayView()
+
         private val map = io.github.lunalobos.chess4kt.Side.entries.associate { it.name to Side(it.name) }
         fun get(name: String) = map[name]
     }
 }
+
+/**
+ * White Player
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val WHITE = entries_[0]
+
+/**
+ * Black Player
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val BLACK = entries_[1]

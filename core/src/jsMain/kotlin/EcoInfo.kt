@@ -24,7 +24,7 @@ package io.github.lunalobos.chess4kt.js
  */
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-class EcoInfo internal constructor(val backedEcoInfo: io.github.lunalobos.chess4kt.EcoInfo) {
+class EcoInfo internal constructor(internal val backedEcoInfo: io.github.lunalobos.chess4kt.EcoInfo) {
     /**
      * The name of the opening or variation (e.g., "Nimzo-Indian, 4.e3 O-O 5.Bd3 d5 6.Nf3 c5").
      */

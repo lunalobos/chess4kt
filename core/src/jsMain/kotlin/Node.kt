@@ -15,7 +15,8 @@
  */
 package io.github.lunalobos.chess4kt.js
 
-import io.github.lunalobos.chess4kt.Game
+import kotlin.js.collections.JsReadonlyArray
+import kotlin.js.collections.toList
 
 /**
  * Each game can be interpreted as a series of interconnected nodes in a tree. Each node is move in the game and
@@ -42,7 +43,8 @@ class Node internal constructor(internal val backedNode: io.github.lunalobos.che
     /**
      * The children of the node. The first child corresponds to the main line. The rest are variations (RAVs).
      */
-    val children get() = backedNode.children.map { Node(it) }
+    @OptIn(ExperimentalJsCollectionsApi::class)
+    val children get() = backedNode.children.map { Node(it) }.asJsReadonlyArrayView()
 
     /**
      * The comment that precedes the move number in PGN (e.g., "{Comment} 1. e4").
@@ -62,7 +64,8 @@ class Node internal constructor(internal val backedNode: io.github.lunalobos.che
     /**
      * The list of suffix annotations (NAGs) for the node.
      */
-    val suffixAnnotations get() = backedNode.suffixAnnotations
+    @OptIn(ExperimentalJsCollectionsApi::class)
+    val suffixAnnotations get() = backedNode.suffixAnnotations?.asJsReadonlyArrayView()
 
     /**
      * The parent node. It can only be null when it is the root node, which evidently cannot have a parent.
@@ -73,20 +76,21 @@ class Node internal constructor(internal val backedNode: io.github.lunalobos.che
      * Appends a move and returns the added node. If the node already has a child, the added move
      * will be a variation (RAV). Returns the new node if the move is legal, or the current node if the move is illegal.
      */
+    @OptIn(ExperimentalJsCollectionsApi::class)
     fun appendMove(
         move: String,
         initialComment: String? = null,
         comment: String? = null,
         endLineComment: String? = null,
-        suffixAnnotations: List<Int>? = null,
-        notation: Notation = Notation.SAN
+        suffixAnnotations: JsReadonlyArray<Int>? = null,
+        notation: Notation = SAN
     ) = Node(
         backedNode.appendMove(
             move,
             initialComment,
             comment,
             endLineComment,
-            suffixAnnotations,
+            suffixAnnotations?.toList(),
             io.github.lunalobos.chess4kt.Notation.valueOf(notation.name)
         )
     )

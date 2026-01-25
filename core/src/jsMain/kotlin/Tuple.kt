@@ -18,56 +18,37 @@ package io.github.lunalobos.chess4kt.js
 import io.github.lunalobos.chess4kt.genericHashCode
 
 /**
- * Auxiliary generic class to represent a pair of related, heterogeneous elements. It is immutable.
- *
- * This class provides properties [v1] and [v2], along with overloaded operators
- * [component1] and [component2] to enable destructuring declarations (e.g., `val (position, move) = tuple`).
+ * Auxiliary generic class to represent a pair of position and associated move. It is immutable.
  *
  * This is a facade created to enable exporting the code to JS, though it can also be used directly within the JS modules of any KMP project.
  */
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-class Tuple<T1, T2> {
+class Tuple internal constructor(
+    val position: Position,
+    val move: Move
+) {
 
     companion object {
         /**
          * Factory function to easily create a new [Tuple] instance.
          *
          */
-        fun <T1, T2> of(v1: T1, v2: T2): Tuple<T1,T2> {
-            return Tuple(v1, v2)
+        fun of(position: Position, move: Move): Tuple {
+            return Tuple(position, move)
         }
     }
 
-    /**
-     * The first element of the tuple.
-     */
-    val v1: T1
-
-    /**
-     * The second element of the tuple.
-     */
-    val v2: T2
-
-    /**
-     * Internal constructor for creating a [Tuple] instance.
-     *
-     */
-    internal constructor(v1: T1, v2: T2) {
-        this.v1 = v1
-        this.v2 = v2
+    operator fun component1(): Position {
+        return position
     }
 
-    operator fun component1(): T1 {
-        return v1
-    }
-
-    operator fun component2(): T2 {
-        return v2
+    operator fun component2(): Move {
+        return move
     }
 
     override fun hashCode(): Int {
-        return genericHashCode(arrayOf(v1, v2))
+        return genericHashCode(arrayOf(position, move))
     }
 
     override fun equals(other: Any?): Boolean {
@@ -75,8 +56,8 @@ class Tuple<T1, T2> {
             false
         } else if (other === this) {
             true
-        } else if (other is Tuple<T1, T2>) {
-            other.v1 == v1 && other.v2 == v2
+        } else if (other is Tuple) {
+            other.position == position && other.move == move
         } else {
             false
         }

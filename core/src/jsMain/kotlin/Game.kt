@@ -136,6 +136,18 @@ class Game internal constructor(private val backedGame: io.github.lunalobos.ches
             backedGame.threeRepetitionsWarning = value
         }
 
+    /**
+     * Standard PGN tags (e.g., Event, Site, Date, Round, White, Black, Result).
+     */
+    val tags: dynamic
+        get() {
+            val p = js("{}")
+            backedGame.tags.entries.forEach {
+                p.set(it.key, it.value)
+            }
+            return p
+        }
+
 
     /**
      * Sets a tag pair (name and value)
@@ -177,7 +189,7 @@ class Game internal constructor(private val backedGame: io.github.lunalobos.ches
 
     /**
      * Deletes all moves (the main line continuation and any variations) that follow the provided node.
-     * The node provided remains in the game.
+     * The move represented by the node is effectively removed from the game.
      */
     fun deleteFromInclusive(node: Node): Node{
         return Node(backedGame.deleteFromInclusive(node.backedNode))

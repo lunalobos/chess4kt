@@ -15,6 +15,8 @@
  */
 package io.github.lunalobos.chess4kt.js
 
+import io.github.lunalobos.chess4kt.js.Piece.Companion.entries_
+
 /**
  * This class represents the chess pieces on the board. Each piece has a corresponding side (color).
  *
@@ -24,76 +26,107 @@ package io.github.lunalobos.chess4kt.js
 @JsExport
 class Piece private constructor(val ordinal: Int, val name: String) {
     companion object {
-        val entries = io.github.lunalobos.chess4kt.Piece.entries.map { Piece(it.ordinal, it.name) }
+        @OptIn(ExperimentalJsCollectionsApi::class)
+        val entries = io.github.lunalobos.chess4kt.Piece.entries.map { Piece(it.ordinal, it.name) }.asJsReadonlyArrayView()
 
-        /**
-         * Represents an empty square on the board.
-         */
-        val EMPTY = entries[0]
+        internal val entries_ = io.github.lunalobos.chess4kt.Piece.entries.map { Piece(it.ordinal, it.name) }
 
-        /**
-         * White Pawn
-         */
-        val WP = entries[1]
 
-        /**
-         * White Knight
-         */
-        val WN = entries[2]
-
-        /**
-         * White Bishop
-         */
-        val WB = entries[3]
-
-        /**
-         * White Rook
-         */
-        val WR = entries[4]
-
-        /**
-         * White Queen
-         */
-        val WQ = entries[5]
-
-        /**
-         * White King
-         */
-        val WK = entries[6]
-
-        /**
-         * Black Pawn
-         */
-        val BP = entries[7]
-
-        /**
-         * Black Knight
-         */
-        val BN = entries[8]
-
-        /**
-         * Black Bishop
-         */
-        val BB = entries[9]
-
-        /**
-         * Black Rook
-         */
-        val BR = entries[10]
-
-        /**
-         * Black Queen
-         */
-        val BQ = entries[11]
-
-        /**
-         * Black King
-         */
-        val BK = entries[12]
         private val map =
             io.github.lunalobos.chess4kt.Square.entries.associate { it.name to Piece(it.ordinal, it.name) }
 
         fun get(name: String) = map[name]
-        fun indexToPiece(index: Int) = entries[index]
+        fun indexToPiece(index: Int) = entries_[index]
     }
 }
+
+/**
+ * Represents an empty square on the board.
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val EMPTY = entries_[0]
+
+/**
+ * White Pawn
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val WP = entries_[1]
+
+/**
+ * White Knight
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val WN = entries_[2]
+
+/**
+ * White Bishop
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val WB = entries_[3]
+
+/**
+ * White Rook
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val WR = entries_[4]
+
+/**
+ * White Queen
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val WQ = entries_[5]
+
+/**
+ * White King
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val WK = entries_[6]
+
+/**
+ * Black Pawn
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val BP = entries_[7]
+
+/**
+ * Black Knight
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val BN = entries_[8]
+
+/**
+ * Black Bishop
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val BB = entries_[9]
+
+/**
+ * Black Rook
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val BR = entries_[10]
+
+/**
+ * Black Queen
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val BQ = entries_[11]
+
+/**
+ * Black King
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+val BK = entries_[12]
