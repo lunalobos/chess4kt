@@ -1,4 +1,4 @@
-[![npm](https://img.shields.io/npm/v/chess4js?logo=npm)](https://www.npmjs.com/package/ll-grid-vue-3)
+[![npm](https://img.shields.io/npm/v/chess4js?logo=npm)](https://www.npmjs.com/package/chess4js)
 ![License](https://img.shields.io/github/license/lunalobos/chess4kt)
 
 # Chess4js
