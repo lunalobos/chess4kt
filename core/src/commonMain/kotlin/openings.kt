@@ -2736,3 +2736,4 @@ internal val openings = """
     A00,Drunken Knight Opening,Nh3
     A00,Krazy Kat,Nh3 e5 f3 d5 Nf2
 """.trimIndent()
+

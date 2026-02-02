@@ -1,4 +1,4 @@
-[![npm](https://img.shields.io/npm/v/chess4js?logo=npm)](https://www.npmjs.com/package/ll-grid-vue-3)
+[![npm](https://img.shields.io/npm/v/chess4js?logo=npm)](https://www.npmjs.com/package/chess4js)
 ![License](https://img.shields.io/github/license/lunalobos/chess4kt)
 
 # Chess4js
@@ -8,7 +8,8 @@
 **Chess4js** is a JavaScript transpilation of **Chess4kt**, my Kotlin Multiplatform chess library.
 
 This library offers nearly all the features of its Kotlin counterpart. It is currently in **beta**; while fully
-functional, initialization performance is still being optimized.
+functional, initialization performance is still being optimized. At present, initialization takes approximately a few 
+hundred milliseconds on modern machines.
 
 ---
 
@@ -199,44 +200,6 @@ algebraic notation).
 The `Game` class represents a match or an analysis game.
 It is basically a tree of `Node` objects with some other properties like tags.
 If an instance is used to represent a documented match then its structure becomes like a linked list.
-
-```mermaid
-
----
-config:
-  theme: neo-dark
-  layout: dagre
-  look: classic
----
-flowchart LR
-subgraph subGraph0["Game Tree"]
-B["MoveNode
-(1. e4 - First move)"]
-A["Node
-(Start position of the game)"]
-C@{ label: "Node\n (1... c5 - Black's response)" }
-D["Node
-(2. Nf3 - Next main move)"]
-E["Node
-(2. d4 - Alternative move by White)"]
-F@{ label: "Node\n (2... cxd4 - Black's response in variation)" }
-end
-A -- children 0: Main line --> B
-B -- children 0: Main line --> C
-C -- children 0: Main line --> D
-C -- children 1: Variation --> E
-E -- children 0: Main line of the variation --> F
-
-C@{ shape: rect}
-F@{ shape: rect}
-style B fill: #424242, stroke: #333
-style A fill: #424242, stroke: #424242
-style C fill: #424242, stroke: #333
-style D fill: #424242, stroke: #333
-style E fill: #424242, stroke: #333
-style F fill: #424242, stroke: #333
-
-```
 
 ### Properties
 

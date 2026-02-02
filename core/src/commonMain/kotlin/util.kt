@@ -19,7 +19,6 @@ import io.github.lunalobos.chess4kt.Game.Node
 import io.github.lunalobos.chess4kt.Piece.*
 import kotlin.math.sign
 
-private val logger = getLogger("io.github.lunalobos.chess4kt.util")
 
 internal val COLS = arrayOf("a", "b", "c", "d", "e", "f", "g", "h")
 
@@ -296,7 +295,7 @@ internal fun positionFromFen(fen: String): Position {
         val rookBitboard = 1L shl 7
         val kingBitboard = 1L shl 4
         validWk = ((bitboards[WR.ordinal - 1] and rookBitboard).countOneBits() == 1)
-                || ((bitboards[WK.ordinal - 1] and kingBitboard).countOneBits() == 1)
+                && ((bitboards[WK.ordinal - 1] and kingBitboard).countOneBits() == 1)
     }
 
     var validWq = true
@@ -304,7 +303,7 @@ internal fun positionFromFen(fen: String): Position {
         val rookBitboard = 1L
         val kingBitboard = 1L shl 4
         validWq = ((bitboards[WR.ordinal - 1] and rookBitboard).countOneBits() == 1)
-                || ((bitboards[WK.ordinal - 1] and kingBitboard).countOneBits() == 1)
+                && ((bitboards[WK.ordinal - 1] and kingBitboard).countOneBits() == 1)
     }
 
     var validBk = true
@@ -312,7 +311,7 @@ internal fun positionFromFen(fen: String): Position {
         val rookBitboard = 1L shl 63
         val kingBitboard = 1L shl 60
         validBk = ((bitboards[BR.ordinal - 1] and rookBitboard).countOneBits() == 1)
-                || ((bitboards[BK.ordinal - 1] and kingBitboard).countOneBits() == 1)
+                && ((bitboards[BK.ordinal - 1] and kingBitboard).countOneBits() == 1)
     }
 
     var validBq = true
@@ -320,12 +319,12 @@ internal fun positionFromFen(fen: String): Position {
         val rookBitboard = 1L shl 56
         val kingBitboard = 1L shl 60
         validBq = ((bitboards[BR.ordinal - 1] and rookBitboard).countOneBits() == 1)
-                || ((bitboards[BK.ordinal - 1] and kingBitboard).countOneBits() == 1)
+                && ((bitboards[BK.ordinal - 1] and kingBitboard).countOneBits() == 1)
     }
 
     // en passant
     val enPassantSquare = position.enPassant
-    val pawnBitboard = bitboards[(if (position.whiteMove) WP.ordinal else BP.ordinal) - 1]
+    val pawnBitboard = bitboards[(if (position.whiteMove) BP.ordinal else WP.ordinal) - 1]
     val isValidEnPassant = ((pawnBitboard and (1L shl enPassantSquare)).countOneBits() == 1) || (enPassantSquare == -1)
 
     if (validCheck && noPawnsIn8thRank && validWk && validWq && validBk && validBq && isValidEnPassant) {
@@ -333,7 +332,7 @@ internal fun positionFromFen(fen: String): Position {
     } else {
         throw IllegalArgumentException(
             """
-            fen provided derives in an illegal position validCheck=$validCheck, noPawnsIn8thRank=$noPawnsIn8thRank,
+            fen provided $fen derives in an illegal position validCheck=$validCheck, noPawnsIn8thRank=$noPawnsIn8thRank,
             validWk=$validWk, validWq=$validWq, validBk=$validBk, validBq=$validBq, validEnPassant=$isValidEnPassant
             """.trimIndent()
         )
@@ -345,7 +344,7 @@ private val BK_PATTERN = Regex("k")
 private val INVALID_ROW_PATTERN = Regex("[^PNBRQKpnbrqk12345678]")
 private val VALID_CASTLE_ABILITY_PATTERN = Regex($$"^([-]{1}|([K]?[Q]?[k]?[q]?))$")
 private val VALID_EN_PASSANT_PATTERN = Regex($$"^[-]{1}$|^[abcdefgh][36]$")
-private val VALID_HALF_MOVE_CLOCK_PATTERN = Regex($$"^[012345679]+$")
+private val VALID_HALF_MOVE_CLOCK_PATTERN = Regex($$"^[0123456789]+$")
 private val VALID_FULL_MOVE_COUNTER_PATTERN = Regex($$"^[1-9][0-9]*$")
 
 private fun isValidFenFormat(fen: String): Boolean {
@@ -358,37 +357,67 @@ private fun isValidFenFormat(fen: String): Boolean {
     // has 8 rows
     val rows = piecesString.split("/")
     val has8Rows = rows.size == 8
+    if(!has8Rows){
+        throw IllegalArgumentException("$fen has no 8 rows")
+    }
 
     // valid rows
     var validRows = true
 
     for (row in rows) {
         validRows = validRows && !INVALID_ROW_PATTERN.containsMatchIn(row)
+        if(!validRows){
+            throw IllegalArgumentException("$fen has an invalid row $row")
+        }
     }
 
     // valid side to move
     val sideToMove = parts[1]
     val validSideToMove = sideToMove == "w" || sideToMove == "b"
 
+    if(!validSideToMove){
+        throw IllegalArgumentException("$fen has no valid side to move $sideToMove")
+    }
+
     // valid castle ability
     val castleAbility = parts[2]
     val validCastleAbility = VALID_CASTLE_ABILITY_PATTERN.containsMatchIn(castleAbility)
+
+    if(!validCastleAbility){
+        throw IllegalArgumentException("$fen has no valid castle ability $castleAbility")
+    }
 
     // valid en passant
     val enPassant = parts[3]
     val validEnPassant = VALID_EN_PASSANT_PATTERN.containsMatchIn(enPassant)
 
+    if(!validEnPassant){
+        throw IllegalArgumentException("$fen has no valid en passant $enPassant")
+    }
+
     // valid half move clock
     val halfMoveClock = parts[4]
     val validHalfMoveClock = VALID_HALF_MOVE_CLOCK_PATTERN.containsMatchIn(halfMoveClock)
+
+    if(!validHalfMoveClock){
+        throw IllegalArgumentException("$fen has no valid half move clock $halfMoveClock")
+    }
 
     // valid full move counter
     val fullMoveCounter = parts[5]
     val validFullMoveCounter = VALID_FULL_MOVE_COUNTER_PATTERN.containsMatchIn(fullMoveCounter)
 
+    if(!validFullMoveCounter){
+        throw IllegalArgumentException("$fen has no valid full move counter $fullMoveCounter")
+    }
+
     // Kings presence
     val kingsPresence = WK_PATTERN.containsMatchIn(piecesString) &&
             BK_PATTERN.containsMatchIn(piecesString)
+
+    if(!kingsPresence){
+        throw IllegalArgumentException("$fen has no king presence")
+    }
 
     return has8Rows && validRows && validSideToMove && validCastleAbility && validEnPassant
             && validHalfMoveClock && validFullMoveCounter && kingsPresence
