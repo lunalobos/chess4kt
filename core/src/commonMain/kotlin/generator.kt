@@ -313,7 +313,7 @@ internal fun generateCastleTuples(
             position.whiteCastleQueenside,
             position.blackCastleKingside,
             position.blackCastleQueenside
-        ).applyCastleRules(bitboards, wm)
+        ).applyCastleRules(bitboards, position.whiteMove)
         val (wk, wq, bk, bq) = castleInfo
         // half moves counter
         val hm = position.halfMovesCounter + 1
@@ -322,7 +322,16 @@ internal fun generateCastleTuples(
         // en passant
         val ep = -1
         // add new tuple
-        val newPosition = Position(bitboards, wm, ep, wk, wq, bk, bq, mc, hm)
+        val newPosition = Position(
+            bitboards,
+            wm,
+            ep,
+            wk,
+            wq,
+            bk,
+            bq,
+            mc,
+            hm)
         children.add(tupleOf(newPosition, m))
     }
 }

@@ -15,17 +15,40 @@
  */
 package io.github.lunalobos.chess4kt
 
+import kotlin.time.Clock.System.now
+import kotlin.time.ExperimentalTime
+
 internal class Eco {
+    companion object {
+        private val logger = getLogger("Eco")
+    }
+
     val movesMap: Map<String, EcoInfo>
     val positionMap: Map<Position, EcoInfo>
 
-    constructor(){
+    @OptIn(ExperimentalTime::class)
+    constructor(positionOf: (String) -> Position){
+        val d1 = now()
         movesMap = loadMoves()
-        positionMap = loadPositions()
+        positionMap = loadPositions2(positionOf)
+        val d2 = now()
+        logger.info("time ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
+    private fun loadPositions2(positionOf: (String) -> Position): Map<Position, EcoInfo>{
+        return mutableMapOf<Position, EcoInfo>().apply {
+            this.putAll(positions1(positionOf))
+            this.putAll(positions2(positionOf))
+            this.putAll(positions3(positionOf))
+            this.putAll(positions4(positionOf))
+        }
+    }
+
+    /*
+    @OptIn(ExperimentalTime::class)
     private fun loadPositions(): Map<Position, EcoInfo>{
         val positions = mutableMapOf<Position, EcoInfo>()
+        val d1 = now()
         movesMap.entries.asSequence()
             .forEach { entry ->
                 val moves = entry.key.split(Regex("\\s+")).fold(ArrayDeque<String>()){ deque, curr ->
@@ -38,8 +61,18 @@ internal class Eco {
                     positions[position] = entry.value
                 }
             }
+        val d2 = now()
+        logger.info("positions size = ${positions.size}")
+        logger.info("time: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
+
+        val str = positions.entries.fold(StringBuilder()) { acc, curr ->
+            acc.append("positionOf(\"${curr.key.fen}\") to ${curr.value},\n")
+        }
+        logger.info(str.toString())
+
         return positions
     }
+    */
 
     private fun loadMoves(): Map<String, EcoInfo>{
         return openings.split("\n").asSequence()

@@ -283,7 +283,7 @@ fun positionOf(fen: String): Position {
 
 //---------------------------------------------------eco functions-----------------------------------------------------
 
-private val eco = Eco()
+private val eco = Eco({ fen -> Position(fen)})
 
 internal fun ecoInfo(moves: String): EcoInfo? {
     return eco.movesMap[moves]

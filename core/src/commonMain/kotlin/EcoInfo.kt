@@ -47,5 +47,5 @@ class EcoInfo internal constructor(
         }
     }
 
-    override fun toString() = "EcoInfo(eco=$eco, name=$name)"
+    override fun toString() = "EcoInfo(eco=\"$eco\", name=\"$name\")"
 }

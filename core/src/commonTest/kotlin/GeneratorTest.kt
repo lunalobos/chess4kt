@@ -15,16 +15,25 @@
  */
 package io.github.lunalobos.chess4kt
 
+
+import kotlin.test.Ignore
+
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Clock.System.now
 import kotlin.time.ExperimentalTime
 
+/*
+ * These unit tests are too expensive and slow to run every time, especially in environments like GitHub Actions,
+ * which is why they are marked to be ignored. However, they are executed before pushing each version since they
+ * are crucial for detecting bugs.
+ */
 class GeneratorTest {
     companion object {
         internal val logger = getLogger("io.github.lunalobos.chess4kt.GeneratorTest")
     }
 
+    @Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun position1() {
@@ -39,6 +48,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${1} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
+    @Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions2() {
@@ -53,6 +63,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${2} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
+    @Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions3() {
@@ -68,6 +79,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${3} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
+    @Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions4() {
@@ -82,6 +94,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${4} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
+    @Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions5() {
@@ -96,6 +109,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${5} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
+    @Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions6() {
