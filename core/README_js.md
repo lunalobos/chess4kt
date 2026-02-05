@@ -238,7 +238,7 @@ For the `Node` class:
 
 ### Methods
 
-For the class `Game`
+For the `Game` class
 
 | Method              | Arguments                          | Return type      | Description                                                                                                                                                             |
 |---------------------|------------------------------------|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -249,8 +249,8 @@ For the class `Game`
 | deleteFromExclusive | node: Node                         | Node             | Deletes all moves (the main line continuation and any variations) that follow the provided node. The node provided remains in the game.                                 |
 | deleteFromInclusive | node: Node                         | Node             | Deletes all moves (the main line continuation and any variations) that follow the provided node. The move represented by the node is effectively removed from the game. | 
 | deleteBefore        | node: Node                         | Node             | Deletes all moves that preceded the provided node in the main line. The node (and its position) becomes the new effective start of the game, creating a new root Node.  |
-
-For the class `Node`
+ 
+For the `Node` class
 
 | Method            | Arguments                                                                                                                                                                                          | Return type | Description                                                                                                                                                                                                  |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
