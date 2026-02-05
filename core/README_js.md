@@ -8,7 +8,7 @@
 **Chess4js** is a JavaScript transpilation of **Chess4kt**, my Kotlin Multiplatform chess library.
 
 This library offers nearly all the features of its Kotlin counterpart. It is currently in **beta**; while fully
-functional, initialization performance is still being optimized. At present, initialization takes approximately a few 
+functional, initialization performance is still being optimized. At present, initialization takes approximately a few
 hundred milliseconds on modern machines.
 
 ---
@@ -65,19 +65,20 @@ A non-directly instantiable class representing a 64-bit bitboard. Instances are 
 
 ### Methods
 
-| Method        | Arguments       | Return Type | Description                                                             |
-|---------------|-----------------|-------------|-------------------------------------------------------------------------|
-| peekLastBit   | None            | Bitboard    | Returns a bitboard containing only the Least Significant Bit (LSB).     |
-| peekFirstBit  | None            | Bitboard    | Returns a bitboard containing only the Most Significant Bit (MSB).      |          
-| trailingZeros | None            | number      | Returns the number of zero bits following the LSB.                      |
-| leadingZeros  | None            | number      | Returns the number of zero bits preceding the MSB.                      |
-| and           | other: Bitboard | Bitboard    | Performs a bitwise AND operation.                                       |
-| or            | other: Bitboard | Bitboard    | Performs a bitwise OR operation.                                        |
-| xor           | other: Bitboard | Bitboard    | Performs a bitwise XOR operation.                                       |
-| inv           | None            | Bitboard    | Performs a bitwise NOT operation (inverts all bits).                    |
-| shl           | i: number       | Bitboard    | Returns a bitboard with bits shifted left by i positions.               |
-| ushr          | i: number       | Bitboard    | Returns a bitboard with bits shifted right (unsigned) by `i` positions. |
-| toString      | none            | string      | Returns a formatted string representation.                              |
+| Method        | Arguments       | Return Type             | Description                                                                                 |
+|---------------|-----------------|-------------------------|---------------------------------------------------------------------------------------------|
+| peekLastBit   | None            | Bitboard                | Returns a bitboard containing only the Least Significant Bit (LSB).                         |
+| peekFirstBit  | None            | Bitboard                | Returns a bitboard containing only the Most Significant Bit (MSB).                          |          
+| trailingZeros | None            | number                  | Returns the number of zero bits following the LSB.                                          |
+| leadingZeros  | None            | number                  | Returns the number of zero bits preceding the MSB.                                          |
+| and           | other: Bitboard | Bitboard                | Performs a bitwise AND operation.                                                           |
+| or            | other: Bitboard | Bitboard                | Performs a bitwise OR operation.                                                            |
+| xor           | other: Bitboard | Bitboard                | Performs a bitwise XOR operation.                                                           |
+| inv           | None            | Bitboard                | Performs a bitwise NOT operation (inverts all bits).                                        |
+| shl           | i: number       | Bitboard                | Returns a bitboard with bits shifted left by i positions.                                   |
+| ushr          | i: number       | Bitboard                | Returns a bitboard with bits shifted right (unsigned) by `i` positions.                     |
+| toString      | none            | string                  | Returns a formatted string representation.                                                  |
+| toArray       | none            | ReadonlyArray\<number\> | Returns an array containing the indices of all set bits (bits equal to 1) in this bitboard. | 
 
 Instances of this class can be obtained from `Position` instances.
 
@@ -186,7 +187,8 @@ A utility class designed to group a `Position` and a `Move` together.
 ## Notation
 
 This non-instantiable class represents the types of move notation supported by this library.
-The library provides two predefined instances: `UCI` (long algebraic notation used in the UCI protocol) and `SAN` (standard
+The library provides two predefined instances: `UCI` (long algebraic notation used in the UCI protocol) and `SAN` (
+standard
 algebraic notation).
 
 ### Properties
