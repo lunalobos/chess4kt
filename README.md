@@ -1,6 +1,6 @@
 ![License](https://img.shields.io/github/license/lunalobos/chess4kt)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.lunalobos/chess4kt)](https://central.sonatype.com/artifact/io.github.lunalobos/chess4kt)
-[![KDoc](https://img.shields.io/badge/kdoc-1.0.0--beta.4-a97bff)](https://chess4kt.pages.dev/)
+[![KDoc](https://img.shields.io/badge/kdoc-1.0.0--beta.5-a97bff)](https://chess4kt.pages.dev/)
 [![npm](https://img.shields.io/npm/v/chess4js?logo=npm)](https://www.npmjs.com/package/chess4js)
 
 # Chess4kt

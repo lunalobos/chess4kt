@@ -15,6 +15,8 @@
  */
 package io.github.lunalobos.chess4kt.js
 
+import io.github.lunalobos.chess4kt.bitboardToSequence
+import kotlin.js.collections.JsReadonlyArray
 import kotlin.math.max
 
 /**
@@ -93,4 +95,9 @@ class Bitboard internal constructor(private val value: Long) {
     infix fun shl(i: Int) = Bitboard(value shl i)
 
     infix fun ushr(i: Int) = Bitboard(value ushr i)
+
+    @OptIn(ExperimentalJsCollectionsApi::class)
+    fun toArray(): JsReadonlyArray<Int>{
+        return bitboardToSequence(value){it.countTrailingZeroBits()}.toList().asJsReadonlyArrayView()
+    }
 }

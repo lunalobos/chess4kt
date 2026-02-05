@@ -1,4 +1,4 @@
-name: Publish
+name: Publish to npm
 on:
   release:
     types: [published]
@@ -32,6 +32,6 @@ jobs:
       - name: Publish to NPM
         run: |
           cd core/build/dist/js/productionLibrary
-          npm publish --provenance --access public --tag beta
+          npm publish --provenance --access public --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

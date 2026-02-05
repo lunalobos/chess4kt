@@ -141,9 +141,9 @@ class Game internal constructor(private val backedGame: io.github.lunalobos.ches
      */
     val tags: dynamic
         get() {
-            val p = js("{}")
+            val p: dynamic = js("({})")
             backedGame.tags.entries.forEach {
-                p.set(it.key, it.value)
+                p[it.key] = it.value
             }
             return p
         }
