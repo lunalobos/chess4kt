@@ -204,4 +204,12 @@ class Game internal constructor(private val backedGame: io.github.lunalobos.ches
         return Node(backedGame.deleteBefore(node.backedNode))
     }
 
+    /**
+     * Updates the instance's ECO ranking based on the last move of the main line. In match mode this is automatic, but
+     * in analysis this function must be called, otherwise the game will not be ranked.
+     */
+    fun updateEco(){
+        backedGame.updateEco()
+    }
+
 }
