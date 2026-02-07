@@ -548,19 +548,19 @@ class Game : Iterable<Game.Node> {
                 return ""
             }
             return when(language){
-                "english" -> toSan(position, move!!)
-                "spanish" -> toSan(position, move!!, piecesSpanish)
-                "dutch" -> toSan(position, move!!, piecesDutch)
-                "french" -> toSan(position, move!!, piecesFrench)
-                "german" -> toSan(position, move!!, piecesGerman)
-                "italian" -> toSan(position, move!!, piecesItalian)
+                "english" -> toSan(parent!!.position, move!!)
+                "spanish" -> toSan(parent!!.position, move!!, piecesSpanish)
+                "dutch" -> toSan(parent!!.position, move!!, piecesDutch)
+                "french" -> toSan(parent!!.position, move!!, piecesFrench)
+                "german" -> toSan(parent!!.position, move!!, piecesGerman)
+                "italian" -> toSan(parent!!.position, move!!, piecesItalian)
                 else -> {
                     if(pieces == null){
                         throw IllegalArgumentException("unknown language: $language and pieces array is null")
                     } else if (pieces.size != 12){
                         throw IllegalArgumentException("unknown language: $language and invalid pieces array")
                     } else {
-                        toSan(position, move!!, pieces)
+                        toSan(parent!!.position, move!!, pieces)
                     }
                 }
             }
@@ -666,8 +666,6 @@ class Game : Iterable<Game.Node> {
                 children.addAll(this@RootNode.children.map { it.copy(this) })
             }
         }
-
-
     }
 
     internal inner class MoveNode(

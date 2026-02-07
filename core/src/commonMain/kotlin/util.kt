@@ -784,12 +784,12 @@ fun Position.blackLacksOfMaterial(): Boolean {
 }
 
 
-internal val piecesEnglish = arrayOf("", "N", "B", "R", "Q", "K", "", "N", "B", "R", "Q", "K")
-internal val piecesSpanish = arrayOf("", "C", "A", "T", "D", "R", "", "C", "A", "T", "D", "R")
-internal val piecesGerman = arrayOf("", "S", "L", "T", "D", "K", "", "S", "L", "T", "D", "K")
-internal val piecesFrench = arrayOf("", "C", "F", "T", "D", "R", "", "C", "F", "T", "D", "R")
-internal val piecesItalian = arrayOf("", "C", "A", "T", "D", "R", "", "C", "A", "T", "D", "R")
-internal val piecesDutch = arrayOf("", "P", "L", "T", "D", "K", "", "P", "L", "T", "D", "K")
+internal val piecesEnglish = arrayOf("", "", "N", "B", "R", "Q", "K", "", "N", "B", "R", "Q", "K")
+internal val piecesSpanish = arrayOf("", "", "C", "A", "T", "D", "R", "", "C", "A", "T", "D", "R")
+internal val piecesGerman = arrayOf("", "", "S", "L", "T", "D", "K", "", "S", "L", "T", "D", "K")
+internal val piecesFrench = arrayOf("", "", "C", "F", "T", "D", "R", "", "C", "F", "T", "D", "R")
+internal val piecesItalian = arrayOf("", "", "C", "A", "T", "D", "R", "", "C", "A", "T", "D", "R")
+internal val piecesDutch = arrayOf("", "", "P", "L", "T", "D", "K", "", "P", "L", "T", "D", "K")
 
 internal fun toSan(position: Position, move: Move, pieces: Array<String> = piecesEnglish): String {
     require(position.isLegal(move)) { "illegal move $move for position ${position.fen}" }
