@@ -135,4 +135,17 @@ class Node internal constructor(internal val backedNode: io.github.lunalobos.che
     }
 
     override fun toString() = backedNode.toString()
+
+    /**
+     * Converts a move to Standard Algebraic Notation (SAN).
+     *
+     * This function acts as a convenience wrapper to generate notation adapted to different languages. If the move is
+     * null, it returns an empty string. If the specified language is not predefined, a custom array of piece initials
+     * must be provided.
+     *
+     * Supported internal languages: "english", "spanish", "dutch", "french", "german", and "italian".
+     */
+    fun toSan(language: String = "english", pieces: Array<String>? = null): String{
+        return backedNode.toSan(language, pieces)
+    }
 }
