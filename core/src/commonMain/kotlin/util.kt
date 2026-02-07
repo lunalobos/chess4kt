@@ -543,92 +543,7 @@ fun Position.isLegal(move: String, notation: Notation = Notation.UCI): Boolean {
 }
 
 
-private val PIECES = arrayOf("", "", "N", "B", "R", "Q", "K", "", "N", "B", "R", "Q", "K")
 
-internal fun toSan(position: Position, move: Move): String {
-    require(position.isLegal(move)) { "illegal move $move for position ${position.fen}" }
-    var sbSAN = StringBuilder()
-
-    // Identify the piece being moved.
-    val piece = entries[position.squares[move.origin]]
-    sbSAN.append(PIECES[piece.ordinal])
-
-    // Determinate if the piece is a pawn.
-    val isPawn = (piece == WP) || (piece == BP)
-
-    // Determine if there are one or more pieces of the same type that can move to the same destination.
-    val moves: List<Move> = position.children.asSequence()
-        .map { it.v2 }
-        .filter { m -> m.target == move.target }
-        .filter { m -> entries[position.squares[m.origin]] === entries[position.squares[move.origin]] }
-        .filter { m -> m.origin != move.origin }
-        .toList()
-
-    // If such pieces exist, determine if they are in the same column.
-    val sameColumn = moves.any { m -> getCol(m.origin) == getCol(move.origin) }
-
-    // If such pieces exist, determine if they are in the same row.
-    val sameRow: Boolean = moves.any { m -> getRow(m.origin) == getRow(move.origin) }
-
-    // If they are in the same row but not in the same column, append the column letter.
-    if (sameRow && !sameColumn && !isPawn) {
-        sbSAN.append(getColLetter(move.origin))
-    }
-
-    // If they are in the same column but not in the same row, append the row number.
-    if (!sameRow && sameColumn) {
-        sbSAN.append(getRow(move.origin) + 1)
-    }
-
-    // If they are in the same column and row, append the origin square.
-    if (sameRow && sameColumn) {
-        sbSAN.append(getColLetter(move.origin)).append(getRow(move.origin) + 1)
-    }
-
-    // If they are not in the same row nor the same column, append the column letter.
-    if (!sameRow && !sameColumn && !moves.isEmpty() && !isPawn) sbSAN.append(getColLetter(move.origin))
-
-    // Determining if a piece is captured
-    val capture = position.squares[move.target] != Piece.EMPTY.ordinal
-    if (capture) {
-        if (isPawn) {
-            sbSAN.append(getColLetter(move.origin))
-        }
-        sbSAN.append("x")
-    }
-
-    // Append target square
-    sbSAN.append(getColLetter(move.target)).append(getRow(move.target) + 1)
-
-    // Determine if it is a promotion. If so, append "=" + promotedPiece to the destination square.
-    val isPromotion = move.promotionPiece != -1 && (isPromotion(move.target) == 1L)
-    if (isPromotion) {
-        sbSAN.append("=").append(PIECES[move.promotionPiece])
-    }
-
-    // Check if the move is a castling move
-    val isCastle = ((piece === WK) or (piece === BK)) && (move.toString() in listOf("e1g1", "e1c1", "e8g8", "e8c8"))
-    if (isCastle) {
-        sbSAN = StringBuilder()
-        sbSAN.append(
-            if (move.toString().startsWith("g1", 2) or move.toString().startsWith("g8", 2))
-                "O-O"
-            else
-                "O-O-O"
-        )
-    }
-
-    // Determine if it is a check or checkmate
-    val p = position.move(move)
-
-    if (p.checkmate) {
-        sbSAN.append("#")
-    } else if (p.check) {
-        sbSAN.append("+")
-    }
-
-    return sbSAN.toString()
-}
 
 internal fun genericHashCode(a: Array<Any?>?): Int {
     if (a == null) return 0
@@ -866,4 +781,97 @@ fun Position.whiteLacksOfMaterial(): Boolean {
  */
 fun Position.blackLacksOfMaterial(): Boolean {
     return isBlackLackOfMaterial(bitboards)
+}
+
+
+internal val piecesEnglish = arrayOf("", "", "N", "B", "R", "Q", "K", "", "N", "B", "R", "Q", "K")
+internal val piecesSpanish = arrayOf("", "", "C", "A", "T", "D", "R", "", "C", "A", "T", "D", "R")
+internal val piecesGerman = arrayOf("", "", "S", "L", "T", "D", "K", "", "S", "L", "T", "D", "K")
+internal val piecesFrench = arrayOf("", "", "C", "F", "T", "D", "R", "", "C", "F", "T", "D", "R")
+internal val piecesItalian = arrayOf("", "", "C", "A", "T", "D", "R", "", "C", "A", "T", "D", "R")
+internal val piecesDutch = arrayOf("", "", "P", "L", "T", "D", "K", "", "P", "L", "T", "D", "K")
+
+internal fun toSan(position: Position, move: Move, pieces: Array<String> = piecesEnglish): String {
+    require(position.isLegal(move)) { "illegal move $move for position ${position.fen}" }
+    var sbSAN = StringBuilder()
+
+    // Identify the piece being moved.
+    val piece = entries[position.squares[move.origin]]
+    sbSAN.append(pieces[piece.ordinal])
+
+    // Determinate if the piece is a pawn.
+    val isPawn = (piece == WP) || (piece == BP)
+
+    // Determine if there are one or more pieces of the same type that can move to the same destination.
+    val moves: List<Move> = position.children.asSequence()
+        .map { it.v2 }
+        .filter { m -> m.target == move.target }
+        .filter { m -> entries[position.squares[m.origin]] === entries[position.squares[move.origin]] }
+        .filter { m -> m.origin != move.origin }
+        .toList()
+
+    // If such pieces exist, determine if they are in the same column.
+    val sameColumn = moves.any { m -> getCol(m.origin) == getCol(move.origin) }
+
+    // If such pieces exist, determine if they are in the same row.
+    val sameRow: Boolean = moves.any { m -> getRow(m.origin) == getRow(move.origin) }
+
+    // If they are in the same row but not in the same column, append the column letter.
+    if (sameRow && !sameColumn && !isPawn) {
+        sbSAN.append(getColLetter(move.origin))
+    }
+
+    // If they are in the same column but not in the same row, append the row number.
+    if (!sameRow && sameColumn) {
+        sbSAN.append(getRow(move.origin) + 1)
+    }
+
+    // If they are in the same column and row, append the origin square.
+    if (sameRow && sameColumn) {
+        sbSAN.append(getColLetter(move.origin)).append(getRow(move.origin) + 1)
+    }
+
+    // If they are not in the same row nor the same column, append the column letter.
+    if (!sameRow && !sameColumn && !moves.isEmpty() && !isPawn) sbSAN.append(getColLetter(move.origin))
+
+    // Determining if a piece is captured
+    val capture = position.squares[move.target] != Piece.EMPTY.ordinal
+    if (capture) {
+        if (isPawn) {
+            sbSAN.append(getColLetter(move.origin))
+        }
+        sbSAN.append("x")
+    }
+
+    // Append target square
+    sbSAN.append(getColLetter(move.target)).append(getRow(move.target) + 1)
+
+    // Determine if it is a promotion. If so, append "=" + promotedPiece to the destination square.
+    val isPromotion = move.promotionPiece != -1 && (isPromotion(move.target) == 1L)
+    if (isPromotion) {
+        sbSAN.append("=").append(pieces[move.promotionPiece])
+    }
+
+    // Check if the move is a castling move
+    val isCastle = ((piece == WK) or (piece == BK)) && (move.toString() in listOf("e1g1", "e1c1", "e8g8", "e8c8"))
+    if (isCastle) {
+        sbSAN = StringBuilder()
+        sbSAN.append(
+            if (move.toString().startsWith("g1", 2) or move.toString().startsWith("g8", 2))
+                "O-O"
+            else
+                "O-O-O"
+        )
+    }
+
+    // Determine if it is a check or checkmate
+    val p = position.move(move)
+
+    if (p.checkmate) {
+        sbSAN.append("#")
+    } else if (p.check) {
+        sbSAN.append("+")
+    }
+
+    return sbSAN.toString()
 }

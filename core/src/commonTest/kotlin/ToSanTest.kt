@@ -132,4 +132,22 @@ class ToSanTest {
         val san = toSan(pos, f7f8q)
         assertEquals("f8=Q+", san)
     }
+
+    @Test
+    fun languages(){
+        val game = analysisGame { null }
+        val node = game.root.appendMove("Nf3")
+        val sanSpanish = node.toSan("spanish")
+        val sanEnglish = node.toSan("english")
+        val sanDutch = node.toSan("dutch")
+        val sanGerman  = node.toSan("german")
+        val sanFrench = node.toSan("french")
+        val sanItalian = node.toSan("italian")
+        assertEquals("Cf3", sanSpanish)
+        assertEquals("Nf3", sanEnglish)
+        assertEquals("Pf3", sanDutch)
+        assertEquals("Cf3", sanFrench)
+        assertEquals("Sf3", sanGerman)
+        assertEquals("Cf3", sanItalian)
+    }
 }

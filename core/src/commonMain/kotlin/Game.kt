@@ -525,6 +525,46 @@ class Game : Iterable<Game.Node> {
          */
         fun copy(parent: Node?): Node
 
+        /**
+         * Converts a move to Standard Algebraic Notation (SAN).
+         *
+         * This function acts as a convenience wrapper to generate notation adapted to different
+         * languages. If the [move] is null, it returns an empty string. If the specified
+         * language is not predefined, a custom array of piece initials must be provided.
+         *
+         * Supported internal languages: "english", "spanish", "dutch", "french", "german", and "italian".
+         *
+         * @param language The desired language for piece initials (defaults to "english").
+         * @param pieces An optional array of 12 strings for custom initials
+         * (e.g., `["", "N", "B", "R", "Q", "K", "", "N", "B", "R", "Q", "K"]`).
+         * @return A string representation of the move in SAN format (e.g., "Nf3", "exd5", "O-O").
+         * @throws IllegalArgumentException If the language is unknown and a valid 12-element
+         * pieces array is not provided.
+         *
+         * @since 1.0.0-beta.6
+         */
+        fun toSan(language: String = "english", pieces: Array<String>? = null): String{
+            if(move == null){
+                return ""
+            }
+            return when(language){
+                "english" -> toSan(parent!!.position, move!!)
+                "spanish" -> toSan(parent!!.position, move!!, piecesSpanish)
+                "dutch" -> toSan(parent!!.position, move!!, piecesDutch)
+                "french" -> toSan(parent!!.position, move!!, piecesFrench)
+                "german" -> toSan(parent!!.position, move!!, piecesGerman)
+                "italian" -> toSan(parent!!.position, move!!, piecesItalian)
+                else -> {
+                    if(pieces == null){
+                        throw IllegalArgumentException("unknown language: $language and pieces array is null")
+                    } else if (pieces.size != 12){
+                        throw IllegalArgumentException("unknown language: $language and invalid pieces array")
+                    } else {
+                        toSan(parent!!.position, move!!, pieces)
+                    }
+                }
+            }
+        }
     }
 
     internal inner class RootNode(override val position: Position) : Node {
@@ -626,8 +666,6 @@ class Game : Iterable<Game.Node> {
                 children.addAll(this@RootNode.children.map { it.copy(this) })
             }
         }
-
-
     }
 
     internal inner class MoveNode(
