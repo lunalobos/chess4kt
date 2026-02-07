@@ -240,16 +240,17 @@ For the `Node` class:
 
 For the `Game` class
 
-| Method              | Arguments                          | Return type      | Description                                                                                                                                                             |
-|---------------------|------------------------------------|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| setTag              | name: String, value: String        | undefined        | Sets a tag pair (name and value).                                                                                                                                       |
-| getTag              | name: String                       | Nullable<String> | Retrieves the tag's value.                                                                                                                                              |
-| toString            | None                               | String           | Returns the game in pgn format.                                                                                                                                         |
-| toAnalysis          | idSupplier?: () => Nullable\<any\> | Game             | Creates a deep copy of this game, converting its mode to ANALYSIS and setting both repetition rules to AWARE. This makes the new instance fully mutable for analysis.   |
-| deleteFromExclusive | node: Node                         | Node             | Deletes all moves (the main line continuation and any variations) that follow the provided node. The node provided remains in the game.                                 |
-| deleteFromInclusive | node: Node                         | Node             | Deletes all moves (the main line continuation and any variations) that follow the provided node. The move represented by the node is effectively removed from the game. | 
-| deleteBefore        | node: Node                         | Node             | Deletes all moves that preceded the provided node in the main line. The node (and its position) becomes the new effective start of the game, creating a new root Node.  |
- 
+| Method              | Arguments                          | Return type      | Description                                                                                                                                                                                       |
+|---------------------|------------------------------------|------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| setTag              | name: String, value: String        | undefined        | Sets a tag pair (name and value).                                                                                                                                                                 |
+| getTag              | name: String                       | Nullable<String> | Retrieves the tag's value.                                                                                                                                                                        |
+| toString            | None                               | String           | Returns the game in pgn format.                                                                                                                                                                   |
+| toAnalysis          | idSupplier?: () => Nullable\<any\> | Game             | Creates a deep copy of this game, converting its mode to ANALYSIS and setting both repetition rules to AWARE. This makes the new instance fully mutable for analysis.                             |
+| deleteFromExclusive | node: Node                         | Node             | Deletes all moves (the main line continuation and any variations) that follow the provided node. The node provided remains in the game.                                                           |
+| deleteFromInclusive | node: Node                         | Node             | Deletes all moves (the main line continuation and any variations) that follow the provided node. The move represented by the node is effectively removed from the game.                           | 
+| deleteBefore        | node: Node                         | Node             | Deletes all moves that preceded the provided node in the main line. The node (and its position) becomes the new effective start of the game, creating a new root Node.                            |
+| updateEco           | None                               | undefined        | Updates the instance's ECO ranking based on the last move of the main line. In match mode this is automatic, but in analysis this function must be called, otherwise the game will not be ranked. |
+
 For the `Node` class
 
 | Method            | Arguments                                                                                                                                                                                          | Return type | Description                                                                                                                                                                                                  |
