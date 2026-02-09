@@ -82,6 +82,15 @@ A non-directly instantiable class representing a 64-bit bitboard. Instances are 
 
 Instances of this class can be obtained from `Position` instances.
 
+### Visible squares
+
+The visibleSquares function accepts a piece type, a source square, and the current board position to compute the
+visibility bitmask, returning the result as a Bitboard.
+
+| Function       | Arguments                                         | Return Type | Description                                                                                          |
+|----------------|---------------------------------------------------|-------------|------------------------------------------------------------------------------------------------------|
+| visibleSquares | piece: string, square: string, position: Position | Bitboard    | Calculates a bitboard of all squares "visible" or attacked by an specific piece from a given square. |
+
 ## Move
 
 A non directly instantiable class that represents a move made on the board.
@@ -153,6 +162,8 @@ const somePosition = positionOf("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w K
 | enPassantSquare      | Nullable\<Square\>                       | The square exposed to an en passant capture, if one exists. Returns null if no en passant capture is possible in the current position.                                                                                                                                                                                                                                                                                                       |
 | gameOver             | boolean                                  | True if the game state is concluded (terminal position), either due to a forced draw or checkmate. False otherwise.                                                                                                                                                                                                                                                                                                                          |
 | sideToMove           | Side                                     | The side (WHITE or BLACK) whose turn it is to move.                                                                                                                                                                                                                                                                                                                                                                                          |
+| friends              | Bitboard                                 | Returns a bitboard representing the occupancy of all friendly pieces.                                                                                                                                                                                                                                                                                                                                                                        |
+| enemies              | Bitboard                                 | Returns a bitboard representing the occupancy of all enemy pieces.                                                                                                                                                                                                                                                                                                                                                                           |
 
 ### Methods
 
@@ -165,6 +176,7 @@ const somePosition = positionOf("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w K
 | move                 | move: Move                             | Position    | Retrieves the new Position that results from executing the provided legal Move. Throws a MoveException if the provided move is not legal in the current position.                                      |
 | moveFromString       | move: String, notation: Notation = UCI | Position    | Retrieves the new Position that results from executing the move specified in the given notation. Throws a MoveException if the move is not legal. If no notation is provided, UCI notation is assumed. |
 | toString             | None                                   | string      | retrieves a nice string representation                                                                                                                                                                 |
+| flipSide             | None                                   | Position    | Creates a new Position identical to the current one, but with the active side toggled.                                                                                                                 |
 
 ### Factories
 
