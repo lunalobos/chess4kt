@@ -97,7 +97,19 @@ class Bitboard internal constructor(private val value: Long) {
     infix fun ushr(i: Int) = Bitboard(value ushr i)
 
     @OptIn(ExperimentalJsCollectionsApi::class)
-    fun toArray(): JsReadonlyArray<Int>{
-        return bitboardToSequence(value){it.countTrailingZeroBits()}.toList().asJsReadonlyArrayView()
+    fun toArray(): JsReadonlyArray<Int> {
+        return bitboardToSequence(value) { it.countTrailingZeroBits() }.toList().asJsReadonlyArrayView()
+    }
+
+    fun bitCount() = value.countOneBits()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null) return false
+        return if (other is Bitboard) {
+            this.value == other.value
+        } else {
+            false
+        }
     }
 }

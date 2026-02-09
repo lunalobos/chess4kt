@@ -189,6 +189,37 @@ internal val threats = yieldThreats(
 
 internal val visibleSquares = yieldVisibleSquares(computeVisible)
 
+/**
+ * Calculates a bitboard of all squares "visible" or attacked by a specific piece
+ * from a given square.
+ *
+ * **Note on Pawn Behavior:** For [Piece.WP] and [Piece.BP], this returns only the
+ * squares targeted for capture (the diagonals). It does not include forward
+ * movement squares, as those are not considered "attacks" or "visible"
+ * interactions with other pieces.
+ *
+ *
+ * @param piece The specific piece type (including color) being evaluated.
+ * @param square The origin square where the piece is currently located.
+ * @param position The current board state used to retrieve occupancy bitboards.
+ * @return A [Long] bitboard representing all squares attacked or reachable by the piece.
+ * @throws IllegalStateException If an invalid or null piece type is provided.
+ *
+ * @since v1.0.0-beta.7
+ */
+fun visibleSquares(piece: Piece, square: Square, position: Position): Long {
+    return when(piece){
+        Piece.WP -> visibleSquaresWhitePawn(square.ordinal, position.friends)
+        Piece.WN, Piece.BN -> visibleSquaresKnight(square.ordinal, position.friends)
+        Piece.WB, Piece.BB -> visibleSquaresBishop(square.ordinal, position.friends, position.enemies)
+        Piece.WR, Piece.BR -> visibleSquaresRook(square.ordinal, position.friends, position.enemies)
+        Piece.WQ, Piece.BQ -> visibleSquaresQueen(square.ordinal, position.friends, position.enemies)
+        Piece.WK, Piece.BK -> visibleSquaresKing(square.ordinal, position.friends)
+        Piece.BP -> visibleSquaresBlackPawn(square.ordinal, position.friends)
+        else -> error("Invalid piece $piece")
+    }
+}
+
 //---------------------------------------------------------------------------------------------------------------------
 
 //---------------------------------------------pawn generator functions------------------------------------------------

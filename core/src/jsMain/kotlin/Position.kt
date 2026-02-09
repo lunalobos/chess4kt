@@ -19,6 +19,9 @@ import io.github.lunalobos.chess4kt.blackLacksOfMaterial
 import io.github.lunalobos.chess4kt.children
 import io.github.lunalobos.chess4kt.draw
 import io.github.lunalobos.chess4kt.enPassantSquare
+import io.github.lunalobos.chess4kt.enemies
+import io.github.lunalobos.chess4kt.flipSide
+import io.github.lunalobos.chess4kt.friends
 import io.github.lunalobos.chess4kt.gameOver
 import io.github.lunalobos.chess4kt.isLegal
 import io.github.lunalobos.chess4kt.move
@@ -40,7 +43,7 @@ import kotlin.js.json
  */
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-class Position internal constructor(private val backedPosition: io.github.lunalobos.chess4kt.Position) {
+class Position internal constructor(internal val backedPosition: io.github.lunalobos.chess4kt.Position) {
     /**
      * Array of **Bitboards**. The index in the array is equal to the ordinal value minus one
      * of the corresponding piece (e.g., Black Knight distribution is at index `BN.ordinal - 1`).
@@ -174,6 +177,16 @@ class Position internal constructor(private val backedPosition: io.github.lunalo
     val sideToMove get() = Side.get(backedPosition.sideToMove.name)!!
 
     /**
+     * Returns a bitboard representing the occupancy of all friendly pieces.
+     */
+    val friends get() = Bitboard(backedPosition.friends)
+
+    /**
+     * Returns a bitboard representing the occupancy of all enemy pieces.
+     */
+    val enemies get() = Bitboard(backedPosition.enemies)
+
+    /**
      * Determines if White has insufficient material to win the game.
      * Returns true if the current pieces for White cannot potentially lead to a checkmate.
      */
@@ -215,6 +228,21 @@ class Position internal constructor(private val backedPosition: io.github.lunalo
         return Position(backedPosition.move(move, io.github.lunalobos.chess4kt.Notation.valueOf(notation.name)))
     }
 
+    /**
+     * Creates a new [Position] identical to the current one, but with the active side toggled.
+     *
+     * This method is used to pass the turn to the opponent without making a move on the board.
+     * It is primarily utilized in null-move pruning or specific evaluation techniques.
+     *
+     * **Constraint:** * The turn cannot be flipped if the current side is in check or checkmate. Flipping the
+     * turn in such a state would result in an illegal position (a state where the king
+     * could be captured), which is not permitted by this engine's logic.
+     */
+    @OptIn(ExperimentalMultiplatform::class)
+    fun flipSide(): Position {
+        return Position(backedPosition.flipSide())
+    }
+
     override fun hashCode() = backedPosition.hashCode()
 
     override fun equals(other: Any?): Boolean {
@@ -226,6 +254,4 @@ class Position internal constructor(private val backedPosition: io.github.lunalo
     }
 
     override fun toString() = backedPosition.toString()
-
-
 }

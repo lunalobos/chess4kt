@@ -357,7 +357,7 @@ private fun isValidFenFormat(fen: String): Boolean {
     // has 8 rows
     val rows = piecesString.split("/")
     val has8Rows = rows.size == 8
-    if(!has8Rows){
+    if (!has8Rows) {
         throw IllegalArgumentException("$fen has no 8 rows")
     }
 
@@ -366,7 +366,7 @@ private fun isValidFenFormat(fen: String): Boolean {
 
     for (row in rows) {
         validRows = validRows && !INVALID_ROW_PATTERN.containsMatchIn(row)
-        if(!validRows){
+        if (!validRows) {
             throw IllegalArgumentException("$fen has an invalid row $row")
         }
     }
@@ -375,7 +375,7 @@ private fun isValidFenFormat(fen: String): Boolean {
     val sideToMove = parts[1]
     val validSideToMove = sideToMove == "w" || sideToMove == "b"
 
-    if(!validSideToMove){
+    if (!validSideToMove) {
         throw IllegalArgumentException("$fen has no valid side to move $sideToMove")
     }
 
@@ -383,7 +383,7 @@ private fun isValidFenFormat(fen: String): Boolean {
     val castleAbility = parts[2]
     val validCastleAbility = VALID_CASTLE_ABILITY_PATTERN.containsMatchIn(castleAbility)
 
-    if(!validCastleAbility){
+    if (!validCastleAbility) {
         throw IllegalArgumentException("$fen has no valid castle ability $castleAbility")
     }
 
@@ -391,7 +391,7 @@ private fun isValidFenFormat(fen: String): Boolean {
     val enPassant = parts[3]
     val validEnPassant = VALID_EN_PASSANT_PATTERN.containsMatchIn(enPassant)
 
-    if(!validEnPassant){
+    if (!validEnPassant) {
         throw IllegalArgumentException("$fen has no valid en passant $enPassant")
     }
 
@@ -399,7 +399,7 @@ private fun isValidFenFormat(fen: String): Boolean {
     val halfMoveClock = parts[4]
     val validHalfMoveClock = VALID_HALF_MOVE_CLOCK_PATTERN.containsMatchIn(halfMoveClock)
 
-    if(!validHalfMoveClock){
+    if (!validHalfMoveClock) {
         throw IllegalArgumentException("$fen has no valid half move clock $halfMoveClock")
     }
 
@@ -407,7 +407,7 @@ private fun isValidFenFormat(fen: String): Boolean {
     val fullMoveCounter = parts[5]
     val validFullMoveCounter = VALID_FULL_MOVE_COUNTER_PATTERN.containsMatchIn(fullMoveCounter)
 
-    if(!validFullMoveCounter){
+    if (!validFullMoveCounter) {
         throw IllegalArgumentException("$fen has no valid full move counter $fullMoveCounter")
     }
 
@@ -415,7 +415,7 @@ private fun isValidFenFormat(fen: String): Boolean {
     val kingsPresence = WK_PATTERN.containsMatchIn(piecesString) &&
             BK_PATTERN.containsMatchIn(piecesString)
 
-    if(!kingsPresence){
+    if (!kingsPresence) {
         throw IllegalArgumentException("$fen has no king presence")
     }
 
@@ -541,8 +541,6 @@ fun Position.isLegal(move: String, notation: Notation = Notation.UCI): Boolean {
         Notation.SAN -> children.any { toSan(this, it.v2) == move }
     }
 }
-
-
 
 
 internal fun genericHashCode(a: Array<Any?>?): Int {
@@ -874,4 +872,73 @@ internal fun toSan(position: Position, move: Move, pieces: Array<String> = piece
     }
 
     return sbSAN.toString()
+}
+
+/**
+ * Returns a bitboard representing the occupancy of all friendly pieces.
+ *
+ * @return A [Long] bitmask where each set bit (1) represents a square occupied
+ * by a friendly piece.
+ *
+ * @since v1.0.0-beta.7
+ */
+val Position.friends: Long
+    get() {
+        return if (whiteMove) {
+            arrayOf(WP, WN, WB, WR, WQ, WK)
+                .asSequence().map { p -> bitboards[p.ordinal - 1] }.fold(0L) { a, b -> a or b }
+        } else {
+            arrayOf(BP, BN, BB, BR, BQ, BK)
+                .asSequence().map { p -> bitboards[p.ordinal - 1] }.fold(0L) { a, b -> a or b }
+        }
+    }
+
+/**
+ * Returns a bitboard representing the occupancy of all enemy pieces.
+ *
+ * @return A [Long] bitmask where each set bit (1) represents a square occupied
+ * by an opponent's piece.
+ * @since v1.0.0-beta.7
+ */
+val Position.enemies: Long
+    get() {
+        return if (whiteMove) {
+            arrayOf(BP, BN, BB, BR, BQ, BK)
+                .asSequence().map { p -> bitboards[p.ordinal - 1] }.fold(0L) { a, b -> a or b }
+        } else {
+            arrayOf(WP, WN, WB, WR, WQ, WK)
+                .asSequence().map { p -> bitboards[p.ordinal - 1] }.fold(0L) { a, b -> a or b }
+        }
+    }
+
+/**
+ * Creates a new [Position] identical to the current one, but with the active side toggled.
+ *
+ * This method is used to pass the turn to the opponent without making a move on the board.
+ *
+ * **Constraint:** The turn cannot be flipped if the current side is in check or checkmate. Flipping the
+ * turn in such a state would result in an illegal position (a state where the king
+ * could be captured), which is not permitted by this library logic.
+ *
+ * @return A new [Position] instance with [whiteMove] toggled.
+ * @throws IllegalStateException If the current position is in check or checkmate.
+ *
+ * @since v1.0.0-beta.7
+ */
+@ExperimentalMultiplatform
+fun Position.flipSide(): Position {
+    if (checkmate || check) {
+        error("this position can't be flipped because it derives to an illegal position")
+    }
+    return Position(
+        bitboards,
+        !whiteMove,
+        enPassant,
+        whiteCastleKingside,
+        whiteCastleQueenside,
+        blackCastleKingside,
+        blackCastleQueenside,
+        movesCounter,
+        halfMovesCounter
+    )
 }
