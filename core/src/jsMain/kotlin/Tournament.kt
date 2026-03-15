@@ -9,6 +9,7 @@ import kotlin.js.collections.JsReadonlyArray
  * This is a facade created to enable exporting the code to JS, though it can also be used directly within the JS
  * modules of any KMP project.
  */
+@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 class Tournament internal constructor(internal val backedTournament: io.github.lunalobos.chess4kt.Tournament) {
 

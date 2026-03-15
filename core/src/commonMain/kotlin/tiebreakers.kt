@@ -18,14 +18,14 @@ package io.github.lunalobos.chess4kt
 import kotlin.math.min
 import kotlin.math.round
 
-class BlackGames() : Tiebreaker {
+private class BlackGames() : Tiebreaker {
     override val name = "Black Games"
     override fun getValue(player: Player): Score {
         return Score(player.blackScore * 2)
     }
 }
 
-class Buchholz : Tiebreaker {
+private class Buchholz : Tiebreaker {
     override val name = "Buchholz"
     private fun buchholz(player: Player): Score {
         val heap = Heap<Player>(10) { p1, p2 -> p1.score.compareTo(p2.score) }
@@ -46,7 +46,7 @@ class Buchholz : Tiebreaker {
     }
 }
 
-class SonnebornBerger : Tiebreaker {
+private class SonnebornBerger : Tiebreaker {
     override val name = "Sonneborn Berger"
     private fun sonnebornBerger(player: Player): Score {
         return player.matches
@@ -59,7 +59,7 @@ class SonnebornBerger : Tiebreaker {
     }
 }
 
-class Progressive : Tiebreaker {
+private class Progressive : Tiebreaker {
     override val name = "Progressive"
     private fun progressive(player: Player): Score {
         return player.roundScores.fold(scoreOf("0.0")) { ac, curr -> ac.addScore(curr) }
@@ -70,7 +70,7 @@ class Progressive : Tiebreaker {
     }
 }
 
-class FidePerformance : Tiebreaker {
+private class FidePerformance : Tiebreaker {
     override val name = "Fide Performance"
     private fun fidePerformance(player: Player): Score {
         val dp = arrayOf(
@@ -113,7 +113,7 @@ class FidePerformance : Tiebreaker {
     }
 }
 
-class LinearPerformance : Tiebreaker {
+private class LinearPerformance : Tiebreaker {
 
     override val name = "Linear Performance"
     private fun linearPerformance(player: Player): Score {

@@ -120,6 +120,7 @@ fun parseGames(pgnInput: String, idSupplier: () -> Any? = { null }): JsReadonlyA
  * Parses a string representation of a score into a [Score]. The input must be a string ending in either ".0"
  * (for whole points) or ".5" (for half points).
  */
+@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 fun scoreOf(score: String): Score {
     return Score(io.github.lunalobos.chess4kt.scoreOf(score))
@@ -128,6 +129,7 @@ fun scoreOf(score: String): Score {
 /**
  * Creates a new [Player] instance from a given name and initial elo.
  */
+@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 fun playerOf(name: String, initialElo: Int): Player {
     return Player(io.github.lunalobos.chess4kt.Player(name, initialElo))
@@ -136,6 +138,7 @@ fun playerOf(name: String, initialElo: Int): Player {
 /**
  * Creates a match between two players with the given elo calculation parameters or with default values.
  */
+@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 fun matchOf(
     white: Player,
@@ -170,6 +173,7 @@ fun matchOf(
  * comparator = tiebreakerComparatorOf("buchholz", "blackGames")
  * )
  */
+@OptIn(ExperimentalJsExport::class, ExperimentalWasmJsInterop::class)
 @JsExport
 fun tournament(
     type: String,

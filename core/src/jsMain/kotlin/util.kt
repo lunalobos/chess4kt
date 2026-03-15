@@ -4,7 +4,7 @@ package io.github.lunalobos.chess4kt.js
  * Calculates a bitboard of all squares "visible" or attacked by a specific piece
  * from a given square.
  *
- * **Note on Pawn Behavior:** For [Piece.WP] and [Piece.BP], this returns only the
+ * **Note on Pawn Behavior:** For [WP] and [BP], this returns only the
  * squares targeted for capture (the diagonals). It does not include forward
  * movement squares, as those are not considered "attacks" or "visible"
  * interactions with other pieces.

@@ -8,6 +8,7 @@ import io.github.lunalobos.chess4kt.Outcome
  * This is a facade created to enable exporting the code to JS, though it can also be used directly within the JS
  * modules of any KMP project.
  */
+@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 class Match internal constructor(internal val backedMatch: io.github.lunalobos.chess4kt.Match) {
     /**
