@@ -124,9 +124,45 @@ class ArenaTournament(
         eloCalculator: EloCalculator
     ) : RatedMatch(white, black, eloCalculator) {
 
+        private var _outcome: Outcome = Outcome.IN_GAME
+
         override var outcome: Outcome
+            get() = _outcome
             set(value) {
-                super.outcome = value
+                _outcome = value
+                if (value.ordinal != Outcome.SUSPENDED.ordinal) {
+                    white.against.add(black)
+                    black.against.add(white)
+                    black.addAsBlackGame()
+                    eloCalculator.calculate(white, black, value)
+                    white.matches.add(this)
+                    black.matches.add(this)
+                }
+                fun playerWon(player: Player, match: Match): Boolean {
+                    return (match.white == player && match.outcome == Outcome.WW) ||
+                            (match.black == player && match.outcome == Outcome.BW)
+                }
+                fun calculateArenaPoints(player: Player, isWhite: Boolean): String {
+                    if (value == Outcome.DRAW) return "1.0"
+                    val isWin = if (isWhite) value == Outcome.WW else value == Outcome.BW
+                    if (isWin) {
+                        val matches = player.matches
+                        val size = matches.size
+                        if (size >= 3) {
+                            val prev1 = matches[size - 2]
+                            val prev2 = matches[size - 3]
+                            if (playerWon(player, prev1) && playerWon(player, prev2)) {
+                                return "4.0"
+                            }
+                        }
+                        return "2.0"
+                    }
+                    return "0.0"
+                }
+                white.score = white.score.addScore(scoreOf(calculateArenaPoints(white, true)))
+                black.score = black.score.addScore(scoreOf(calculateArenaPoints(black, false)))
+                white.accumulateScore()
+                black.accumulateScore()
                 logger.debug("removing match $this from activeMatches")
                 activeMatches.remove(this)
                 finishedMatches.add(this)
@@ -144,9 +180,5 @@ class ArenaTournament(
                     }
                 }
             }
-            get() {
-                return super.outcome
-            }
-
     }
 }
