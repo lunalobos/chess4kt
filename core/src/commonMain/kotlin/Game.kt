@@ -326,7 +326,7 @@ class Game : Iterable<Game.Node> {
         iterator().asSequence()
             .filter { it is MoveNode }
             .forEach { sb.append(it.toString()) }
-        sb.append(result?.str ?: "")
+        sb.append(result?.str ?: "*")
             .append(finalComment?.let { "{$it}" } ?: "")
             .append(finalEndLineComment?.let { " ; $it\n" } ?: "")
 
@@ -337,6 +337,11 @@ class Game : Iterable<Game.Node> {
         val mainTags = arrayOf("event", "site", "date", "round", "white", "black", "result", "ECO")
         val sb = mainTags.asSequence()
             .map { tupleOf(it, tags[it] ?: "unknown") }
+            .also {
+                if (tags["result"] == "unknown") {
+                    tags["result"] = "*"
+                }
+            }
             .fold(StringBuilder()) { acc, (name, value) ->
                 acc.append("[${name.capitalize()} \"$value\"]\n")
             }
@@ -543,11 +548,11 @@ class Game : Iterable<Game.Node> {
          *
          * @since 1.0.0-beta.6
          */
-        fun toSan(language: String = "english", pieces: Array<String>? = null): String{
-            if(move == null){
+        fun toSan(language: String = "english", pieces: Array<String>? = null): String {
+            if (move == null) {
                 return ""
             }
-            return when(language){
+            return when (language) {
                 "english" -> toSan(parent!!.position, move!!)
                 "spanish" -> toSan(parent!!.position, move!!, piecesSpanish)
                 "dutch" -> toSan(parent!!.position, move!!, piecesDutch)
@@ -555,9 +560,9 @@ class Game : Iterable<Game.Node> {
                 "german" -> toSan(parent!!.position, move!!, piecesGerman)
                 "italian" -> toSan(parent!!.position, move!!, piecesItalian)
                 else -> {
-                    if(pieces == null){
+                    if (pieces == null) {
                         throw IllegalArgumentException("unknown language: $language and pieces array is null")
-                    } else if (pieces.size != 12){
+                    } else if (pieces.size != 12) {
                         throw IllegalArgumentException("unknown language: $language and invalid pieces array")
                     } else {
                         toSan(parent!!.position, move!!, pieces)

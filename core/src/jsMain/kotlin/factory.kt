@@ -15,6 +15,8 @@
  */
 package io.github.lunalobos.chess4kt.js
 
+import io.github.lunalobos.chess4kt.EloCalculator
+import io.github.lunalobos.chess4kt.tiebreakerComparatorOf
 import kotlin.js.collections.JsReadonlyArray
 
 private val initialPosition = Position(io.github.lunalobos.chess4kt.positionOf())
@@ -105,11 +107,82 @@ fun customGame(
  * Parses a string containing one or more games in Portable Game Notation (PGN) format.
  * Games are returned in ANALYSIS mode, making them mutable for subsequent use.
  *
- * This is a facade created to enable exporting the code to JS, though it can also be used directly within the JS modules of any KMP project.
- *
+ * This is a facade created to enable exporting the code to JS, though it can also be used directly within the JS
+ * modules of any KMP project.
  */
 @OptIn(ExperimentalJsExport::class, ExperimentalJsCollectionsApi::class)
 @JsExport
 fun parseGames(pgnInput: String, idSupplier: () -> Any? = { null }): JsReadonlyArray<Game> {
     return io.github.lunalobos.chess4kt.parseGames(pgnInput, idSupplier).map { Game(it) }.asJsReadonlyArrayView()
+}
+
+/**
+ * Parses a string representation of a score into a [Score]. The input must be a string ending in either ".0"
+ * (for whole points) or ".5" (for half points).
+ */
+@JsExport
+fun scoreOf(score: String): Score {
+    return Score(io.github.lunalobos.chess4kt.scoreOf(score))
+}
+
+/**
+ * Creates a new [Player] instance from a given name and initial elo.
+ */
+@JsExport
+fun playerOf(name: String, initialElo: Int): Player {
+    return Player(io.github.lunalobos.chess4kt.Player(name, initialElo))
+}
+
+/**
+ * Creates a match between two players with the given elo calculation parameters or with default values.
+ */
+@JsExport
+fun matchOf(
+    white: Player,
+    black: Player,
+    impactFactor: Double = 32.0,
+    rangeFactor: Double = 400.0,
+    logisticBase: Double = 10.0,
+): Match {
+    return Match(
+        io.github.lunalobos.chess4kt.RatedMatch(
+            white.backedPlayer, black.backedPlayer, EloCalculator(impactFactor, rangeFactor, logisticBase)
+        )
+    )
+}
+
+/**
+ * Factory function to create a [Tournament] instance based on the specified type.
+ *
+ * @param type The tournament format to create. Supported values: "arena", "swiss".
+ * @param tiebreakers an array with the tiebreakers names in order. Supported values for each name are: "blackGames",
+ * "progressive", "sonnebornBerger", "fidePerformance", "linearPerformance", or "buchholz"
+ * @param impactFactor The K-factor that determines how much a single match affects the rating. A higher value leads
+ * to faster rating changes. Default is 32.0.
+ * @param rangeFactor The scale factor used to determine win probability. In standard Elo (like Chess), this is
+ * typically 400.0.
+ * @param logisticBase The base of the exponent in the logistic function.
+ * @return A [Tournament] instance.
+ * @throws IllegalStateException if the [type] provided is not recognized.
+ * @sample
+ * val myTournament = tournament(
+ * type = "swiss",
+ * comparator = tiebreakerComparatorOf("buchholz", "blackGames")
+ * )
+ */
+@JsExport
+fun tournament(
+    type: String,
+    tiebreakers: JsArray<String> = arrayOf("fidePerformance", "buchholz", "progressive", "sonnebornBerger"),
+    impactFactor: Double = 32.0,
+    rangeFactor: Double = 400.0,
+    logisticBase: Double = 10.0,
+): Tournament {
+    return Tournament(
+        io.github.lunalobos.chess4kt.tournament(
+            type,
+            EloCalculator(impactFactor, rangeFactor, logisticBase),
+            tiebreakerComparatorOf(*tiebreakers)
+        )
+    )
 }
