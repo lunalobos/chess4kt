@@ -274,7 +274,7 @@ For the `Node` class
 | `hasChildren`       | None                                                                                                                                                                                                                  | `boolean`   | Checks if the node has children.                                                                                                                                                                                                                                                                                                                                                                        |
 | `belongsToMainLine` | None                                                                                                                                                                                                                  | `boolean`   | Indicates whether this node belongs to the main line (i.e., it is the first child of all its ancestors).                                                                                                                                                                                                                                                                                                |
 | `copy`              | `parent`: `Nullable<Node>`                                                                                                                                                                                            | `Node`      | Creates a deep copy of this node and its entire subtree, assigning the specified parent to the new copy. This process is recursive; copying the root node copies the entire game tree.                                                                                                                                                                                                                  |
-| `toSan`             | `language`: `string` deafult `"english"`, `pieces`: `Nullable<Array<String>>` default `null`                                                                                                                          | `string`    | Converts a move to Standard Algebraic Notation (SAN). This function acts as a convenience wrapper to generate notation adapted to different languages. If the move is null, it returns an empty string. If the specified language is not predefined, a custom array of piece initials must be provided. Supported internal languages: "english", "spanish", "dutch", "french", "german", and "italian". |
+| `toSan`             | `language`: `string` default `"english"`, `pieces`: `Nullable<Array<String>>` default `null`                                                                                                                          | `string`    | Converts a move to Standard Algebraic Notation (SAN). This function acts as a convenience wrapper to generate notation adapted to different languages. If the move is null, it returns an empty string. If the specified language is not predefined, a custom array of piece initials must be provided. Supported internal languages: "english", "spanish", "dutch", "french", "german", and "italian". |
 
 ### Factories and PGN parsing
 
@@ -397,7 +397,7 @@ factory.
 
 #### Factories
 
-| Function   | Arguments                         | Return type | DEscription                                                      |
+| Function   | Arguments                         | Return type | Description                                                      |
 |------------|-----------------------------------|-------------|------------------------------------------------------------------|
 | `playerOf` | `name`: `string`, `elo`: `number` | `Player`    | Creates a new Player instance from a given name and initial elo. |
 
@@ -425,9 +425,9 @@ factory.
 
 #### Factories
 
-| Function  | Arguments                                                                                                                                                  | Return type | Description                                                                                           |
-|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|-------------------------------------------------------------------------------------------------------|
-| `matchOf` | `white`: `Player`, `black`: `Player`, `impactFactor`: `number` defuault `32`, `rangeFactor`: `number` defualt `400`, `logisticBase`: `number` default `10` | `Match`     | Creates a match between two players with the given elo calculation parameters or with default values. |
+| Function  | Arguments                                                                                                                                                 | Return type | Description                                                                                           |
+|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|-------------------------------------------------------------------------------------------------------|
+| `matchOf` | `white`: `Player`, `black`: `Player`, `impactFactor`: `number` default `32`, `rangeFactor`: `number` default `400`, `logisticBase`: `number` default `10` | `Match`     | Creates a match between two players with the given elo calculation parameters or with default values. |
 
 #### Example
 

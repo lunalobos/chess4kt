@@ -53,7 +53,7 @@ open class EloCalculator(
         val wExpected = 1 / (1 + logisticBase.pow(wExponent))
         val bExponent = (white.currentElo - black.currentElo).toDouble() / rangeFactor
         val bExpected = 1 / (1 + logisticBase.pow(bExponent))
-        white.currentElo = round(white.currentElo + impactFactor * (outcome.whiteScore.value.toDouble() - wExpected)).toInt()
-        black.currentElo = round(black.currentElo + impactFactor * (outcome.blackScore.value.toDouble() - bExpected)).toInt()
+        white.currentElo = round(white.currentElo + impactFactor * (outcome.whiteScore.toDouble() - wExpected)).toInt()
+        black.currentElo = round(black.currentElo + impactFactor * (outcome.blackScore.toDouble() - bExpected)).toInt()
     }
 }
