@@ -436,3 +436,51 @@ fun parseGames(pgnInput: String, idSupplier: () -> Any? = { null }): List<Game> 
     val games = parser.parseGames(idSupplier)
     return games
 }
+
+/**
+ * Parses a string representation of a score into a [Score].
+ * The input must be a string ending in either ".0" (for whole points)
+ * or ".5" (for half points).
+ * @param score The string to parse (e.g., "1.0", "2.5").
+ * @return A [Score] initialized with the correct internal value.
+ * @throws IllegalArgumentException if the score format is invalid or does not end in .0 or .5.
+ */
+fun scoreOf(score: String): Score {
+    val trimmed = score.trim()
+    val internalValue = if (trimmed.endsWith(".5")) {
+        val integerPart = trimmed.substringBefore(".5").toIntOrNull() ?: 0
+        (integerPart * 2) + 1
+    } else if (trimmed.endsWith(".0")) {
+        val integerPart = trimmed.substringBefore(".0").toIntOrNull() ?: 0
+        integerPart * 2
+    } else {
+        throw IllegalArgumentException("$score is not a valid score")
+    }
+    return Score(internalValue)
+}
+
+/**
+ * Factory function to create a [Tournament] instance based on the specified type.
+ *
+ * @param type The tournament format to create. Supported values: "arena", "swiss".
+ * @param eloCalculator The logic used for rating adjustments (optional).
+ * @param comparator The strategy for ranking players with tied scores (optional).
+ * @return A [Tournament] implementation matching the requested type.
+ * @throws IllegalStateException if the [type] provided is not recognized.
+ * @sample
+ * val myTournament = tournament(
+ * type = "swiss",
+ * comparator = tiebreakerComparatorOf("buchholz", "blackGames")
+ * )
+ */
+fun tournament(
+    type: String,
+    eloCalculator: EloCalculator = EloCalculator(),
+    comparator: Comparator<Player> = defaultTiebreakerComparator
+): Tournament {
+    return when (type) {
+        "arena" -> ArenaTournament(eloCalculator).apply { playersComparator = comparator }
+        "swiss" -> SwissTournament(eloCalculator).apply { playersComparator = comparator }
+        else -> error("unknown tournament type $type")
+    }
+}

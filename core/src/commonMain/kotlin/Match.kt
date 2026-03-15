@@ -15,19 +15,30 @@
  */
 package io.github.lunalobos.chess4kt
 
-import kotlin.test.Test
-import io.github.lunalobos.chess4kt.Square.*
-import kotlin.test.assertTrue
+/**
+ * Represents a single match or pairing within a tournament.
+ * This interface tracks the two participants (White and Black) and the
+ * final outcome of their game.
+ *
+ * @since 1.0.0-beta.8
+ * @author lunalobos
+ */
+interface Match {
+    /**
+     * The result of the match.
+     * Usually initialized as a 'Pending' state and updated once the game is over.
+     */
+    var outcome: Outcome
 
-internal class BitboardTest {
-    companion object{
-        val logger = getLogger("io.github.lunalobos.chess4kt.BitboardTest")
-    }
+    /**
+     * The player competing with the White pieces.
+     * Can be null.
+     */
+    val white: Player?
 
-    //@Test
-    fun helloBitboard(){
-        val bitboard = Bitboard.fromSquares(E4,D4)
-        logger.debug(bitboard.toString())
-        assertTrue(true)
-    }
+    /**
+     * The player competing with the Black pieces.
+     * Can be null.
+     */
+    val black: Player?
 }

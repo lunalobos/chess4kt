@@ -1,6 +1,6 @@
 ![License](https://img.shields.io/github/license/lunalobos/chess4kt)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.lunalobos/chess4kt)](https://central.sonatype.com/artifact/io.github.lunalobos/chess4kt)
-[![KDoc](https://img.shields.io/badge/kdoc-1.0.0--beta.7-a97bff)](https://chess4kt.pages.dev/)
+[![KDoc](https://img.shields.io/badge/kdoc-1.0.0--beta.8-a97bff)](https://chess4kt.pages.dev/)
 [![npm](https://img.shields.io/npm/v/chess4js?logo=npm)](https://www.npmjs.com/package/chess4js)
 
 # Chess4kt
@@ -250,3 +250,146 @@ val petrovDefense = """
 val games = parseGames(petrovDefense) // a list containing one game
 val nepomniachtchiVsGorshtein = games[0] // the specific game in question
 ```
+
+### Tournament Management (since 1.0.0-beta.8)
+The library provides a suite of classes, interfaces, and factories for tournament management. The purpose of these 
+utilities is to handle all logic related to tournament administration. Post-tournament database storage is not 
+explicitly handled, as the `Game` class (being exportable to PGN) provides all necessary features for this purpose.
+
+#### Score
+The `Score` class is a way to store scores that are exact multiples of 0.5, avoiding the use of Java's `BigDecimal` 
+(which is unavailable in KMP). It implements the `Comparable` interface, making it ideal for storing a player's primary 
+score as well as other tie-breaking metrics (Buchholz, Sonneborn-Berger, etc.).
+
+This class features a straightforward factory:
+
+```kotlin
+val highScore = scoreOf("4.5")
+
+val lowScore = scoreOf("1.0")
+
+highScore > lowScore // true
+```
+
+#### Player
+The `Player` class represents a participant in a tournament. It includes several properties beyond the obvious ones, 
+such as `score` (the player's tournament points), `name` (which should be a unique identifier), `initialElo` (rating at 
+the start of the tournament), and `currentElo` (the player's live rating). Refer to the documentation to see 
+all available properties.
+
+```kotlin
+val player = Player("name", 1600).apply {
+    score = scoreOf("1.5")
+}
+```
+
+#### EloCalculator
+The `EloCalculator` class determines the new ratings for two players after a ranked match. It features three properties 
+that modify rating variations:
+
+* **impactFactor** (`Double`): The K-factor that determines how much a single match affects the rating. A higher value 
+leads to faster rating changes. Default is `32.0`.
+
+* **rangeFactor** (`Double`): The scale factor used to determine win probability. Default is `400.0`.
+
+* **logisticBase** (`Double`): The base of the exponent in the logistic function. Default is `10.0`.
+
+```kotlin
+val defaultEloCalculator = EloCalculator()
+
+val customEloCalculator = EloCalculator(
+    impactFactor = 16.0,
+    rangeFactor = 300.0,
+    logisticBase = 2
+)
+```
+
+#### Match
+The `Match` interface represents a game within a tournament. It contains the basic information for the encounter: the 
+player playing White, the player playing Black, and the result. The result is an instance of the `Outcome` enum.
+The most significant implementation of `Match` is `RatedMatch`, which can be instantiated as follows:
+
+```kotlin
+val white = Player("foo", 1600)
+val black = Player("bar", 1600)
+val eloCalculator = EloCalculator()
+val match: Match = RatedMatch(white, black, eloCalculator)
+```
+
+When the `outcome` of a `RatedMatch` instance is set, the `eloCalculator` is triggered to automatically determine the 
+players new Elo ratings.
+
+```kotlin
+match.outcome = Outcome.DRAW // eloCalculator determinate new Elo ratings
+```
+
+#### Tiebreaker
+The `Tiebreaker` interface is a contract for defining tie-breaking strategies. These strategies are common in Swiss 
+tournaments, such as Buchholz, Sonneborn-Berger, Progressive, etc. The goal is to calculate a secondary score based 
+on a player's specific statistics to break ties between players with equal primary points.
+
+They can be instantiated using the `tiebreakerOf` factory:
+```kotlin
+val player = Player("foo", 1600)
+/* some tournament logic for this player*/
+val fidePerformance = tiebreakerOf("fidePerformance")
+val buchholzScore = fidePerformance.getValue(player) // the FIDE Performance score for this player
+```
+Each `Tiebreaker` implementation includes a `Comparator<Player>` instance, allowing for player comparisons based on that 
+specific logic. These comparators sort players from highest to lowest score.
+
+The `tiebreakerComparatorOf` factory function allows you to create a composite comparator that executes multiple 
+tie-breaking criteria in a defined order. For example, to break ties first by FIDE Performance, then by 
+Sonneborn-Berger, and finally by Buchholz:
+
+```kotlin
+val customComparator = tiebreakerComparatorOf("fidePerformance", "sonnebornBerger", "buchholz")
+```
+
+#### Tournament interface, ArenaTournament, SwissTournament
+Finally, the library features a `Tournament` interface. Implementations of this interface manage different tournament 
+formats, handling pairings automatically. You can obtain implementations using the `tournament` factory function:
+
+```kotlin
+val swissTournament = tournament(type = "swiss")
+```
+
+These instances create `Match` objects without requiring you to manually provide an `EloCalculator`. You can pass a 
+calculator directly to the factory, along with a custom player comparator:
+
+```kotlin
+val eloCalculator = EloCalculator(impactFactor = 16.0)
+val comparator = tiebreakerComparatorOf("fidePerformance", "sonnebornBerger", "buchholz")
+val swissTournament = tournament(
+    type = "swiss", 
+    eloCalculator =  eloCalculator,
+    comparator = comparator
+)
+```
+
+The example above returns an instance of the `SwissTournament` class, which implements Swiss-system logic. There is also 
+an `ArenaTournament` class for arena-style logic; to get an instance of this class, pass the "arena" literal as the type 
+parameter.
+
+Once the tournament is instantiated, you can add players using `addPlayer` and generate the first round with 
+`nextRound`. Given a list of n players named players:
+
+```kotlin
+players.forEach { swissTournament.addPlayer(it) }
+val firstRound = swissTournament.nextRound() // List<Match>
+```
+
+You can then set the outcome for each match. In a Swiss tournament, once outcomes are set, you can request the next 
+round:
+
+```kotlin
+val secondRound = swissTournament.nextRound()
+```
+
+This continues until the tournament ends. `SwissTournament` includes a `numberOfRounds` property (Int), which is 
+automatically calculated at the start of the first round using a logarithmic formula to determine the efficient 
+number of rounds needed to find a winner.
+
+You can check if a tournament is over via the `completed` flag. In `SwissTournament`, this becomes true automatically 
+after the final round. In `ArenaTournament`, this flag must be set manually, as arena logic is more arbitrary and 
+leaves the end-condition criteria to the developer's discretion. For more details, please visit the documentation.

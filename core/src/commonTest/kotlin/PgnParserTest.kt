@@ -1,3 +1,18 @@
+/*
+ * Copyright 2026 Miguel Angel Luna Lobos
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/lunalobos/chessapi4j/blob/master/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.github.lunalobos.chess4kt
 
 import kotlin.test.Test
@@ -91,16 +106,16 @@ class PgnParserTest {
         """.trimIndent()
         val t1 = now()
         val games = parseGames(pgnInput)
-        assertEquals(games[0].result, Game.Result.WHITE_WIN)
-        assertEquals(games[1].result, Game.Result.DRAW)
-        assertEquals(games[2].result, Game.Result.DRAW)
+        assertEquals(Game.Result.WHITE_WIN, games[0].result)
+        assertEquals(Game.Result.DRAW, games[1].result)
+        assertEquals(Game.Result.DRAW, games[2].result)
         val t2 = now()
         logger.debug("engines time[ms]=${t2.toEpochMilliseconds() - t1.toEpochMilliseconds()}")
     }
 
     @Test
     @OptIn(ExperimentalTime::class)
-    fun masters(){
+    fun masters() {
         val pgnInput = """
             [Event "Zurich CC Blitz 2014"]
             [Site "Zurich SUI"]
@@ -192,16 +207,16 @@ class PgnParserTest {
 
         val t1 = now()
         val games = parseGames(pgnInput)
-        assertEquals(games[0].result, Game.Result.BLACK_WIN)
-        assertEquals(games[1].result, Game.Result.BLACK_WIN)
-        assertEquals(games[2].result, Game.Result.BLACK_WIN)
+        assertEquals(Game.Result.BLACK_WIN, games[0].result)
+        assertEquals(Game.Result.BLACK_WIN, games[1].result)
+        assertEquals(Game.Result.BLACK_WIN, games[2].result)
         val t2 = now()
         logger.debug("masters time[ms]=${t2.toEpochMilliseconds() - t1.toEpochMilliseconds()}")
     }
 
     @OptIn(ExperimentalTime::class)
     @Test
-    fun petrovDefense(){
+    fun petrovDefense() {
         val pgnInput = """
             [Event "Jerusalem Masters 2025"]
             [Site "Jerusalem, Occupied Country"]
@@ -244,8 +259,41 @@ class PgnParserTest {
 
         val t1 = now()
         val games = parseGames(pgnInput)
-        assertEquals(games[0].result, Game.Result.WHITE_WIN)
+        assertEquals(Game.Result.WHITE_WIN, games[0].result)
         val t2 = now()
         logger.debug("petrov time[ms]=${t2.toEpochMilliseconds() - t1.toEpochMilliseconds()}")
+    }
+
+    @Test
+    fun suspendedGame() {
+        val pgnInput = """
+            [Event "Zurich CC Blitz 2014"]
+            [Site "Zurich SUI"]
+            [Date "2014.01.29"]
+            [Round "1.1"]
+            [White "Carlsen,M"]
+            [Black "Caruana,F"]
+            [Result "*"]
+            [WhiteElo "2872"]
+            [BlackElo "2782"]
+            [ECO "B42"]
+            [EventDate "2014.01.29"]
+            [WhiteTitle "GM"]
+            [BlackTitle "GM"]
+            [Opening "Sicilian"]
+            [Variation "Kan, Polugaievsky variation"]
+            [WhiteFideId "1503014"]
+            [BlackFideId "2020009"]
+
+            1.e4 c5 2.Nf3 e6 3.d4 cxd4 4.Nxd4 a6 5.Bd3 Bc5 6.c3 d6 7.Nd2 Nf6 8.O-O O-O
+            9.a4 e5 10.N4b3 Ba7 11.Nc4 Be6 12.Qe2 Nc6 13.Bg5 h6 14.Bh4 g5 15.Bg3 Ne7 
+            16.Nbd2 Ng6 17.Rfe1 h5 18.h3 h4 19.Bh2 g4 20.Kh1 gxh3 21.gxh3 Bxh3 22.Rg1 
+            Kg7 23.Ne3 Bxe3 24.Qxe3 Ng4 25.Qf3 Qf6 26.Rxg4 Qxf3+ 27.Nxf3 Bxg4 28.Nxh4 
+            Nxh4 29.Rg1 Nf3 30.Rxg4+ Kf6 31.Rg3 Nxh2 32.Kxh2 Rh8+ 33.Kg2 Rag8 34.Bc4 
+            Rxg3+ 35.fxg3 a5 *
+        """.trimIndent()
+        val games = parseGames(pgnInput)
+
+        assertEquals(null, games[0].result)
     }
 }

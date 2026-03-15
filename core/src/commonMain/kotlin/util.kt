@@ -920,7 +920,7 @@ val Position.enemies: Long
  * turn in such a state would result in an illegal position (a state where the king
  * could be captured), which is not permitted by this library logic.
  *
- * @return A new [Position] instance with [whiteMove] toggled.
+ * @return A new [Position] instance with whiteMove toggled.
  * @throws IllegalStateException If the current position is in check or checkmate.
  *
  * @since v1.0.0-beta.7

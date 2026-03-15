@@ -1,0 +1,106 @@
+/*
+ * Copyright 2026 Miguel Angel Luna Lobos
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/lunalobos/chessapi4j/blob/master/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.github.lunalobos.chess4kt
+
+import kotlin.random.Random
+
+class MockGenerator {
+    companion object {
+        private val firstNames = """
+            William, Jack, Oliver, Joshua, Thomas, Lachlan, Cooper, Noah, Ethan, Lucas, James, Samuel, Jacob, Liam, 
+            Alexander, Benjamin, Max, Isaac, Daniel, Riley, Ryan, Charlie, Tyler, Jake, Matthew, Xavier, Harry, Jayden, Nicholas, 
+            Harrison, Levi, Luke, Adam, Henry, Aiden, Dylan, Oscar, Michael, Jackson, Logan, Joseph, Blake, Nathan, Connor, 
+            Elijah, Nate, Archie, Bailey, Marcus, Cameron, Jordan, Zachary, Caleb, Hunter, Ashton, Toby, Aidan, Hayden, Mason, 
+            Hamish, Edward, Angus, Eli, Sebastian, Christian, Patrick, Andrew, Anthony, Luca, Kai, Beau, Alex, George, Callum, 
+            Finn, Zac, Mitchell, Jett, Jesse, Gabriel, Leo, Declan, Charles, Jasper, Jonathan, Aaron, Hugo, David, Christopher, 
+            Chase, Owen, Justin, Ali, Darcy, Lincoln, Cody, Phoenix, Sam, John, Joel, Isabella, Ruby, Chloe, Olivia, Charlotte, 
+            Mia, Lily, Emily, Ella, Sienna, Sophie, Amelia, Grace, Ava, Zoe, Emma, Sophia, Matilda, Hannah, Jessica, Lucy, 
+            Georgia, Sarah, Abigail, Zara, Eva, Scarlett, Jasmine, Chelsea, Lilly, Ivy, Isla, Evie, Isabelle, Maddison, Layla, 
+            Summer, Annabelle, Alexis, Elizabeth, Bella, Holly, Lara, Madison, Alyssa, Maya, Tahlia, Claire, Hayley, Imogen, 
+            Jade, Ellie, Sofia, Addison, Molly, Phoebe, Alice, Savannah, Gabriella, Kayla, Mikayla, Abbey, Eliza, Willow, 
+            Alexandra, Poppy, Samantha, Stella, Amy, Amelie, Anna, Piper, Gemma, Isabel, Victoria, Stephanie, Caitlin, Heidi, 
+            Paige, Rose, Amber, Audrey, Claudia, Taylor, Madeline, Angelina, Natalie, Charli, Lauren, Ashley, Violet, Mackenzie, 
+            Abby, Skye, Lillian, Alana, Lola, Leah, Eve, Kiara
+        """.trimIndent().split("\n", ", ").map { it.trim() }.filter{ it != "" }.shuffled()
+
+        private val lastNames = """
+            Smith, Jones, Williams, Brown, Wilson, Taylor, Johnson, White, Martin, Anderson, Thompson, Nguyen, Thomas, 
+            Walker, Harris, Lee, Ryan, Robinson, Kelly, King, Davis, Wright, Evans, Roberts, Green, Hall, Wood, Jackson, 
+            Clarke, Patel, Khan, Lewis, James, Phillips, Mason, Mitchell, Rose, Davies, Rodriguez, Cox, Alexander, Garden, 
+            Campbell, Johnston, Moore, Smyth, O'neill, Doherty, Stewart, Quinn, Murphy, Graham, Mclaughlin, Hamilton, 
+            Murray, Hughes, Robertson, Thomson, Scott, Macdonald, Reid, Clark, Ross, Young, Watson, Paterson, Morrison, 
+            Morgan, Griffiths, Edwards, Rees, Jenkins, Owen, Price, Moss, Richards, Abbott, Adams, Armstrong, Bahringer, 
+            Bailey, Barrows, Bartell, Bartoletti, Barton, Bauch, Baumbach, Bayer, Beahan, Beatty, Becker, Beier, Berge, 
+            Bergstrom, Bode, Bogan, Borer, Bosco, Botsford, Boyer, Boyle, Braun, Bruen, Carroll, Carter, Cartwright, 
+            Casper, Cassin, Champlin, Christiansen, Cole, Collier, Collins, Connelly, Conroy, Corkery, Cormier, Corwin, 
+            Cronin, Crooks, Cruickshank, Cummings, D'amore, Daniel, Dare, Daugherty, Dickens, Dickinson, Dietrich, 
+            Donnelly, Dooley, Douglas, Doyle, Durgan, Ebert, Emard, Emmerich, Erdman, Ernser, Fadel, Fahey, Farrell, 
+            Fay, Feeney, Feil, Ferry, Fisher, Flatley, Gibson, Gleason, Glover, Goldner, Goodwin, Grady, Grant, 
+            Greenfelder, Greenholt, Grimes, Gutmann, Hackett, Hahn, Haley, Hammes, Hand, Hane, Hansen, Harber, Hartmann, 
+            Harvey, Hayes, Heaney, Heathcote, Heller, Hermann, Hermiston, Hessel, Hettinger, Hickle, Hill, Hills, Hoppe, 
+            Howe, Howell, Hudson, Huel, Hyatt, Jacobi, Jacobs, Jacobson, Jerde, Johns, Keeling, Kemmer, Kessler, Kiehn, 
+            Kirlin, Klein, Koch, Koelpin, Kohler, Koss, Kovacek, Kreiger, Kris, Kuhlman, Kuhn, Kulas, Kunde, Kutch, Lakin, 
+            Lang, Langworth, Larkin, Larson, Leannon, Leffler, Little, Lockman, Lowe, Lynch, Mann, Marks, Marvin, Mayer, 
+            Mccullough, Mcdermott, Mckenzie, Miller, Mills, Monahan, Morissette, Mueller, Muller, Nader, Nicolas, Nolan, 
+            O'connell, O'conner, O'hara, O'keefe, Olson, O'reilly, Parisian, Parker, Quigley, Reilly, Reynolds, Rice, 
+            Ritchie, Rohan, Rolfson, Rowe, Russel, Rutherford, Sanford, Sauer, Schmidt, Schmitt, Schneider, Schroeder, 
+            Schultz, Shields, Smitham, Spencer, Stanton, Stark, Stokes, Swift, Tillman, Towne, Tremblay, Tromp, Turcotte, 
+            Turner, Walsh, Walter, Ward, Waters, Weber, Welch, West, Wilderman, Wilkinson, Williamson, Windler, Wolf
+        """.trimIndent().split("\n", ", ").map { it.trim() }.filter{ it != "" }.shuffled()
+
+    }
+
+    val firstNamesIterator = InfiniteIterator(firstNames)
+    val lastNamesIterator = InfiniteIterator(lastNames)
+
+    fun firstName(): String {
+        return firstNamesIterator.next()
+    }
+
+    fun lastName(): String {
+        return lastNamesIterator.next()
+    }
+
+    fun fullName(): String {
+        return "${firstName()} ${lastName()}"
+    }
+
+    fun chessPlayer(minElo: Int = 1200, maxElo: Int = 2300): ChessPlayer {
+        return ChessPlayer(fullName(), Random.nextInt(minElo, maxElo))
+    }
+
+    fun chessPlayers(amount: Int, minElo: Int = 1200, maxElo: Int = 2300): List<ChessPlayer> {
+        return (0 until amount).map { chessPlayer(minElo, maxElo) }
+    }
+
+    data class ChessPlayer(val name: String, val elo: Int)
+    class InfiniteIterator<T> (private val source: Collection<T>) : Iterator<T> {
+
+        private var iterator = source.iterator()
+
+        override fun next(): T {
+            if(!iterator.hasNext()){
+                iterator = source.iterator()
+            }
+            return iterator.next()
+        }
+
+        override fun hasNext(): Boolean {
+            return true
+        }
+
+    }
+}
