@@ -34,7 +34,7 @@ internal fun pawnTuples(
     mi.pawnMoves.forEach {
         generateTuples(
             it.regularMovesList, it.pawnPiece, it.originSquare,
-            it.enemies, position, children, { -1 }) { castleInfo ->
+            it.enemies, position, children, true, { -1 }) { castleInfo ->
             { bitboards -> { wm -> castleInfo.applyCastleRules(bitboards, wm) } }
         }
         generatePromotionTuples(
@@ -43,7 +43,7 @@ internal fun pawnTuples(
         )
         generateTuples(
             it.advanceEpMovesList, it.pawnPiece, it.originSquare,
-            it.enemies, position, children, { it.countTrailingZeroBits() }) { castleInfo ->
+            it.enemies, position, children, true, { it.countTrailingZeroBits() }) { castleInfo ->
             { bitboards -> { wm -> castleInfo.applyCastleRules(bitboards, wm) } }
         }
         it.epCaptureMove?.let { move ->
@@ -60,21 +60,21 @@ internal fun knightBishopAndQueenTuples(
     mi.knightMoves.forEach {
         generateTuples(
             it.allMovesList, it.piece, it.square, it.enemies,
-            position, children, { -1 }) { castleInfo ->
+            position, children, false, { -1 }) { castleInfo ->
             { bitboards -> { wm -> castleInfo.applyCastleRules(bitboards, wm) } }
         }
     }
     mi.bishopMoves.forEach {
         generateTuples(
             it.allMovesList, it.piece, it.square, it.enemies,
-            position, children, { -1 }) { castleInfo ->
+            position, children, false,{ -1 }) { castleInfo ->
             { bitboards -> { wm -> castleInfo.applyCastleRules(bitboards, wm) } }
         }
     }
     mi.queenMoves.forEach {
         generateTuples(
             it.allMovesList, it.piece, it.square, it.enemies,
-            position, children, { -1 }) { castleInfo ->
+            position, children, false, { -1 }) { castleInfo ->
             { bitboards -> { wm -> castleInfo.applyCastleRules(bitboards, wm) } }
         }
     }
@@ -87,7 +87,7 @@ internal fun rookTuples(
     mi.rookMoves.forEach {
         generateTuples(
             it.allMovesList, it.piece, it.square, it.enemies,
-            position, children, { -1 }) { castleInfo ->
+            position, children, false, { -1 }) { castleInfo ->
             { bitboards -> { wm -> castleInfo.applyCastleRules(bitboards, wm).applyCastleRules(bitboards, !wm) } }
         }
     }
@@ -105,6 +105,7 @@ internal fun kingTuples(
         mi.kingMoves.enemies,
         position,
         children,
+        false,
         { -1 }
     ) { castleInfo ->
         { bitboards -> { wm -> castleInfo.applyCastleRules(bitboards, wm).applyCastleRules(bitboards, !wm) } }
@@ -125,8 +126,9 @@ internal fun generateTuples(
     enemies: Long,
     position: Position,
     children: MutableList<Tuple<Position, Move>>,
+    isPawnMove: Boolean,
     epFunction: (Long) -> Int,
-    castleFunction: (CastleInfo) -> (LongArray) -> (Boolean) -> CastleInfo
+    castleFunction: (CastleInfo) -> (LongArray) -> (Boolean) -> CastleInfo,
 ) {
     moves.forEach { m: Move ->
         val move: Long = m.move
@@ -155,7 +157,7 @@ internal fun generateTuples(
         // half moves counter
         val aux = if (wm) 6 else 0
         val isCapture = isPresent(enemies and move)
-        val isPawnMove = isPresent(move and bitboards[Piece.BP.ordinal - aux - 1])
+        //val isPawnMove = isPresent(move and bitboards[Piece.BP.ordinal - aux - 1])
         val hm = if (isCapture || isPawnMove) 0 else (position.halfMovesCounter + 1)
         // add new tuple
         val tuple = tupleOf(Position(bitboards, wm, ep, wk, wq, bk, bq, mc, hm), m)

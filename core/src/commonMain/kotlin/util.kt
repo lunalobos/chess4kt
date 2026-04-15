@@ -365,6 +365,9 @@ private fun isValidFenFormat(fen: String): Boolean {
     var validRows = true
 
     for (row in rows) {
+        if(row.length > 8){
+            throw IllegalArgumentException("row $row has more than 8 characters")
+        }
         validRows = validRows && !INVALID_ROW_PATTERN.containsMatchIn(row)
         if (!validRows) {
             throw IllegalArgumentException("$fen has an invalid row $row")

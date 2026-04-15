@@ -896,10 +896,10 @@ class Game : Iterable<Game.Node> {
 
         override fun next(): Node {
             val aux = curr
-            if (curr?.hasChildren() ?: false) {
-                curr = curr?.children[0]
+            curr = if (curr?.hasChildren() ?: false) {
+                curr?.children[0]
             } else {
-                curr = null
+                null
             }
             return aux ?: throw NoSuchElementException("next has been called when current node is null")
         }

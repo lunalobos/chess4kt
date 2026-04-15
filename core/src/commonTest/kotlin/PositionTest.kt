@@ -17,8 +17,14 @@ package io.github.lunalobos.chess4kt
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import kotlin.test.fail
 
 class PositionTest {
+
+    companion object {
+        private val logger = getLogger("PositionTest")
+    }
 
     @Test
     fun start() {
@@ -36,5 +42,15 @@ class PositionTest {
             "r1b2rk1/2q1bppp/p2p1n2/npp1p3/3PP3/2P2N1P/PPBN1PP1/R1BQR1K1 b - - 2 12",
             pos.fen
         )
+    }
+
+    @Test
+    fun factory(){
+        try {
+            positionOf("rnrnbqkbnr/pp2pppp/3p4/8/3NP3/8/PPP2PPP/RNBQKB1R b KQkq - 0 4")
+        } catch(e: Throwable){
+            assertEquals(IllegalArgumentException::class.qualifiedName, e::class.qualifiedName)
+            assertTrue(e.message?.endsWith("has more than 8 characters") ?: false)
+        }
     }
 }

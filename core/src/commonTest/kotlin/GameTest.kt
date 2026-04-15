@@ -487,6 +487,130 @@ class GameTest {
         logger.debug("deleteFromInclusive time[ms]=$time")
     }
 
+    @Test
+    fun fen(){
+        val pgn = """
+            [Event "chess.com SpeedChess 2022"]
+            [Site "chess.com INT"]
+            [Date "2022.12.18"]
+            [Round "4.19"]
+            [White "Nakamura,Hi"]
+            [Black "Carlsen,M"]
+            [Result "1/2-1/2"]
+            [WhiteElo "2768"]
+            [BlackElo "2859"]
+            [ECO "B98"]
+            [EventDate "2022.11.23"]
+            [WhiteTitle "GM"]
+            [BlackTitle "GM"]
+            [Opening "Sicilian"]
+            [Variation "Najdorf, 7...Be7"]
+            [WhiteFideId "2016192"]
+            [BlackFideId "1503014"]
+
+            1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 a6 6.Bg5 e6 7.f4 Be7 8.Qf3 Bd7
+            9.O-O-O Nc6 10.Bc4 h6 11.Bh4 Qb6 12.Bf2 Qc7 13.Bb3 Na5 14.Kb1 O-O-O 15.f5 
+            Nxb3 16.cxb3 Kb8 17.Rc1 Qa5 18.b4 Qxb4 19.a3 Qc4 20.Nd5 exd5 21.Rxc4 dxc4 
+            22.h3 Rhe8 23.Re1 Rc8 24.Ne2 Bc6 25.Nc3 Bd8 26.Bd4 Ba5 27.Bxf6 gxf6 28.Qf4
+            Re5 29.Qxh6 Bxc3 30.bxc3 Bxe4+ 31.Ka1 Rcc5 32.Qxf6 Rcd5 33.Qxf7 Ka7 34.f6 
+            Rd2 35.Qc7 Rb5 36.Rxe4 Rd1+ 37.Ka2 Rd2+ 38.Ka1 Rd1+ 39.Ka2 Rd2+ 40.Ka1 
+            1/2-1/2
+        """.trimIndent()
+
+        val game = parseGames(pgn).first();
+
+        val fens = listOf(
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+            "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+            "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2",
+            "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+            "rnbqkbnr/pp2pppp/3p4/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3",
+            "rnbqkbnr/pp2pppp/3p4/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq d3 0 3",
+            "rnbqkbnr/pp2pppp/3p4/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+            "rnbqkbnr/pp2pppp/3p4/8/3NP3/8/PPP2PPP/RNBQKB1R b KQkq - 0 4",
+            "rnbqkb1r/pp2pppp/3p1n2/8/3NP3/8/PPP2PPP/RNBQKB1R w KQkq - 1 5",
+            "rnbqkb1r/pp2pppp/3p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R b KQkq - 2 5",
+            "rnbqkb1r/1p2pppp/p2p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R w KQkq - 0 6",
+            "rnbqkb1r/1p2pppp/p2p1n2/6B1/3NP3/2N5/PPP2PPP/R2QKB1R b KQkq - 1 6",
+            "rnbqkb1r/1p3ppp/p2ppn2/6B1/3NP3/2N5/PPP2PPP/R2QKB1R w KQkq - 0 7",
+            "rnbqkb1r/1p3ppp/p2ppn2/6B1/3NPP2/2N5/PPP3PP/R2QKB1R b KQkq f3 0 7",
+            "rnbqk2r/1p2bppp/p2ppn2/6B1/3NPP2/2N5/PPP3PP/R2QKB1R w KQkq - 1 8",
+            "rnbqk2r/1p2bppp/p2ppn2/6B1/3NPP2/2N2Q2/PPP3PP/R3KB1R b KQkq - 2 8",
+            "rn1qk2r/1p1bbppp/p2ppn2/6B1/3NPP2/2N2Q2/PPP3PP/R3KB1R w KQkq - 3 9",
+            "rn1qk2r/1p1bbppp/p2ppn2/6B1/3NPP2/2N2Q2/PPP3PP/2KR1B1R b kq - 4 9",
+            "r2qk2r/1p1bbppp/p1nppn2/6B1/3NPP2/2N2Q2/PPP3PP/2KR1B1R w kq - 5 10",
+            "r2qk2r/1p1bbppp/p1nppn2/6B1/2BNPP2/2N2Q2/PPP3PP/2KR3R b kq - 6 10",
+            "r2qk2r/1p1bbpp1/p1nppn1p/6B1/2BNPP2/2N2Q2/PPP3PP/2KR3R w kq - 0 11",
+            "r2qk2r/1p1bbpp1/p1nppn1p/8/2BNPP1B/2N2Q2/PPP3PP/2KR3R b kq - 1 11",
+            "r3k2r/1p1bbpp1/pqnppn1p/8/2BNPP1B/2N2Q2/PPP3PP/2KR3R w kq - 2 12",
+            "r3k2r/1p1bbpp1/pqnppn1p/8/2BNPP2/2N2Q2/PPP2BPP/2KR3R b kq - 3 12",
+            "r3k2r/1pqbbpp1/p1nppn1p/8/2BNPP2/2N2Q2/PPP2BPP/2KR3R w kq - 4 13",
+            "r3k2r/1pqbbpp1/p1nppn1p/8/3NPP2/1BN2Q2/PPP2BPP/2KR3R b kq - 5 13",
+            "r3k2r/1pqbbpp1/p2ppn1p/n7/3NPP2/1BN2Q2/PPP2BPP/2KR3R w kq - 6 14",
+            "r3k2r/1pqbbpp1/p2ppn1p/n7/3NPP2/1BN2Q2/PPP2BPP/1K1R3R b kq - 7 14",
+            "2kr3r/1pqbbpp1/p2ppn1p/n7/3NPP2/1BN2Q2/PPP2BPP/1K1R3R w - - 8 15",
+            "2kr3r/1pqbbpp1/p2ppn1p/n4P2/3NP3/1BN2Q2/PPP2BPP/1K1R3R b - - 0 15",
+            "2kr3r/1pqbbpp1/p2ppn1p/5P2/3NP3/1nN2Q2/PPP2BPP/1K1R3R w - - 0 16",
+            "2kr3r/1pqbbpp1/p2ppn1p/5P2/3NP3/1PN2Q2/PP3BPP/1K1R3R b - - 0 16",
+            "1k1r3r/1pqbbpp1/p2ppn1p/5P2/3NP3/1PN2Q2/PP3BPP/1K1R3R w - - 1 17",
+            "1k1r3r/1pqbbpp1/p2ppn1p/5P2/3NP3/1PN2Q2/PP3BPP/1KR4R b - - 2 17",
+            "1k1r3r/1p1bbpp1/p2ppn1p/q4P2/3NP3/1PN2Q2/PP3BPP/1KR4R w - - 3 18",
+            "1k1r3r/1p1bbpp1/p2ppn1p/q4P2/1P1NP3/2N2Q2/PP3BPP/1KR4R b - - 0 18",
+            "1k1r3r/1p1bbpp1/p2ppn1p/5P2/1q1NP3/2N2Q2/PP3BPP/1KR4R w - - 0 19",
+            "1k1r3r/1p1bbpp1/p2ppn1p/5P2/1q1NP3/P1N2Q2/1P3BPP/1KR4R b - - 0 19",
+            "1k1r3r/1p1bbpp1/p2ppn1p/5P2/2qNP3/P1N2Q2/1P3BPP/1KR4R w - - 1 20",
+            "1k1r3r/1p1bbpp1/p2ppn1p/3N1P2/2qNP3/P4Q2/1P3BPP/1KR4R b - - 2 20",
+            "1k1r3r/1p1bbpp1/p2p1n1p/3p1P2/2qNP3/P4Q2/1P3BPP/1KR4R w - - 0 21",
+            "1k1r3r/1p1bbpp1/p2p1n1p/3p1P2/2RNP3/P4Q2/1P3BPP/1K5R b - - 0 21",
+            "1k1r3r/1p1bbpp1/p2p1n1p/5P2/2pNP3/P4Q2/1P3BPP/1K5R w - - 0 22",
+            "1k1r3r/1p1bbpp1/p2p1n1p/5P2/2pNP3/P4Q1P/1P3BP1/1K5R b - - 0 22",
+            "1k1rr3/1p1bbpp1/p2p1n1p/5P2/2pNP3/P4Q1P/1P3BP1/1K5R w - - 1 23",
+            "1k1rr3/1p1bbpp1/p2p1n1p/5P2/2pNP3/P4Q1P/1P3BP1/1K2R3 b - - 2 23",
+            "1kr1r3/1p1bbpp1/p2p1n1p/5P2/2pNP3/P4Q1P/1P3BP1/1K2R3 w - - 3 24",
+            "1kr1r3/1p1bbpp1/p2p1n1p/5P2/2p1P3/P4Q1P/1P2NBP1/1K2R3 b - - 4 24",
+            "1kr1r3/1p2bpp1/p1bp1n1p/5P2/2p1P3/P4Q1P/1P2NBP1/1K2R3 w - - 5 25",
+            "1kr1r3/1p2bpp1/p1bp1n1p/5P2/2p1P3/P1N2Q1P/1P3BP1/1K2R3 b - - 6 25",
+            "1krbr3/1p3pp1/p1bp1n1p/5P2/2p1P3/P1N2Q1P/1P3BP1/1K2R3 w - - 7 26",
+            "1krbr3/1p3pp1/p1bp1n1p/5P2/2pBP3/P1N2Q1P/1P4P1/1K2R3 b - - 8 26",
+            "1kr1r3/1p3pp1/p1bp1n1p/b4P2/2pBP3/P1N2Q1P/1P4P1/1K2R3 w - - 9 27",
+            "1kr1r3/1p3pp1/p1bp1B1p/b4P2/2p1P3/P1N2Q1P/1P4P1/1K2R3 b - - 0 27",
+            "1kr1r3/1p3p2/p1bp1p1p/b4P2/2p1P3/P1N2Q1P/1P4P1/1K2R3 w - - 0 28",
+            "1kr1r3/1p3p2/p1bp1p1p/b4P2/2p1PQ2/P1N4P/1P4P1/1K2R3 b - - 1 28",
+            "1kr5/1p3p2/p1bp1p1p/b3rP2/2p1PQ2/P1N4P/1P4P1/1K2R3 w - - 2 29",
+            "1kr5/1p3p2/p1bp1p1Q/b3rP2/2p1P3/P1N4P/1P4P1/1K2R3 b - - 0 29",
+            "1kr5/1p3p2/p1bp1p1Q/4rP2/2p1P3/P1b4P/1P4P1/1K2R3 w - - 0 30",
+            "1kr5/1p3p2/p1bp1p1Q/4rP2/2p1P3/P1P4P/6P1/1K2R3 b - - 0 30",
+            "1kr5/1p3p2/p2p1p1Q/4rP2/2p1b3/P1P4P/6P1/1K2R3 w - - 0 31",
+            "1kr5/1p3p2/p2p1p1Q/4rP2/2p1b3/P1P4P/6P1/K3R3 b - - 1 31",
+            "1k6/1p3p2/p2p1p1Q/2r1rP2/2p1b3/P1P4P/6P1/K3R3 w - - 2 32",
+            "1k6/1p3p2/p2p1Q2/2r1rP2/2p1b3/P1P4P/6P1/K3R3 b - - 0 32",
+            "1k6/1p3p2/p2p1Q2/3rrP2/2p1b3/P1P4P/6P1/K3R3 w - - 1 33",
+            "1k6/1p3Q2/p2p4/3rrP2/2p1b3/P1P4P/6P1/K3R3 b - - 0 33",
+            "8/kp3Q2/p2p4/3rrP2/2p1b3/P1P4P/6P1/K3R3 w - - 1 34",
+            "8/kp3Q2/p2p1P2/3rr3/2p1b3/P1P4P/6P1/K3R3 b - - 0 34",
+            "8/kp3Q2/p2p1P2/4r3/2p1b3/P1P4P/3r2P1/K3R3 w - - 1 35",
+            "8/kpQ5/p2p1P2/4r3/2p1b3/P1P4P/3r2P1/K3R3 b - - 2 35",
+            "8/kpQ5/p2p1P2/1r6/2p1b3/P1P4P/3r2P1/K3R3 w - - 3 36",
+            "8/kpQ5/p2p1P2/1r6/2p1R3/P1P4P/3r2P1/K7 b - - 0 36",
+            "8/kpQ5/p2p1P2/1r6/2p1R3/P1P4P/6P1/K2r4 w - - 1 37",
+            "8/kpQ5/p2p1P2/1r6/2p1R3/P1P4P/K5P1/3r4 b - - 2 37",
+            "8/kpQ5/p2p1P2/1r6/2p1R3/P1P4P/K2r2P1/8 w - - 3 38",
+            "8/kpQ5/p2p1P2/1r6/2p1R3/P1P4P/3r2P1/K7 b - - 4 38",
+            "8/kpQ5/p2p1P2/1r6/2p1R3/P1P4P/6P1/K2r4 w - - 5 39",
+            "8/kpQ5/p2p1P2/1r6/2p1R3/P1P4P/K5P1/3r4 b - - 6 39",
+            "8/kpQ5/p2p1P2/1r6/2p1R3/P1P4P/K2r2P1/8 w - - 7 40",
+            "8/kpQ5/p2p1P2/1r6/2p1R3/P1P4P/3r2P1/K7 b - - 8 40"
+        )
+
+        val gameIterator = game.iterator();
+        val fenIterator = fens.iterator();
+        while (gameIterator.hasNext() && fenIterator.hasNext()) {
+            val currentNode = gameIterator.next()
+            val currentFen = fenIterator.next()
+            assertEquals(currentFen, currentNode.position.fen)
+        }
+    }
+
     fun extractMoves(pgnString: String): List<String> {
         val cleanString = pgnString
             .replace("\n", " ")
