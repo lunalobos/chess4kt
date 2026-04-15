@@ -176,6 +176,8 @@ class Game : Iterable<Game.Node> {
      */
     val id: Any?
 
+    private val idGenerator = IdGenerator();
+
     internal constructor(
         tags: Map<String, String>,
         gameMode: GameMode,
@@ -402,6 +404,14 @@ class Game : Iterable<Game.Node> {
      * variations), and always only one parent node.
      */
     interface Node {
+
+        /**
+         * An id for the node.
+         *
+         * @since v1.0.0-beta.9
+         */
+        val id: Int
+
         /**
          * The position of the node, which is the result after executing the move.
          */
@@ -572,6 +582,12 @@ class Game : Iterable<Game.Node> {
         }
     }
 
+    private class IdGenerator (var curr: Int = 0){
+        fun next(): Int{
+            return curr++;
+        }
+    }
+
     internal inner class RootNode(override val position: Position) : Node {
         override var comment: String? = null
         override val children: MutableList<Node> = mutableListOf()
@@ -591,6 +607,8 @@ class Game : Iterable<Game.Node> {
                 logger.warn("initialComment on root nodes it will be always null and can't be set")
                 field = null
             }
+
+        override val id: Int = idGenerator.next()
 
         override fun hashCode(): Int {
             return genericHashCode(arrayOf(position, comment))
@@ -681,7 +699,7 @@ class Game : Iterable<Game.Node> {
         override var endLineComment: String?,
         override var suffixAnnotations: List<Int>?,
         override var parent: Node?,
-
+        override val id: Int = idGenerator.next(),
         ) : Node {
         override val children = mutableListOf<Node>()
 
