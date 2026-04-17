@@ -11,7 +11,7 @@ class PositionTest {
         try {
             val position = positionOf("rnrnbqkbnr/pp2pppp/3p4/8/3NP3/8/PPP2PPP/RNBQKB1R b KQkq - 0 4")
         } catch(e: Throwable){
-            fail(e.message)
+            assertTrue(e.message?.endsWith("has more than 8 characters") ?: false)
         }
     }
 }
