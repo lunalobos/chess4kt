@@ -27,7 +27,7 @@ hundred milliseconds on modern machines.
 The library provides predefined instances for every square (A1, B1, ..., H8). You can import them directly:
 
 ```js
-import { A1, G4, D6 } from "chess4js";
+import {A1, G4, D6} from "chess4js";
 ```
 
 ## Piece
@@ -56,7 +56,7 @@ import {WP, BK, WQ, BN} from "chess4js"
 exist: `WHITE` and `BLACK`. You can import them directly:
 
 ```js
-import { WHITE, BLACK } from "chess4js" 
+import {WHITE, BLACK} from "chess4js" 
 ```
 
 ## Bitboard
@@ -118,7 +118,7 @@ A non directly instantiable class that represents a move made on the board.
 ### Example
 
 ```js
-import { moveOf } from "chess4js"
+import {moveOf} from "chess4js"
 
 const myMove = moveOf("e2e4");
 ```
@@ -129,9 +129,9 @@ Represents a specific board state. Instances of this class are immutable. Modify
 inconsistent behavior. Use factory methods to generate new positions.
 
 ```js
-import { startpos, positionOf } from "chess4js"
+import {startpos, positionOf} from "chess4js"
 
-const initialPosition = startpos(); 
+const initialPosition = startpos();
 const somePosition = positionOf("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
 ```
@@ -247,6 +247,7 @@ For the `Node` class:
 | `endLineComment`    | `Nullable<string>`                | The end-of-line comment for the node, which follows a semicolon ; and goes until the end of the line.        |
 | `suffixAnnotations` | `Nullable<ReadonlyArray<number>>` | The list of suffix annotations (NAGs) for the node.                                                          |
 | `parent`            | `Nullable<Node>`                  | The parent node. It can only be null when it is the root node, which evidently cannot have a parent.         |
+| `id`                | `number`                          | An id for the node.                                                                                          |
 
 ### Methods
 
@@ -288,7 +289,7 @@ For the `Node` class
 ### Example
 
 ```js
-import { strictMatch } from "chess4js";
+import {strictMatch} from "chess4js";
 
 const myGame = strictMatch(() => "someId");
 myGame.setTag("white", "foo")
@@ -298,12 +299,12 @@ myGame.setTag("site", "foobared place")
 myGame.setTag("date", "1999.06.10")
 
 myGame.root.appendMove("e4")
-           .appendMove("e5")
-           .appendMove("Bc4")
-           .appendMove("Nc6")
-           .appendMove("Qh5")
-           .appendMove("Nf6")
-           .appendMove("Qxf7#")
+    .appendMove("e5")
+    .appendMove("Bc4")
+    .appendMove("Nc6")
+    .appendMove("Qh5")
+    .appendMove("Nf6")
+    .appendMove("Qxf7#")
 
 ```
 
@@ -321,7 +322,7 @@ A non-instantiable class that provides basic information about ECO classificatio
 ### Example
 
 ```javascript
-import { strictMatch } from "chess4js";
+import {strictMatch} from "chess4js";
 
 const myGame = strictMatch(() => "someId");
 myGame.setTag("white", "foo")
@@ -331,14 +332,14 @@ myGame.setTag("site", "foobared place")
 myGame.setTag("date", "1999.06.10")
 
 myGame.root.appendMove("e4")
-           .appendMove("c5")
-           .appendMove("Nf3")
-           .appendMove("e6")
-           .appendMove("d4")
-           .appendMove("cxd4")
-           .appendMove("Nxd4")
-           .appendMove("Qb6")
-           
+    .appendMove("c5")
+    .appendMove("Nf3")
+    .appendMove("e6")
+    .appendMove("d4")
+    .appendMove("cxd4")
+    .appendMove("Nxd4")
+    .appendMove("Qb6")
+
 const ecoInfo = myGame.ecoInfo.eco // "B40"
 ```
 
@@ -368,9 +369,9 @@ Represents a score in a tournament. It can't be directly instantiated, you need 
 #### Example
 
 ```javascript
-import { scoreOf } from "chess4js";
+import {scoreOf} from "chess4js";
 
-const hightScore = scoreOf("2.5"); 
+const hightScore = scoreOf("2.5");
 const lowScore = scoreOf("0.0");
 
 hightScore.compareTo(lowScore) // 1
@@ -404,7 +405,7 @@ factory.
 #### Example
 
 ```javascript
-import { playerOf } from "chess4js";
+import {playerOf} from "chess4js";
 
 const foo = playerOf("foo", 1600);
 const bar = playerOf("bar", 1600);
@@ -432,7 +433,7 @@ factory.
 #### Example
 
 ```javascript
-import { matchOf, playerOf } from "chess4js";
+import {matchOf, playerOf} from "chess4js";
 
 const white = playerOf("foo", 1600);
 const black = playerOf("bar", 1600);
@@ -482,74 +483,74 @@ behavior of a Swiss tournament, having a fixed number of rounds, for example. Ad
 before the next one can be generated.
 
 ```javascript
-import { tournament, playerOf } from "./chess4js.mjs";
+import {tournament, playerOf} from "./chess4js.mjs";
 
 const myTournament = tournament("swiss");
 
 function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min) + min);
+    return Math.floor(Math.random() * (max - min) + min);
 }
 
 function runMatch(match) {
-  const ratio = (match.white.currentElo - match.black.currentElo) / 100;
-  const random = Math.random();
-  if (match.white.currentElo >= match.black.currentElo) {
-    if (random < ratio) {
-      match.outcome = "1-0";
-    } else if (random == ratio) {
-      match.outcome = "1/2-1/2";
+    const ratio = (match.white.currentElo - match.black.currentElo) / 100;
+    const random = Math.random();
+    if (match.white.currentElo >= match.black.currentElo) {
+        if (random < ratio) {
+            match.outcome = "1-0";
+        } else if (random == ratio) {
+            match.outcome = "1/2-1/2";
+        } else {
+            match.outcome = "0-1";
+        }
     } else {
-      match.outcome = "0-1";
+        if (random < ratio) {
+            match.outcome = "0-1";
+        } else if (random == ratio) {
+            match.outcome = "1/2-1/2";
+        } else {
+            match.outcome = "1-0";
+        }
     }
-  } else {
-    if (random < ratio) {
-      match.outcome = "0-1";
-    } else if (random == ratio) {
-      match.outcome = "1/2-1/2";
-    } else {
-      match.outcome = "1-0";
-    }
-  }
 }
 
 const minElo = 1800;
 const maxElo = 2200;
 
 const players = [
-  "William Smith",
-  "Jack Jones",
-  "Oliver Williams",
-  "Joshua Brown",
-  "Thomas Wilson",
-  "Lachlan Taylor",
-  "Cooper Johnson",
-  "Noah White",
-  "Ethan Martin",
-  "Lucas Anderson",
-  "James Thompson",
-  "Samuel Nguyen",
-  "Jacob Thomas",
-  "Liam Walker",
-  "Alexander Harris",
-  "Benjamin Lee",
+    "William Smith",
+    "Jack Jones",
+    "Oliver Williams",
+    "Joshua Brown",
+    "Thomas Wilson",
+    "Lachlan Taylor",
+    "Cooper Johnson",
+    "Noah White",
+    "Ethan Martin",
+    "Lucas Anderson",
+    "James Thompson",
+    "Samuel Nguyen",
+    "Jacob Thomas",
+    "Liam Walker",
+    "Alexander Harris",
+    "Benjamin Lee",
 ].map((name) => {
-  return playerOf(name, randomInt(minElo, maxElo));
+    return playerOf(name, randomInt(minElo, maxElo));
 });
 
 players.forEach((player) => {
-  console.log(`adding player ${player.toString()}`);
-  myTournament.addPlayer(player);
+    console.log(`adding player ${player.toString()}`);
+    myTournament.addPlayer(player);
 });
 
 while (!myTournament.completed) {
-  console.log("next round");
-  myTournament.nextRound().forEach((match) => {
-    runMatch(match);
-    console.log(`${match.toString()}`);
-  });
+    console.log("next round");
+    myTournament.nextRound().forEach((match) => {
+        runMatch(match);
+        console.log(`${match.toString()}`);
+    });
 }
 
-console.log(myTournament.leaderboard.map( e => e.toString() + ` - ${e.score.toString()}`));
+console.log(myTournament.leaderboard.map(e => e.toString() + ` - ${e.score.toString()}`));
 ```
 
 *Creating an arena tournament*
@@ -561,83 +562,83 @@ is only intended to show the class's behavior when used in arena mode; it is not
 management of an arena tournament, which is typically more complex.
 
 ```javascript
-import { tournament, playerOf } from "./chess4js.mjs";
+import {tournament, playerOf} from "./chess4js.mjs";
 
 const myTournament = tournament("arena");
 
 function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min) + min);
+    return Math.floor(Math.random() * (max - min) + min);
 }
 
 function runMatch(match) {
-  const ratio = (match.white.currentElo - match.black.currentElo) / 100;
-  const random = Math.random();
-  if (match.white.currentElo >= match.black.currentElo) {
-    if (random < ratio) {
-      match.outcome = "1-0";
-    } else if (random == ratio) {
-      match.outcome = "1/2-1/2";
+    const ratio = (match.white.currentElo - match.black.currentElo) / 100;
+    const random = Math.random();
+    if (match.white.currentElo >= match.black.currentElo) {
+        if (random < ratio) {
+            match.outcome = "1-0";
+        } else if (random == ratio) {
+            match.outcome = "1/2-1/2";
+        } else {
+            match.outcome = "0-1";
+        }
     } else {
-      match.outcome = "0-1";
+        if (random < ratio) {
+            match.outcome = "0-1";
+        } else if (random == ratio) {
+            match.outcome = "1/2-1/2";
+        } else {
+            match.outcome = "1-0";
+        }
     }
-  } else {
-    if (random < ratio) {
-      match.outcome = "0-1";
-    } else if (random == ratio) {
-      match.outcome = "1/2-1/2";
-    } else {
-      match.outcome = "1-0";
-    }
-  }
 }
 
 const minElo = 1800;
 const maxElo = 2200;
 
 const players = [
-  "William Smith",
-  "Jack Jones",
-  "Oliver Williams",
-  "Joshua Brown",
-  "Thomas Wilson",
-  "Lachlan Taylor",
-  "Cooper Johnson",
-  "Noah White",
-  "Ethan Martin",
-  "Lucas Anderson",
-  "James Thompson",
-  "Samuel Nguyen",
-  "Jacob Thomas",
-  "Liam Walker",
-  "Alexander Harris",
-  "Benjamin Lee",
+    "William Smith",
+    "Jack Jones",
+    "Oliver Williams",
+    "Joshua Brown",
+    "Thomas Wilson",
+    "Lachlan Taylor",
+    "Cooper Johnson",
+    "Noah White",
+    "Ethan Martin",
+    "Lucas Anderson",
+    "James Thompson",
+    "Samuel Nguyen",
+    "Jacob Thomas",
+    "Liam Walker",
+    "Alexander Harris",
+    "Benjamin Lee",
 ].map((name) => {
-  return playerOf(name, randomInt(minElo, maxElo));
+    return playerOf(name, randomInt(minElo, maxElo));
 });
 
 players.forEach((player) => {
-  console.log(`adding player ${player.toString()}`);
-  myTournament.addPlayer(player);
+    console.log(`adding player ${player.toString()}`);
+    myTournament.addPlayer(player);
 });
 
 const gamesLimit = 100;
 
 let gamesQueue = [];
 
-while((myTournament.finishedMatches.length + myTournament.activeMatches.length) < gamesLimit) {
+while ((myTournament.finishedMatches.length + myTournament.activeMatches.length) < gamesLimit) {
     myTournament.nextRound();
-    myTournament.activeMatches.forEach( (match) => gamesQueue.push(match) )
+    myTournament.activeMatches.forEach((match) => gamesQueue.push(match))
     if (gamesQueue.length > 0) {
-        for(let i = 0; i < (gamesQueue.length / 4 * 3); i++) {
+        for (let i = 0; i < (gamesQueue.length / 4 * 3); i++) {
             runMatch(gamesQueue.pop());
         }
     }
     gamesQueue = [];
 }
 
-myTournament.activeMatches.forEach( (match) => runMatch(match) );
+myTournament.activeMatches.forEach((match) => runMatch(match));
 
 myTournament.completed = true;
 
-console.log(myTournament.leaderboard.map( e => e.toString() + ` - ${e.score.toString()}`));
+console.log(myTournament.leaderboard.map(e => e.toString() + ` - ${e.score.toString()}`));
 ```

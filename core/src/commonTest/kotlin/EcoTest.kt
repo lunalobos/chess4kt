@@ -17,6 +17,7 @@ package io.github.lunalobos.chess4kt
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class EcoTest {
 
@@ -37,5 +38,36 @@ class EcoTest {
     fun movesA06(){
         val ecoInfo = ecoInfo("Nf3 d5 b3 c5 e4 dxe4 Ne5")
         assertEquals("A06", ecoInfo?.eco)
+    }
+
+    @Test
+    fun kingsPawn(){
+        val position = positionOf("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1")
+        val ecoInfo = ecoInfo(position)
+        assertEquals("B00", ecoInfo?.eco)
+        assertEquals("King's Pawn Opening; B00", ecoInfo?.name)
+    }
+
+    @Test
+    fun sicilian(){
+        val position = positionOf("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2")
+        val ecoInfo = ecoInfo(position)
+        assertEquals("B20", ecoInfo?.eco)
+        assertEquals("Sicilian Defense; B20", ecoInfo?.name)
+    }
+
+    @Test
+    fun queensPawn(){
+        val position = positionOf("rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1")
+        val ecoInfo = ecoInfo(position)
+        assertEquals("A40", ecoInfo?.eco)
+        assertEquals("Queen Pawn Opening; A40", ecoInfo?.name)
+    }
+
+    @Test
+    fun startpos(){
+        val position = positionOf()
+        val ecoInfo = ecoInfo(position)
+        assertNull(ecoInfo)
     }
 }

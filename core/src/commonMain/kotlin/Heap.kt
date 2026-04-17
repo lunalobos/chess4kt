@@ -17,7 +17,8 @@ package io.github.lunalobos.chess4kt
 
 internal class Heap<T>(
     initialSize: Int = 10,
-    var comparator: Comparator<T>
+    var comparator: Comparator<T>,
+
 ) {
     private var heapSize = 0
 
