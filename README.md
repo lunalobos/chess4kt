@@ -1,6 +1,6 @@
 ![License](https://img.shields.io/github/license/lunalobos/chess4kt)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.lunalobos/chess4kt)](https://central.sonatype.com/artifact/io.github.lunalobos/chess4kt)
-[![KDoc](https://img.shields.io/badge/kdoc-1.0.0--beta.8-a97bff)](https://chess4kt.pages.dev/)
+[![KDoc](https://img.shields.io/badge/kdoc-1.0.0--beta.9-a97bff)](https://chess4kt.pages.dev/)
 [![npm](https://img.shields.io/npm/v/chess4js?logo=npm)](https://www.npmjs.com/package/chess4js)
 
 # Chess4kt
@@ -250,6 +250,138 @@ val petrovDefense = """
 val games = parseGames(petrovDefense) // a list containing one game
 val nepomniachtchiVsGorshtein = games[0] // the specific game in question
 ```
+
+### Game Serialization
+
+The `Game` class is not directly serializable (to avoid adding the Kotlin serialization module as a dependency), but it exposes all the data needed to reconstruct a full game tree using only primitive values and plain objects.
+
+#### Intermediate Data Classes
+
+You can define your own lightweight, serializable data classes outside the library to act as the bridge between a `Game` instance and any serialization format (JSON, binary, etc.):
+
+```kotlin
+// These classes belong to YOUR code, not to chess4kt
+
+data class SerializableNode(
+    val id: Int,
+    val move: String?,          // result of move.toString() (UCI notation), null for root
+    val childrenIds: List<Int>,
+    val parentId: Int?          // null for root
+)
+
+data class SerializableGame(
+    val initialFen: String,     // FEN of the root position
+    val nodes: List<SerializableNode>,
+    val tags: Map<String, String>,
+    val gameMode: String,                    // "MATCH" or "ANALYSIS"
+    val threeRepetitionsMode: String,        // "IGNORE", "STRICT" or "AWARE"
+    val fiftyMovesRuleMode: String,          // "IGNORE", "STRICT" or "AWARE"
+    val result: String?,                     // "1-0", "0-1", "1/2-1/2" or null
+    val finalComment: String?,
+    val finalEndLineComment: String?,
+    val threeRepetitions: Boolean,
+    val fiveRepetitions: Boolean,
+    val fiftyMoves: Boolean,
+    val seventyFiveMoves: Boolean
+)
+```
+
+#### Serialization Example
+
+The following example shows how to walk the game tree and build a `SerializableGame` that can then be converted to JSON (here using `kotlinx.serialization` as an illustration, but any JSON library works):
+
+```kotlin
+fun Game.toSerializable(): SerializableGame {
+    // Collect all nodes with a BFS/DFS traversal
+    val allNodes = mutableListOf<Game.Node>()
+    fun collect(node: Game.Node) {
+        allNodes.add(node)
+        node.children.forEach { collect(it) }
+    }
+    collect(root)
+
+    val serializableNodes = allNodes.map { node ->
+        SerializableNode(
+            id          = node.id,
+            move        = node.move?.toString(),   // UCI string, e.g. "e2e4" or "a7a8q"
+            childrenIds = node.children.map { it.id },
+            parentId    = node.parent?.id
+        )
+    }
+
+    return SerializableGame(
+        initialFen            = root.position.fen,
+        nodes                 = serializableNodes,
+        tags                  = tags.toMap(),
+        gameMode              = if (threeRepetitionsMode == Game.ThreeRepetitionsMode.IGNORE
+                                    && fiftyMovesRuleMode == Game.FiftyMovesRuleMode.IGNORE)
+                                    "MATCH" else "ANALYSIS",
+        threeRepetitionsMode  = threeRepetitionsMode.name,
+        fiftyMovesRuleMode    = fiftyMovesRuleMode.name,
+        result                = result?.str,
+        finalComment          = finalComment,
+        finalEndLineComment   = finalEndLineComment,
+        threeRepetitions      = threeRepetitions,
+        fiveRepetitions       = fiveRepetitions,
+        fiftyMoves            = fiftyMoves,
+        seventyFiveMoves      = seventyFiveMoves
+    )
+}
+
+// --- JSON serialization (using any JSON library, e.g. Gson or kotlinx.serialization) ---
+
+// With Gson:
+// val json: String = Gson().toJson(game.toSerializable())
+
+// With kotlinx.serialization (add @Serializable to your data classes):
+// val json: String = Json.encodeToString(game.toSerializable())
+```
+
+#### Deserialization Example
+
+To reconstruct a `Game` from a `SerializableGame`, create a new `Game` instance from the stored FEN, then replay every stored node in order, using the parent–child relationships encoded in the node list:
+
+```kotlin
+fun SerializableGame.toGame(): Game {
+    // 1. Recreate the game with the original configuration
+    val game = gameOf(
+        tags                 = tags.toMutableMap(),
+        gameMode             = Game.GameMode.valueOf(gameMode),
+        threeRepetitionsMode = Game.ThreeRepetitionsMode.valueOf(threeRepetitionsMode),
+        fiftyMovesRuleMode   = Game.FiftyMovesRuleMode.valueOf(fiftyMovesRuleMode)
+    )
+
+    // 2. Build an id -> Node index as we create nodes
+    val nodeIndex = mutableMapOf<Int, Game.Node>()
+    nodeIndex[nodes.first().id] = game.root   // root is already created
+
+    // 3. Replay nodes in order (they were stored breadth/depth-first, so parents come first)
+    for (serialNode in nodes.drop(1)) {       // skip root
+        val uciMove = serialNode.move ?: continue
+        val parentNode = nodeIndex[serialNode.parentId]
+            ?: error("Parent node ${serialNode.parentId} not found")
+
+        // appendMove returns the newly created node
+        val createdNode = parentNode.appendMove(uciMove, notation = Notation.UCI)
+        nodeIndex[serialNode.id] = createdNode
+    }
+
+    // 4. Restore the remaining game metadata
+    game.finalComment          = finalComment
+    game.finalEndLineComment   = finalEndLineComment
+    game.threeRepetitions      = threeRepetitions
+    game.fiveRepetitions       = fiveRepetitions
+    game.fiftyMoves            = fiftyMoves
+    game.seventyFiveMoves      = seventyFiveMoves
+    result?.let { game.result  = Game.Result.entries.first { r -> r.str == it } }
+
+    return game
+}
+```
+
+> **Note:** Node comments (`comment`, `initialComment`, `endLineComment`, `suffixAnnotations`) and other per-node metadata are not shown above for brevity, but they can be added to `SerializableNode` and restored in the same way, since all those properties are publicly accessible on `Game.Node`.
+
+> **ByteArray serialization:** If you need a binary representation instead of JSON, serialize your `SerializableGame` to a `ByteArray` using any binary encoder (e.g., Protocol Buffers, Avro, or Kotlin's `java.io.ObjectOutputStream` on the JVM). The approach is identical — the intermediate data classes act as the serialization boundary
 
 ### Tournament Management (since 1.0.0-beta.8)
 The library provides a suite of classes, interfaces, and factories for tournament management. The purpose of these 

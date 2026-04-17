@@ -200,7 +200,7 @@ class Game internal constructor(private val backedGame: io.github.lunalobos.ches
      * The node (and its position) becomes the new effective start of the game, creating a new RootNode.
      *
      */
-    fun Game.deleteBefore(node: Node): Node{
+    fun deleteBefore(node: Node): Node{
         return Node(backedGame.deleteBefore(node.backedNode))
     }
 

@@ -365,6 +365,9 @@ private fun isValidFenFormat(fen: String): Boolean {
     var validRows = true
 
     for (row in rows) {
+        if(row.length > 8){
+            throw IllegalArgumentException("row $row has more than 8 characters")
+        }
         validRows = validRows && !INVALID_ROW_PATTERN.containsMatchIn(row)
         if (!validRows) {
             throw IllegalArgumentException("$fen has an invalid row $row")
@@ -941,4 +944,50 @@ fun Position.flipSide(): Position {
         movesCounter,
         halfMovesCounter
     )
+}
+
+/**
+ * Generates a unique string identifier for the current position, suitable for use as a key
+ * in a transposition table.
+ *
+ * The identifier encodes all position-defining state that is relevant for transposition detection,
+ * including the piece distribution (as hexadecimal bitboard values), the side to move,
+ * the en passant target square, the castling rights for both sides, and the half-move clock.
+ * The full-move counter is intentionally excluded, since two positions that differ only in
+ * that counter are considered the same transposition.
+ *
+ * The resulting string has the following format (each segment separated by `-`):
+ * 1. Twelve hexadecimal bitboard values, one per piece type (in [Piece] ordinal order, excluding [Piece.EMPTY]).
+ * 2. Side to move: `"w"` for White, `"b"` for Black.
+ * 3. En passant target square index (`-1` if none).
+ * 4. White kingside castling right: `"K"` if available, `"x"` otherwise.
+ * 5. White queenside castling right: `"Q"` if available, `"x"` otherwise.
+ * 6. Black kingside castling right: `"k"` if available, `"x"` otherwise.
+ * 7. Black queenside castling right: `"q"` if available, `"x"` otherwise.
+ * 8. Half-move clock value.
+ *
+ * Example output:
+ * ```
+ * ff00000000000000-000000000000ff00-...w-(-1)-K-Q-k-q-0-
+ * ```
+ *
+ * @receiver The [Position] for which the transposition identifier is computed.
+ * @return A [String] that uniquely identifies the position for transposition-table purposes.
+ *
+ * @since 1.0.0-beta.9
+ * @author lunalobos
+ */
+fun Position.transpositionId(): String {
+    val sb = StringBuilder()
+    for(bitboard in bitboards){
+        sb.append(bitboard.toHexString()).append("-")
+    }
+    sb.append(if(whiteMove) "w" else "b").append("-")
+    sb.append(enPassant).append("-")
+    sb.append(if(whiteCastleKingside) "K" else "x").append("-")
+    sb.append(if(whiteCastleQueenside) "Q" else "x").append("-")
+    sb.append(if(blackCastleKingside) "k" else "x").append("-")
+    sb.append(if(blackCastleQueenside) "q" else "x").append("-")
+    sb.append(halfMovesCounter).append("-")
+    return sb.toString()
 }

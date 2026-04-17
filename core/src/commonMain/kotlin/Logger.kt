@@ -61,7 +61,7 @@ internal class Logger(val name: String, val filterLevel: Level) {
     }
 
     fun error(err: Throwable): Throwable {
-        error(err.message ?: "none")
+        error("message: ${err.message ?: "none"}, trace: ${err.stackTraceToString()}")
         return err
     }
 
@@ -70,7 +70,7 @@ internal class Logger(val name: String, val filterLevel: Level) {
     }
 
     fun fatal(err: Throwable): Throwable {
-        fatal(err.message ?: "none")
+        fatal("message: ${err.message ?: "none"}, trace: ${err.stackTraceToString()}")
         return err
     }
 

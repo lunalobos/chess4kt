@@ -29,7 +29,7 @@ package io.github.lunalobos.chess4kt
 class Game : Iterable<Game.Node> {
 
     internal companion object {
-        val logger = getLogger("io.github.lunalobos.chess4kt.Game")
+        private val logger = getLogger("io.github.lunalobos.chess4kt.Game")
     }
 
     /**
@@ -175,6 +175,8 @@ class Game : Iterable<Game.Node> {
      * A developer-provided unique identifier for serialization or tracking purposes (e.g., UUID or String).
      */
     val id: Any?
+
+    private val idGenerator = IdGenerator();
 
     internal constructor(
         tags: Map<String, String>,
@@ -402,6 +404,14 @@ class Game : Iterable<Game.Node> {
      * variations), and always only one parent node.
      */
     interface Node {
+
+        /**
+         * An id for the node.
+         *
+         * @since v1.0.0-beta.9
+         */
+        val id: Int
+
         /**
          * The position of the node, which is the result after executing the move.
          */
@@ -572,6 +582,12 @@ class Game : Iterable<Game.Node> {
         }
     }
 
+    private class IdGenerator (var curr: Int = 0){
+        fun next(): Int{
+            return curr++;
+        }
+    }
+
     internal inner class RootNode(override val position: Position) : Node {
         override var comment: String? = null
         override val children: MutableList<Node> = mutableListOf()
@@ -591,6 +607,8 @@ class Game : Iterable<Game.Node> {
                 logger.warn("initialComment on root nodes it will be always null and can't be set")
                 field = null
             }
+
+        override val id: Int = idGenerator.next()
 
         override fun hashCode(): Int {
             return genericHashCode(arrayOf(position, comment))
@@ -681,7 +699,7 @@ class Game : Iterable<Game.Node> {
         override var endLineComment: String?,
         override var suffixAnnotations: List<Int>?,
         override var parent: Node?,
-
+        override val id: Int = idGenerator.next(),
         ) : Node {
         override val children = mutableListOf<Node>()
 
@@ -896,10 +914,10 @@ class Game : Iterable<Game.Node> {
 
         override fun next(): Node {
             val aux = curr
-            if (curr?.hasChildren() ?: false) {
-                curr = curr?.children[0]
+            curr = if (curr?.hasChildren() ?: false) {
+                curr?.children[0]
             } else {
-                curr = null
+                null
             }
             return aux ?: throw NoSuchElementException("next has been called when current node is null")
         }

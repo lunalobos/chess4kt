@@ -15,6 +15,8 @@
  */
 package io.github.lunalobos.chess4kt
 
+import kotlin.collections.set
+//import kotlin.math.min
 import kotlin.time.Clock.System.now
 import kotlin.time.ExperimentalTime
 
@@ -24,18 +26,30 @@ internal class Eco {
     }
 
     val movesMap: Map<String, EcoInfo>
+    //val ecoInfoToMovesCountMap: MutableMap<EcoInfo, Int> = HashMap()
     val positionMap: Map<Position, EcoInfo>
 
     @OptIn(ExperimentalTime::class)
-    constructor(positionOf: (String) -> Position){
+    constructor(positionOf: (String) -> Position) {
         val d1 = now()
         movesMap = loadMoves()
+        //fillEcoMap()
         positionMap = loadPositions2(positionOf)
         val d2 = now()
         logger.info("time ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    private fun loadPositions2(positionOf: (String) -> Position): Map<Position, EcoInfo>{
+    /*
+    private fun fillEcoMap(){
+        movesMap.entries.forEach { entry ->
+            val movesCount = entry.key.split("\\s".toRegex()).size
+            val countMapped = ecoInfoToMovesCountMap[entry.value] ?: Int.MAX_VALUE
+            ecoInfoToMovesCountMap[entry.value] = min(movesCount, countMapped)
+        }
+    }
+    */
+
+    private fun loadPositions2(positionOf: (String) -> Position): Map<Position, EcoInfo> {
         return mutableMapOf<Position, EcoInfo>().apply {
             this.putAll(positions1(positionOf))
             this.putAll(positions2(positionOf))
@@ -45,22 +59,45 @@ internal class Eco {
     }
 
     /*
+    private fun heap(): Heap<EcoInfo> {
+        val comparator: Comparator<EcoInfo> = Comparator<EcoInfo> { a, b ->
+            val aCount = ecoInfoToMovesCountMap[a] ?: Int.MAX_VALUE
+            val bCount = ecoInfoToMovesCountMap[b] ?: Int.MAX_VALUE
+            aCount.compareTo(bCount)
+        }.thenComparator { a, b -> a.eco.compareTo(b.eco) }
+        return Heap(10, comparator)
+    }
+
+    private fun creteHeap(positionsToHeap: HashMap<Position, Heap<EcoInfo>>, position: Position): Heap<EcoInfo>{
+        val newHeap = heap()
+        positionsToHeap[position] = newHeap
+        return newHeap
+    }
+    */
+
+    /*
     @OptIn(ExperimentalTime::class)
-    private fun loadPositions(): Map<Position, EcoInfo>{
-        val positions = mutableMapOf<Position, EcoInfo>()
+    private fun loadPositions(): Map<Position, EcoInfo> {
+
+        val positionsToHeap = HashMap<Position, Heap<EcoInfo>>()
         val d1 = now()
         movesMap.entries.asSequence()
             .forEach { entry ->
-                val moves = entry.key.split(Regex("\\s+")).fold(ArrayDeque<String>()){ deque, curr ->
+                val moves = entry.key.split(Regex("\\s+")).fold(ArrayDeque<String>()) { deque, curr ->
                     deque.add(curr)
                     deque
                 }
                 var position = positionOf()
-                while(moves.isNotEmpty()){
+                while (moves.isNotEmpty()) {
                     position = position.move(moves.pop(), Notation.SAN)
-                    positions[position] = entry.value
+                    val heap = positionsToHeap[position] ?: creteHeap(positionsToHeap, position)
+                    heap += entry.value
                 }
             }
+        val positions = HashMap<Position, EcoInfo>()
+        positionsToHeap.forEach { (position, heap) ->
+            positions[position] = heap.pop()!!
+        }
         val d2 = now()
         logger.info("positions size = ${positions.size}")
         logger.info("time: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
@@ -74,10 +111,10 @@ internal class Eco {
     }
     */
 
-    private fun loadMoves(): Map<String, EcoInfo>{
+    private fun loadMoves(): Map<String, EcoInfo> {
         return openings.split("\n").asSequence()
-            .map { parseLine(it)}
-            .map { EcoRow(it[0].trim(), it[1].trim(), it[2].trim())}
+            .map { parseLine(it) }
+            .map { EcoRow(it[0].trim(), it[1].trim(), it[2].trim()) }
             .fold(mutableMapOf<String, EcoInfo>()) { map, curr ->
                 map[curr.moves] = curr.asDescriptor()
                 map
@@ -85,7 +122,7 @@ internal class Eco {
     }
 
     private fun parseLine(line: String): List<String> {
-        val stack = line.toCharArray().asSequence().fold(ArrayDeque<Char>()){ deque, curr ->
+        val stack = line.toCharArray().asSequence().fold(ArrayDeque<Char>()) { deque, curr ->
             deque.add(curr)
             deque
         }
@@ -121,33 +158,33 @@ internal class Eco {
         return strings
     }
 
-    class Bucket{
+    class Bucket {
         val end: Char
         val sb: StringBuilder
         var hasSpace: Boolean
 
-        constructor(end: Char){
+        constructor(end: Char) {
             this.end = end
             sb = StringBuilder()
             hasSpace = true
         }
 
-        fun add(c: Char){
-            if(c == end){
+        fun add(c: Char) {
+            if (c == end) {
                 hasSpace = false
                 return
             }
             sb.append(c)
         }
 
-        fun content(): String{
+        fun content(): String {
             return sb.toString()
         }
 
     }
 
-    data class EcoRow (val eco: String, val name: String, val moves: String){
-        fun asDescriptor(): EcoInfo{
+    data class EcoRow(val eco: String, val name: String, val moves: String) {
+        fun asDescriptor(): EcoInfo {
             return EcoInfo(eco, name)
         }
     }

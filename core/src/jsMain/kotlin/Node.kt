@@ -29,6 +29,12 @@ import kotlin.js.collections.toList
 @OptIn(ExperimentalJsExport::class)
 @JsExport
 class Node internal constructor(internal val backedNode: io.github.lunalobos.chess4kt.Game.Node) {
+
+    /**
+     * An id for the node.
+     */
+    val id: Int = backedNode.id
+
     /**
      * The position of the node, which is the result after executing the move.
      */
