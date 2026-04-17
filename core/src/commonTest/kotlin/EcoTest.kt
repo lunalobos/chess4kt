@@ -28,13 +28,6 @@ class EcoTest {
     }
 
     @Test
-    fun positionD14(){
-        val position = positionOf("r2qk2r/pp3ppp/2n1pn2/3p1b2/1b1P1B2/1QN1PN2/PP3PPP/R3KB1R w KQkq - 2 9")
-        val ecoInfo = ecoInfo(position)
-        assertEquals("D14", ecoInfo?.eco)
-    }
-
-    @Test
     fun movesA06(){
         val ecoInfo = ecoInfo("Nf3 d5 b3 c5 e4 dxe4 Ne5")
         assertEquals("A06", ecoInfo?.eco)

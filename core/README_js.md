@@ -177,6 +177,7 @@ const somePosition = positionOf("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w K
 | `moveFromString`       | `move`: `String`, `notation`: `Notation` default `UCI` | `Position`  | Retrieves the new Position that results from executing the move specified in the given notation. Throws a MoveException if the move is not legal. If no notation is provided, UCI notation is assumed. |
 | `toString`             | None                                                   | `string`    | retrieves a nice string representation                                                                                                                                                                 |
 | `flipSide`             | None                                                   | `Position`  | Creates a new Position identical to the current one, but with the active side toggled.                                                                                                                 |
+| `transpositionId`      | None                                                   | `String`    | Generates a unique string identifier for the current position, suitable for use as a key in a transposition table.                                                                                     |
 
 ### Factories
 

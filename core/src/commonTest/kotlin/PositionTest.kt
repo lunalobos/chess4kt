@@ -53,4 +53,11 @@ class PositionTest {
             assertTrue(e.message?.endsWith("has more than 8 characters") ?: false)
         }
     }
+
+    @Test
+    fun transposition(){
+        val position1 = positionOf("rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 2 4")
+        val position2 = positionOf("rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 2 6")
+        assertEquals(position1.transpositionId(), position2.transpositionId())
+    }
 }

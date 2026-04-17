@@ -27,6 +27,7 @@ import io.github.lunalobos.chess4kt.isLegal
 import io.github.lunalobos.chess4kt.move
 import io.github.lunalobos.chess4kt.positionOf
 import io.github.lunalobos.chess4kt.sideToMove
+import io.github.lunalobos.chess4kt.transpositionId
 import io.github.lunalobos.chess4kt.whiteLacksOfMaterial
 import kotlin.js.collections.JsReadonlyArray
 import kotlin.js.collections.toList
@@ -241,6 +242,37 @@ class Position internal constructor(internal val backedPosition: io.github.lunal
     @OptIn(ExperimentalMultiplatform::class)
     fun flipSide(): Position {
         return Position(backedPosition.flipSide())
+    }
+
+
+    /**
+     * Generates a unique string identifier for the current position, suitable for use as a key
+     * in a transposition table.
+     *
+     * The identifier encodes all position-defining state that is relevant for transposition detection,
+     * including the piece distribution (as hexadecimal bitboard values), the side to move,
+     * the en passant target square, the castling rights for both sides, and the half-move clock.
+     * The full-move counter is intentionally excluded, since two positions that differ only in
+     * that counter are considered the same transposition.
+     *
+     * The resulting string has the following format (each segment separated by `-`):
+     * 1. Twelve hexadecimal bitboard values, one per piece type (in [Piece] ordinal order, excluding [Piece.EMPTY]).
+     * 2. Side to move: `"w"` for White, `"b"` for Black.
+     * 3. En passant target square index (`-1` if none).
+     * 4. White kingside castling right: `"K"` if available, `"x"` otherwise.
+     * 5. White queenside castling right: `"Q"` if available, `"x"` otherwise.
+     * 6. Black kingside castling right: `"k"` if available, `"x"` otherwise.
+     * 7. Black queenside castling right: `"q"` if available, `"x"` otherwise.
+     * 8. Half-move clock value.
+     *
+     * Example output:
+     * ```
+     * ff00000000000000-000000000000ff00-...w-(-1)-K-Q-k-q-0-
+     * ```
+     *
+     */
+    fun transpositionId(): String {
+        return backedPosition.transpositionId()
     }
 
     override fun hashCode() = backedPosition.hashCode()
