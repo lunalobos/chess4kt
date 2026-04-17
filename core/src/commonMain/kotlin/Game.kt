@@ -29,7 +29,7 @@ package io.github.lunalobos.chess4kt
 class Game : Iterable<Game.Node> {
 
     internal companion object {
-        val logger = getLogger("io.github.lunalobos.chess4kt.Game")
+        private val logger = getLogger("io.github.lunalobos.chess4kt.Game")
     }
 
     /**

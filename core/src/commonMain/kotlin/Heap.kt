@@ -87,7 +87,7 @@ internal class Heap<T>(
     }
 
     fun toList(): List<T> {
-        val copy = Heap<T>(heapSize, comparator)
+        val copy = Heap(heapSize, comparator)
         copy.heapSize = heapSize
         copy.array = array.copyOf()
         val list = mutableListOf<T>()
