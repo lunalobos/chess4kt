@@ -175,10 +175,10 @@ class GameTest {
             [White "nn"]
             [Black "nn"]
             [Result "1/2-1/2"]
-            [ECO "E57"]
+            [ECO "E53"]
             [Id "$id"]
             [EventDate "2025.11.30"]
-            [Opening "E57"]
+            [Opening "Keres Variation, Nimzo-Indian"]
             
             1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.e3 O-O 5.Bd3 d5 6.Nf3 c5 7.O-O cxd4 8.exd4 dxc4 9.Bxc4 b6 
             	( 9...Nc6 $6 {Test comment} 10.Bg5 Be7 )
@@ -412,7 +412,7 @@ class GameTest {
             [BlackTitle "GM"]
             [WhiteFideId "1503014"]
             [BlackFideId "1500015"]
-            [Opening "Swiss Cheese Variation, Sicilian"]
+            [Opening "B42"]
             
             1.e4 c5 2.Nf3 e6 3.d4 cxd4 4.Nxd4 a6 5.Bd3 Nf6 6.Qe2 e5 7.Nf5 Nc6 8.O-O g6 9.Ne3 Bg7 10.Nc3 O-O 11.Ned5 Nxd5 12.Nxd5 d6 13.Be3 Be6 14.Bc4 b5 15.Bb3 Nd4 16.Bxd4 exd4 17.a4 1-0
         """.trimIndent()
@@ -476,7 +476,7 @@ class GameTest {
             [BlackTitle "GM"]
             [WhiteFideId "1503014"]
             [BlackFideId "1500015"]
-            [Opening "Swiss Cheese Variation, Sicilian"]
+            [Opening "B42"]
             
             1.e4 c5 2.Nf3 e6 3.d4 cxd4 4.Nxd4 a6 5.Bd3 Nf6 6.Qe2 e5 7.Nf5 Nc6 8.O-O g6 9.Ne3 Bg7 10.Nc3 O-O 11.Ned5 Nxd5 12.Nxd5 d6 13.Be3 Be6 14.Bc4 b5 15.Bb3 Nd4 16.Bxd4 exd4 1-0
         """.trimIndent()

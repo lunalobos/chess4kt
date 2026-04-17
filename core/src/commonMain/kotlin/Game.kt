@@ -32,6 +32,8 @@ class Game : Iterable<Game.Node> {
         private val logger = getLogger("io.github.lunalobos.chess4kt.Game")
     }
 
+    private val idGenerator = IdGenerator()
+
     /**
      * The root node of the game tree. The setter is protected if the game is immutable.
      */
@@ -176,7 +178,7 @@ class Game : Iterable<Game.Node> {
      */
     val id: Any?
 
-    private val idGenerator = IdGenerator();
+
 
     internal constructor(
         tags: Map<String, String>,

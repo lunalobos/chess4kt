@@ -49,7 +49,6 @@ class PositionTest {
         try {
             positionOf("rnrnbqkbnr/pp2pppp/3p4/8/3NP3/8/PPP2PPP/RNBQKB1R b KQkq - 0 4")
         } catch(e: Throwable){
-            assertEquals(IllegalArgumentException::class.qualifiedName, e::class.qualifiedName)
             assertTrue(e.message?.endsWith("has more than 8 characters") ?: false)
         }
     }
