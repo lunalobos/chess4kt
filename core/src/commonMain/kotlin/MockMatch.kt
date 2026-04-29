@@ -34,6 +34,8 @@ internal class MockMatch(
     /** Always null, as a mock match represents a round without an opponent. */
     override val black = null
 
+    override val id: String? = null
+
     /**
      * Provides a descriptive status of the bye.
      * @return A string explaining that the player has no match.

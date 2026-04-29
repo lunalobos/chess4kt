@@ -968,7 +968,7 @@ fun Position.flipSide(): Position {
  *
  * Example output:
  * ```
- * ff00000000000000-000000000000ff00-...w-(-1)-K-Q-k-q-0-
+ * ff00000000000000-000000000000ff00-...w-(-1)-K-Q-k-q-0
  * ```
  *
  * @receiver The [Position] for which the transposition identifier is computed.
@@ -983,11 +983,14 @@ fun Position.transpositionId(): String {
         sb.append(bitboard.toHexString()).append("-")
     }
     sb.append(if(whiteMove) "w" else "b").append("-")
+    if(enPassant == -1){
+        sb.append("(").append(enPassant).append(")-")
+    }
     sb.append(enPassant).append("-")
     sb.append(if(whiteCastleKingside) "K" else "x").append("-")
     sb.append(if(whiteCastleQueenside) "Q" else "x").append("-")
     sb.append(if(blackCastleKingside) "k" else "x").append("-")
     sb.append(if(blackCastleQueenside) "q" else "x").append("-")
-    sb.append(halfMovesCounter).append("-")
+    sb.append(halfMovesCounter)
     return sb.toString()
 }

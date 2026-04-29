@@ -82,6 +82,12 @@ class Tournament internal constructor(internal val backedTournament: io.github.l
         get() = backedTournament.finishedMatches.map { Match(it) }.asJsReadonlyArrayView()
 
     /**
+     * Unique ID generator for assigning identifiers to match objects.
+     */
+    val idGenerator: (() -> String)?
+        get() = backedTournament.idGenerator
+
+    /**
      * Adds a player to the tournament. Player's name most be unique.
      */
     fun addPlayer(player: Player) = backedTournament.addPlayer(player.backedPlayer)

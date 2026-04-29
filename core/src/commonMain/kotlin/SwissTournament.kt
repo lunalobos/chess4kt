@@ -26,6 +26,7 @@ import kotlin.math.log2
  */
 class SwissTournament(
     override val eloCalculator: EloCalculator = EloCalculator(),
+    override val idGenerator: (() -> String)? = null,
 ) : Tournament {
     /** Total rounds expected for this tournament. */
     var numberOfRounds = 0
@@ -128,15 +129,25 @@ class SwissTournament(
             temporalPlayersQueue.asSequence().forEach { e -> playersHeap += e }
             temporalPlayersQueue.clear()
             if (black != null) {
-                val game = RatedMatch(white, black, eloCalculator)
+                val id = if(idGenerator != null) {
+                    idGenerator()
+                } else {
+                    null
+                }
+                val game = RatedMatch(white, black, eloCalculator, id)
                 games.add(game)
             }
         }
         if (playersHeap.size > 1) {
             while (playersHeap.size > 1) {
+                val id = if(idGenerator != null) {
+                    idGenerator()
+                } else {
+                    null
+                }
                 val white = playersHeap.pop()!!
                 val black = playersHeap.pop()!!
-                val game = RatedMatch(white, black, eloCalculator)
+                val game = RatedMatch(white, black, eloCalculator, id)
                 games.add(game)
             }
         }
@@ -172,9 +183,14 @@ class SwissTournament(
             refreshHeap()
         }
         while (playersHeap.size > 1) {
+            val id = if(idGenerator != null) {
+                idGenerator()
+            } else {
+                null
+            }
             val white = playersHeap.pop()!!
             val black = playersHeap.pop()!!
-            val game = RatedMatch(white, black, eloCalculator)
+            val game = RatedMatch(white, black, eloCalculator, id)
             games.add(game)
         }
         if (playersHeap.size == 1) {

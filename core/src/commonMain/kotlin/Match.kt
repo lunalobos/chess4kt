@@ -41,4 +41,9 @@ interface Match {
      * Can be null.
      */
     val black: Player?
+
+    /**
+     * An id for the match
+     */
+    val id: String?
 }

@@ -42,6 +42,9 @@ class Match internal constructor(internal val backedMatch: io.github.lunalobos.c
             }
         }
 
+    val id: String?
+        get() = backedMatch.id
+
     override fun toString(): String {
         return backedMatch.toString()
     }

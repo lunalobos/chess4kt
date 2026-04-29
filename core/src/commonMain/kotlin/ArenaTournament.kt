@@ -20,7 +20,8 @@ package io.github.lunalobos.chess4kt
  * @property eloCalculator The strategy used for rating adjustments.
  */
 class ArenaTournament(
-    override val eloCalculator: EloCalculator = EloCalculator()
+    override val eloCalculator: EloCalculator = EloCalculator(),
+    override val idGenerator: (() -> String)? = null
 ) : Tournament {
     companion object {
         private val logger = getLogger("ArenaTournament")
@@ -81,7 +82,12 @@ class ArenaTournament(
                 }
             }
             logger.debug("matchmaking black: $player2")
-            val match = ArenaMatch(player1.player, player2.player, eloCalculator)
+            val id = if(idGenerator != null) {
+                idGenerator()
+            } else {
+                null
+            }
+            val match = ArenaMatch(player1.player, player2.player, eloCalculator, id)
             activeMatches.add(match)
             newMatches.add(match)
         }
@@ -121,8 +127,9 @@ class ArenaTournament(
     private inner class ArenaMatch(
         white: Player,
         black: Player,
-        eloCalculator: EloCalculator
-    ) : RatedMatch(white, black, eloCalculator) {
+        eloCalculator: EloCalculator,
+        id: String? = null
+    ) : RatedMatch(white, black, eloCalculator, id) {
 
         private var _outcome: Outcome = Outcome.IN_GAME
 
