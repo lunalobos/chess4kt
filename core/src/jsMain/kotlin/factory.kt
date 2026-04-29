@@ -146,10 +146,11 @@ fun matchOf(
     impactFactor: Double = 32.0,
     rangeFactor: Double = 400.0,
     logisticBase: Double = 10.0,
+    id: String? = null
 ): Match {
     return Match(
         io.github.lunalobos.chess4kt.RatedMatch(
-            white.backedPlayer, black.backedPlayer, EloCalculator(impactFactor, rangeFactor, logisticBase)
+            white.backedPlayer, black.backedPlayer, EloCalculator(impactFactor, rangeFactor, logisticBase), id
         )
     )
 }
@@ -164,6 +165,7 @@ fun matchOf(
  * to faster rating changes. Default is 32.0.
  * @param rangeFactor The scale factor used to determine win probability. In standard Elo (like Chess), this is
  * typically 400.0.
+ * @param idGenerator Unique ID generator for assigning identifiers to match objects.
  * @param logisticBase The base of the exponent in the logistic function.
  * @return A [Tournament] instance.
  * @throws IllegalStateException if the [type] provided is not recognized.
@@ -181,12 +183,14 @@ fun tournament(
     impactFactor: Double = 32.0,
     rangeFactor: Double = 400.0,
     logisticBase: Double = 10.0,
+    idGenerator: (() -> String)? = null
 ): Tournament {
     return Tournament(
         io.github.lunalobos.chess4kt.tournament(
             type,
             EloCalculator(impactFactor, rangeFactor, logisticBase),
-            tiebreakerComparatorOf(*tiebreakers)
+            tiebreakerComparatorOf(*tiebreakers),
+            idGenerator
         )
     )
 }

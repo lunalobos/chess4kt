@@ -465,6 +465,7 @@ fun scoreOf(score: String): Score {
  * @param type The tournament format to create. Supported values: "arena", "swiss".
  * @param eloCalculator The logic used for rating adjustments (optional).
  * @param comparator The strategy for ranking players with tied scores (optional).
+ * @param idGenerator Unique ID generator for assigning identifiers to match objects.
  * @return A [Tournament] implementation matching the requested type.
  * @throws IllegalStateException if the [type] provided is not recognized.
  * @sample
@@ -476,11 +477,34 @@ fun scoreOf(score: String): Score {
 fun tournament(
     type: String,
     eloCalculator: EloCalculator = EloCalculator(),
-    comparator: Comparator<Player> = defaultTiebreakerComparator
+    comparator: Comparator<Player> = defaultTiebreakerComparator,
+    idGenerator: (() -> String)? = null
 ): Tournament {
     return when (type) {
-        "arena" -> ArenaTournament(eloCalculator).apply { playersComparator = comparator }
-        "swiss" -> SwissTournament(eloCalculator).apply { playersComparator = comparator }
+        "arena" -> ArenaTournament(eloCalculator, idGenerator).apply { playersComparator = comparator }
+        "swiss" -> SwissTournament(eloCalculator, idGenerator).apply { playersComparator = comparator }
         else -> error("unknown tournament type $type")
     }
+}
+
+/**
+ * Creates a match between two players with the given elo calculation parameters or with default values.
+ *
+ * @param white the white player
+ * @param black the black player
+ * @param impactFactor The K-factor that determines how much a single match affects the rating. A higher value leads
+ * to faster rating changes. Default is 32.0.
+ * @param rangeFactor The scale factor used to determine win probability. Default is 400.0.
+ * @param logisticBase The base of the exponent in the logistic function. Standard Elo uses base 10.
+ * @param id a nullable id
+ */
+fun matchOf(
+    white: Player,
+    black: Player,
+    impactFactor: Double = 32.0,
+    rangeFactor: Double = 400.0,
+    logisticBase: Double = 10.0,
+    id: String? = null
+): Match {
+    return RatedMatch(white, black, EloCalculator(impactFactor, rangeFactor, logisticBase), id)
 }

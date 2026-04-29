@@ -31,6 +31,7 @@ open class RatedMatch(
     override val white: Player,
     override val black: Player,
     val eloCalculator: EloCalculator,
+    override val id: String? = null
 ) : Match {
 
     /**

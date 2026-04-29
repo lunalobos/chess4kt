@@ -41,6 +41,11 @@ interface Tournament {
     val finishedMatches: List<Match>
 
     /**
+     * Unique ID generator for assigning identifiers to match objects.
+     */
+    val idGenerator: (() -> String)?
+
+    /**
      * Adds a player to the tournament. Player's name most be unique.
      */
     fun addPlayer(player: Player)
