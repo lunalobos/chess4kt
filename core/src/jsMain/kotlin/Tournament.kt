@@ -68,6 +68,39 @@ class Tournament internal constructor(internal val backedTournament: io.github.l
         }
 
     /**
+     * The unique identifier for this tournament.
+     *
+     * @since v1.0.0-beta9c
+     */
+    val id: Any?
+        get() = backedTournament.id
+
+    /**
+     * The display name of the tournament.
+     *
+     * @since v1.0.0-beta9c
+     */
+    val name: String?
+        get() = backedTournament.name
+
+    /**
+     * The specific time settings for the matches (e.g., "3+2", "10|0").
+     * Returns null if no specific time control has been defined.
+     *
+     * @since v1.0.0-beta9c
+     */
+    val timeControl: String?
+        get() = backedTournament.timeControl
+
+    /**
+     * The category of the tournament based on the time control (e.g., "blitz", "bullet", "rapid").
+     *
+     * @since v1.0.0-beta9c
+     */
+    val type: String?
+        get() = backedTournament.type
+
+    /**
      * Current matches being played.
      */
     @OptIn(ExperimentalJsCollectionsApi::class, ExperimentalJsExport::class)
@@ -103,5 +136,15 @@ class Tournament internal constructor(internal val backedTournament: io.github.l
     @OptIn(ExperimentalJsCollectionsApi::class, ExperimentalJsExport::class)
     fun nextRound(): JsReadonlyArray<Match> = backedTournament.nextRound().map { Match(it) }
         .asJsReadonlyArrayView()
+
+    /**
+     * Adds a match to the tournament for the specified round. This method is ideal for cases
+     * where external logic is being used or an instance is being reconstructed.
+     *
+     * @since v1.0.0-beta9c
+     */
+    fun addMatch(white: String, black: String?, outcome: String, id: String?, round: Int?): Boolean{
+        return backedTournament.addMatch(white, black, outcome, id, round)
+    }
 
 }

@@ -466,23 +466,29 @@ fun scoreOf(score: String): Score {
  * @param eloCalculator The logic used for rating adjustments (optional).
  * @param comparator The strategy for ranking players with tied scores (optional).
  * @param idGenerator Unique ID generator for assigning identifiers to match objects.
+ * @param id The unique identifier for this tournament.
+ * @param name The display name of the tournament.
+ * @param timeControl The specific time settings for the matches (e.g., "3+2", "10|0").
+ * @param timeControlType The category of the tournament based on the time control (e.g., "blitz", "bullet", "rapid").
+ *
  * @return A [Tournament] implementation matching the requested type.
  * @throws IllegalStateException if the [type] provided is not recognized.
- * @sample
- * val myTournament = tournament(
- * type = "swiss",
- * comparator = tiebreakerComparatorOf("buchholz", "blackGames")
- * )
  */
 fun tournament(
     type: String,
     eloCalculator: EloCalculator = EloCalculator(),
     comparator: Comparator<Player> = defaultTiebreakerComparator,
-    idGenerator: (() -> String)? = null
+    idGenerator: (() -> String)? = null,
+    id: String? = null,
+    name: String? = null,
+    timeControl: String? = null,
+    timeControlType: String? = null,
 ): Tournament {
     return when (type) {
-        "arena" -> ArenaTournament(eloCalculator, idGenerator).apply { playersComparator = comparator }
-        "swiss" -> SwissTournament(eloCalculator, idGenerator).apply { playersComparator = comparator }
+        "arena" -> ArenaTournament(eloCalculator, idGenerator, id, name, timeControl, timeControlType)
+            .apply { playersComparator = comparator }
+        "swiss" -> SwissTournament(eloCalculator, idGenerator, id, name, timeControl, timeControlType)
+            .apply { playersComparator = comparator }
         else -> error("unknown tournament type $type")
     }
 }

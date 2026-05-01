@@ -15,6 +15,7 @@
  */
 package io.github.lunalobos.chess4kt
 
+import kotlin.collections.get
 import kotlin.math.log2
 
 /**
@@ -27,6 +28,10 @@ import kotlin.math.log2
 class SwissTournament(
     override val eloCalculator: EloCalculator = EloCalculator(),
     override val idGenerator: (() -> String)? = null,
+    override val id: Any? = null,
+    override val name: String? = null,
+    override val timeControl: String? = null,
+    override val type: String? = null,
 ) : Tournament {
     /** Total rounds expected for this tournament. */
     var numberOfRounds = 0
@@ -129,7 +134,7 @@ class SwissTournament(
             temporalPlayersQueue.asSequence().forEach { e -> playersHeap += e }
             temporalPlayersQueue.clear()
             if (black != null) {
-                val id = if(idGenerator != null) {
+                val id = if (idGenerator != null) {
                     idGenerator()
                 } else {
                     null
@@ -140,7 +145,7 @@ class SwissTournament(
         }
         if (playersHeap.size > 1) {
             while (playersHeap.size > 1) {
-                val id = if(idGenerator != null) {
+                val id = if (idGenerator != null) {
                     idGenerator()
                 } else {
                     null
@@ -183,7 +188,7 @@ class SwissTournament(
             refreshHeap()
         }
         while (playersHeap.size > 1) {
-            val id = if(idGenerator != null) {
+            val id = if (idGenerator != null) {
                 idGenerator()
             } else {
                 null
@@ -210,5 +215,23 @@ class SwissTournament(
         customFirstRoundPairs.add(RatedMatch(white, black, eloCalculator))
     }
 
+
+    override fun addMatch(white: String, black: String?, outcome: String, id: String?, round: Int?): Boolean {
+        if (round == null) {
+            throw IllegalArgumentException("cannot add match: specified round is null.")
+        }
+        if (round > rounds.size - 1) {
+            throw IllegalArgumentException("invalid round number ($round). Must be between 0 and ${rounds.size - 1}.")
+        }
+        val whitePlayer = names[white] ?: throw IllegalArgumentException("invalid player name $white")
+        val outcomeObject = Outcome.valueOf(outcome)
+        if(black == null){
+            return rounds[round].games.add(MockMatch(outcomeObject, whitePlayer))
+        } else {
+            val blackPlayer = names[black] ?: throw IllegalArgumentException("invalid player name $black")
+            return rounds[round].games.add(RatedMatch(whitePlayer, blackPlayer, eloCalculator, id)
+                    .apply { this.outcome = outcomeObject })
+        }
+    }
 }
 
