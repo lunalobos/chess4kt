@@ -503,6 +503,9 @@ fun tournament(
  * @param rangeFactor The scale factor used to determine win probability. Default is 400.0.
  * @param logisticBase The base of the exponent in the logistic function. Standard Elo uses base 10.
  * @param id a nullable id
+ * @param round the round number (0-based)
+ *
+ * @return a match between the two players provided
  */
 fun matchOf(
     white: Player,
@@ -510,7 +513,8 @@ fun matchOf(
     impactFactor: Double = 32.0,
     rangeFactor: Double = 400.0,
     logisticBase: Double = 10.0,
-    id: String? = null
+    id: String? = null,
+    round: Int? = null,
 ): Match {
-    return RatedMatch(white, black, EloCalculator(impactFactor, rangeFactor, logisticBase), id)
+    return RatedMatch(white, black, EloCalculator(impactFactor, rangeFactor, logisticBase), id, round)
 }

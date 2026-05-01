@@ -42,8 +42,19 @@ class Match internal constructor(internal val backedMatch: io.github.lunalobos.c
             }
         }
 
+    /**
+     * An id for the match.
+     */
     val id: String?
         get() = backedMatch.id
+
+    /**
+     * The match round. Can be null if not applicable.
+     *
+     * @since v1.0.0-beta.9d
+     */
+    val round: Int?
+        get() = backedMatch.round
 
     override fun toString(): String {
         return backedMatch.toString()

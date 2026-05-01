@@ -29,6 +29,7 @@ package io.github.lunalobos.chess4kt
 internal class MockMatch(
     override var outcome: Outcome,
     override val white: Player,
+    override val round: Int? = null
 ) : Match {
 
     /** Always null, as a mock match represents a round without an opponent. */

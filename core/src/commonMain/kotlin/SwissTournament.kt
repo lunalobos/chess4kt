@@ -124,6 +124,7 @@ class SwissTournament(
         val temporalPlayersQueue = ArrayDeque<Player>()
         val games = mutableListOf<Match>()
         refreshHeap()
+        val roundNumber = rounds.size
         while (playersHeap.size > 1) {
             val white = playersHeap.pop()!!
             var black = playersHeap.pop()
@@ -139,7 +140,7 @@ class SwissTournament(
                 } else {
                     null
                 }
-                val game = RatedMatch(white, black, eloCalculator, id)
+                val game = RatedMatch(white, black, eloCalculator, id, roundNumber)
                 games.add(game)
             }
         }
@@ -152,13 +153,13 @@ class SwissTournament(
                 }
                 val white = playersHeap.pop()!!
                 val black = playersHeap.pop()!!
-                val game = RatedMatch(white, black, eloCalculator, id)
+                val game = RatedMatch(white, black, eloCalculator, id, roundNumber)
                 games.add(game)
             }
         }
         if (playersHeap.size == 1) {
             val lastPlayer = playersHeap.pop()!!
-            val game = MockMatch(Outcome.WW, lastPlayer)
+            val game = MockMatch(Outcome.WW, lastPlayer, roundNumber)
             games.add(game)
         }
         rounds.add(Round(games))
@@ -195,12 +196,12 @@ class SwissTournament(
             }
             val white = playersHeap.pop()!!
             val black = playersHeap.pop()!!
-            val game = RatedMatch(white, black, eloCalculator, id)
+            val game = RatedMatch(white, black, eloCalculator, id, 0)
             games.add(game)
         }
         if (playersHeap.size == 1) {
             val lastPlayer = playersHeap.pop()!!
-            val fakeGame = MockMatch(Outcome.WW, lastPlayer)
+            val fakeGame = MockMatch(Outcome.WW, lastPlayer, 0)
             games.add(fakeGame)
         }
         pairedPlayers.forEach { it.enable() }

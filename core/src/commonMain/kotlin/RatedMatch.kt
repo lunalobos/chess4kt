@@ -23,6 +23,8 @@ package io.github.lunalobos.chess4kt
  * @property white The player assigned the white pieces.
  * @property black The player assigned the black pieces.
  * @property eloCalculator The logic used to adjust ratings post-match.
+ * @property id a unique id for the match or null if not applicable
+ * @property round the round number (0-based) for the match or null if not applicable
  *
  * @author lunalobos
  * @since 1.0.0-beta.8
@@ -31,7 +33,8 @@ open class RatedMatch(
     override val white: Player,
     override val black: Player,
     val eloCalculator: EloCalculator,
-    override val id: String? = null
+    override val id: String? = null,
+    override val round: Int? = null
 ) : Match {
 
     /**
