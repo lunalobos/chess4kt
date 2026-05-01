@@ -43,7 +43,14 @@ interface Match {
     val black: Player?
 
     /**
-     * An id for the match
+     * An id for the match.
      */
     val id: String?
+
+    /**
+     * The match round. Can be null if not applicable.
+     *
+     * @since v1.0.0-beta.9d
+     */
+    val round: Int?
 }

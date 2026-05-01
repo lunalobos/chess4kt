@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "io.github.lunalobos"
-version = "1.0.0-beta.9c"
+version = "1.0.0-beta.9d"
 
 kotlin {
 

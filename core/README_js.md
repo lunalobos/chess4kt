@@ -424,13 +424,14 @@ factory.
 | `white`   | `Nullable<Player>` | The white player.                                                                  |
 | `black`   | `Nullable<Player>` | The black player.                                                                  |
 | `outcome` | `string`           | The outcome of the match, can be "1-0", "0-1", "1/2-1/2", "in game" or "suspended" |
-| `id`      | `Nullable<string>` | An id for the match                                                                |
+| `id`      | `Nullable<string>` | A unique id for the match                                                          |
+| `round`   | `Nullable<number>` | The round number (0-based) for the match or null if not applicable                 |
 
 #### Factories
 
-| Function  | Arguments                                                                                                                                                 | Return type | Description                                                                                           |
-|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|-------------------------------------------------------------------------------------------------------|
-| `matchOf` | `white`: `Player`, `black`: `Player`, `impactFactor`: `number` default `32`, `rangeFactor`: `number` default `400`, `logisticBase`: `number` default `10` | `Match`     | Creates a match between two players with the given elo calculation parameters or with default values. |
+| Function  | Arguments                                                                                                                                                                                                                                      | Return type | Description                                                                                           |
+|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|-------------------------------------------------------------------------------------------------------|
+| `matchOf` | `white`: `Player`, `black`: `Player`, `impactFactor`: `number` default `32`, `rangeFactor`: `number` default `400`, `logisticBase`: `number` default `10`, `id`: `Nullable<string>` default `null`, `round`: `Nullable<number>` default `null` | `Match`     | Creates a match between two players with the given elo calculation parameters or with default values. |
 
 #### Example
 

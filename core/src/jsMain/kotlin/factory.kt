@@ -147,11 +147,12 @@ fun matchOf(
     impactFactor: Double = 32.0,
     rangeFactor: Double = 400.0,
     logisticBase: Double = 10.0,
-    id: String? = null
+    id: String? = null,
+    round: Int? = null,
 ): Match {
     return Match(
         io.github.lunalobos.chess4kt.RatedMatch(
-            white.backedPlayer, black.backedPlayer, EloCalculator(impactFactor, rangeFactor, logisticBase), id
+            white.backedPlayer, black.backedPlayer, EloCalculator(impactFactor, rangeFactor, logisticBase), id, round
         )
     )
 }
