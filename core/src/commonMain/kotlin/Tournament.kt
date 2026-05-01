@@ -46,17 +46,68 @@ interface Tournament {
     val idGenerator: (() -> String)?
 
     /**
-     * Adds a player to the tournament. Player's name most be unique.
+     * The unique identifier for this tournament.
+     *
+     * @since v1.0.0-beta9c
+     */
+    val id: Any?
+
+    /**
+     * The display name of the tournament.
+     *
+     * @since v1.0.0-beta9c
+     */
+    val name: String?
+
+    /**
+     * The specific time settings for the matches (e.g., "3+2", "10|0").
+     * Returns null if no specific time control has been defined.
+     *
+     * @since v1.0.0-beta9c
+     */
+    val timeControl: String?
+
+    /**
+     * The category of the tournament based on the time control (e.g., "blitz", "bullet", "rapid").
+     *
+     * @since v1.0.0-beta9c
+     */
+    val type: String?
+
+    /**
+     * Adds a player to the tournament. The player's name must be unique.
+     *
+     * @param player The player to be added.
      */
     fun addPlayer(player: Player)
 
     /**
-     * Removes a player from the tournament
+     * Removes a player from the tournament.
+     *
+     * @param player The player to remove.
      */
     fun removePlayer(player: Player)
 
     /**
      * Generates a list of new pairings.
+     *
+     * @return a list containing the new pairings.
      */
     fun nextRound(): List<Match>
+
+    /**
+     * Adds a match to the tournament for the specified round. This method is ideal for cases
+     * where external logic is being used or an instance is being reconstructed.
+     *
+     * @param white the white player
+     * @param black the black player or null if not applicable
+     * @param outcome the outcome as a string (WW, BW, DRAW, SUSPENDED, IN_GAME)
+     * @param id the id for the match
+     * @param round the round number, or null if not applicable (0-based)
+     *
+     * @return a boolean indicating whether the match was successfully added
+     *
+     * @since v1.0.0-beta.9c
+     */
+    fun addMatch(white: String, black: String?, outcome: String, id: String?, round: Int?): Boolean
 }

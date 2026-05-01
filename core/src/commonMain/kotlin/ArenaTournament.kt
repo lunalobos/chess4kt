@@ -21,7 +21,11 @@ package io.github.lunalobos.chess4kt
  */
 class ArenaTournament(
     override val eloCalculator: EloCalculator = EloCalculator(),
-    override val idGenerator: (() -> String)? = null
+    override val idGenerator: (() -> String)? = null,
+    override val id: Any? = null,
+    override val name: String? = null,
+    override val timeControl: String? = null,
+    override val type: String? = null
 ) : Tournament {
     companion object {
         private val logger = getLogger("ArenaTournament")
@@ -95,6 +99,28 @@ class ArenaTournament(
             logger.trace("no matchmaking because of players heap size ${playersHeap.size}")
         }
         return newMatches
+    }
+
+    override fun addMatch(
+        white: String,
+        black: String?,
+        outcome: String,
+        id: String?,
+        round: Int?
+    ): Boolean {
+        if(black == null){
+            throw NullPointerException("black can't be null for this implementation")
+        }
+        val whitePlayer = names[white] ?: throw IllegalArgumentException("Invalid player name $white")
+        val outcomeObject = Outcome.valueOf(outcome)
+        val blackPlayer = names[black] ?: throw IllegalArgumentException("Invalid player name $black")
+        val match = ArenaMatch(whitePlayer, blackPlayer, eloCalculator, id)
+            .apply { this.outcome = outcomeObject }
+        return if(outcomeObject == Outcome.IN_GAME){
+            activeMatches.add(match)
+        } else {
+            finishedMatches.add(match)
+        }
     }
 
     override val leaderboard: List<Player>
