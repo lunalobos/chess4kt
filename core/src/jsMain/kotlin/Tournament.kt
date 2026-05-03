@@ -117,7 +117,7 @@ class Tournament internal constructor(internal val backedTournament: io.github.l
     /**
      * Unique ID generator for assigning identifiers to match objects.
      */
-    val idGenerator: (() -> String)?
+    val idGenerator: (() -> Any)?
         get() = backedTournament.idGenerator
 
     /**

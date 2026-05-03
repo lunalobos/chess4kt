@@ -43,7 +43,7 @@ interface Tournament {
     /**
      * Unique ID generator for assigning identifiers to match objects.
      */
-    val idGenerator: (() -> String)?
+    val idGenerator: (() -> Any)?
 
     /**
      * The unique identifier for this tournament.

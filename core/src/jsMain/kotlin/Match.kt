@@ -45,7 +45,7 @@ class Match internal constructor(internal val backedMatch: io.github.lunalobos.c
     /**
      * An id for the match.
      */
-    val id: String?
+    val id: Any?
         get() = backedMatch.id
 
     /**
