@@ -109,5 +109,5 @@ interface Tournament {
      *
      * @since v1.0.0-beta.9c
      */
-    fun addMatch(white: String, black: String?, outcome: String, id: String?, round: Int?): Boolean
+    fun addMatch(white: String, black: String?, outcome: String, id: Any?, round: Int?): Boolean
 }

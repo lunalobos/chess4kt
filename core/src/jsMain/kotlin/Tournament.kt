@@ -143,7 +143,7 @@ class Tournament internal constructor(internal val backedTournament: io.github.l
      *
      * @since v1.0.0-beta9c
      */
-    fun addMatch(white: String, black: String?, outcome: String, id: String?, round: Int?): Boolean{
+    fun addMatch(white: String, black: String?, outcome: String, id: Any?, round: Int?): Boolean{
         return backedTournament.addMatch(white, black, outcome, id, round)
     }
 

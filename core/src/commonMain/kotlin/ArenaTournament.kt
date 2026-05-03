@@ -105,7 +105,7 @@ class ArenaTournament(
         white: String,
         black: String?,
         outcome: String,
-        id: String?,
+        id: Any?,
         round: Int?
     ): Boolean {
         if(black == null){
