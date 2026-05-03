@@ -217,7 +217,7 @@ class SwissTournament(
     }
 
 
-    override fun addMatch(white: String, black: String?, outcome: String, id: String?, round: Int?): Boolean {
+    override fun addMatch(white: String, black: String?, outcome: String, id: Any?, round: Int?): Boolean {
         if (round == null) {
             throw IllegalArgumentException("cannot add match: specified round is null.")
         }
