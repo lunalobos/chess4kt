@@ -478,8 +478,8 @@ fun tournament(
     type: String,
     eloCalculator: EloCalculator = EloCalculator(),
     comparator: Comparator<Player> = defaultTiebreakerComparator,
-    idGenerator: (() -> String)? = null,
-    id: String? = null,
+    idGenerator: (() -> Any)? = null,
+    id: Any? = null,
     name: String? = null,
     timeControl: String? = null,
     timeControlType: String? = null,
@@ -513,7 +513,7 @@ fun matchOf(
     impactFactor: Double = 32.0,
     rangeFactor: Double = 400.0,
     logisticBase: Double = 10.0,
-    id: String? = null,
+    id: Any? = null,
     round: Int? = null,
 ): Match {
     return RatedMatch(white, black, EloCalculator(impactFactor, rangeFactor, logisticBase), id, round)

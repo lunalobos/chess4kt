@@ -27,7 +27,7 @@ import kotlin.math.log2
  */
 class SwissTournament(
     override val eloCalculator: EloCalculator = EloCalculator(),
-    override val idGenerator: (() -> String)? = null,
+    override val idGenerator: (() -> Any)? = null,
     override val id: Any? = null,
     override val name: String? = null,
     override val timeControl: String? = null,

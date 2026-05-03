@@ -45,7 +45,7 @@ interface Match {
     /**
      * An id for the match.
      */
-    val id: String?
+    val id: Any?
 
     /**
      * The match round. Can be null if not applicable.

@@ -21,7 +21,7 @@ package io.github.lunalobos.chess4kt
  */
 class ArenaTournament(
     override val eloCalculator: EloCalculator = EloCalculator(),
-    override val idGenerator: (() -> String)? = null,
+    override val idGenerator: (() -> Any)? = null,
     override val id: Any? = null,
     override val name: String? = null,
     override val timeControl: String? = null,
@@ -154,7 +154,7 @@ class ArenaTournament(
         white: Player,
         black: Player,
         eloCalculator: EloCalculator,
-        id: String? = null
+        id: Any? = null
     ) : RatedMatch(white, black, eloCalculator, id) {
 
         private var _outcome: Outcome = Outcome.IN_GAME

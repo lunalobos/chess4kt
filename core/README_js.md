@@ -424,14 +424,14 @@ factory.
 | `white`   | `Nullable<Player>` | The white player.                                                                  |
 | `black`   | `Nullable<Player>` | The black player.                                                                  |
 | `outcome` | `string`           | The outcome of the match, can be "1-0", "0-1", "1/2-1/2", "in game" or "suspended" |
-| `id`      | `Nullable<string>` | A unique id for the match                                                          |
+| `id`      | `Nullable<any>`    | A unique id for the match                                                          |
 | `round`   | `Nullable<number>` | The round number (0-based) for the match or null if not applicable                 |
 
 #### Factories
 
-| Function  | Arguments                                                                                                                                                                                                                                      | Return type | Description                                                                                           |
-|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|-------------------------------------------------------------------------------------------------------|
-| `matchOf` | `white`: `Player`, `black`: `Player`, `impactFactor`: `number` default `32`, `rangeFactor`: `number` default `400`, `logisticBase`: `number` default `10`, `id`: `Nullable<string>` default `null`, `round`: `Nullable<number>` default `null` | `Match`     | Creates a match between two players with the given elo calculation parameters or with default values. |
+| Function  | Arguments                                                                                                                                                                                                                                   | Return type | Description                                                                                           |
+|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|-------------------------------------------------------------------------------------------------------|
+| `matchOf` | `white`: `Player`, `black`: `Player`, `impactFactor`: `number` default `32`, `rangeFactor`: `number` default `400`, `logisticBase`: `number` default `10`, `id`: `Nullable<any>` default `null`, `round`: `Nullable<number>` default `null` | `Match`     | Creates a match between two players with the given elo calculation parameters or with default values. |
 
 #### Example
 
@@ -452,21 +452,21 @@ are two types: arena and swiss instances. Both are further detailed in the examp
 
 #### Properties
 
-| Property          | Type                     | Description                                                                                                                              |
-|-------------------|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| `impactFactor`    | `number`                 | The K-factor that determines how much a single match affects the rating. A higher value leads to faster rating changes. Default is 32.0. |
-| `rangeFactor`     | `number`                 | The scale factor used to determine win probability. Default is 400.0.                                                                    |
-| `logisticBase`    | `number`                 | The base of the exponent in the logistic function. Default is 10.                                                                        |
-| `tiebreakers`     | `Array<string>`          | The strategy for breaking ties in the leaderboard.                                                                                       |
-| `leaderboard`     | `ReadonlyArray<Player>`  | Current player standings, ordered by score and tie-breakers.                                                                             |
-| `completed`       | `boolean`                | Whether the tournament has reached its conclusion.                                                                                       |
-| `activeMatches`   | `ReadonlyArray<Match>`   | Current matches being played.                                                                                                            |
-| `finishedMatches` | `ReadonlyArray<Match>`   | All concluded matches in the tournament history.                                                                                         |
-| `idGenerator`     | `Nullable<() => string>` | Unique ID generator for assigning identifiers to match objects.                                                                          |
-| `id`              | `Nullable<Any>`          | The unique identifier for this tournament.                                                                                               |
-| `name`            | `Nullable<string>`       | The display name of the tournament.                                                                                                      |
-| `timeControl`     | `Nullable<string>`       | The specific time settings for the matches (e.g., "3+2", "10 + 0").                                                                      |
-| `type`            | `Nullable<string>`       | The category of the tournament based on the time control (e.g., "blitz", "bullet", "rapid").                                             |
+| Property          | Type                    | Description                                                                                                                              |
+|-------------------|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| `impactFactor`    | `number`                | The K-factor that determines how much a single match affects the rating. A higher value leads to faster rating changes. Default is 32.0. |
+| `rangeFactor`     | `number`                | The scale factor used to determine win probability. Default is 400.0.                                                                    |
+| `logisticBase`    | `number`                | The base of the exponent in the logistic function. Default is 10.                                                                        |
+| `tiebreakers`     | `Array<string>`         | The strategy for breaking ties in the leaderboard.                                                                                       |
+| `leaderboard`     | `ReadonlyArray<Player>` | Current player standings, ordered by score and tie-breakers.                                                                             |
+| `completed`       | `boolean`               | Whether the tournament has reached its conclusion.                                                                                       |
+| `activeMatches`   | `ReadonlyArray<Match>`  | Current matches being played.                                                                                                            |
+| `finishedMatches` | `ReadonlyArray<Match>`  | All concluded matches in the tournament history.                                                                                         |
+| `idGenerator`     | `Nullable<() => any>`   | Unique ID generator for assigning identifiers to match objects.                                                                          |
+| `id`              | `Nullable<Any>`         | The unique identifier for this tournament.                                                                                               |
+| `name`            | `Nullable<string>`      | The display name of the tournament.                                                                                                      |
+| `timeControl`     | `Nullable<string>`      | The specific time settings for the matches (e.g., "3+2", "10 + 0").                                                                      |
+| `type`            | `Nullable<string>`      | The category of the tournament based on the time control (e.g., "blitz", "bullet", "rapid").                                             |
 
 #### Methods
 
@@ -479,9 +479,9 @@ are two types: arena and swiss instances. Both are further detailed in the examp
 
 #### Factories
 
-| Function     | Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Return Type  | Description                                                                   |
-|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|-------------------------------------------------------------------------------|
-| `tournament` | `type`: `string`,  `tiebreakers`: `Array<String>` default `["fidePerformance", "buchholz", "progressive", "sonnebornBerger"]`, `impactFactor`: `number` default `32`, `rangeFactor`: `number` default `400`, `logisticBase`: `number` default `10`, `idGenerator`: `Nullable<() => string>` default `null`, `id`: `Nullable<any>` default `null`, `name`: `Nullable<string>` default `null`, `timeControl`: `Nullable<string>` default `null`, `timeControlType`: `Nullable<string>` default `null` | `Tournament` | Factory function to create a Tournament instance based on the specified type. |
+| Function     | Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Return Type  | Description                                                                   |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|-------------------------------------------------------------------------------|
+| `tournament` | `type`: `string`,  `tiebreakers`: `Array<String>` default `["fidePerformance", "buchholz", "progressive", "sonnebornBerger"]`, `impactFactor`: `number` default `32`, `rangeFactor`: `number` default `400`, `logisticBase`: `number` default `10`, `idGenerator`: `Nullable<() => any>` default `null`, `id`: `Nullable<any>` default `null`, `name`: `Nullable<string>` default `null`, `timeControl`: `Nullable<string>` default `null`, `timeControlType`: `Nullable<string>` default `null` | `Tournament` | Factory function to create a Tournament instance based on the specified type. |
 
 #### Examples
 
