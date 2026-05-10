@@ -37,6 +37,10 @@ internal class MockMatch(
 
     override val id: String? = null
 
+    init {
+        white.score = white.score.addScore(scoreOf("1.0"))
+    }
+
     /**
      * Provides a descriptive status of the bye.
      * @return A string explaining that the player has no match.

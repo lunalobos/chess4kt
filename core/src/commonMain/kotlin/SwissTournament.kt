@@ -33,6 +33,10 @@ class SwissTournament(
     override val timeControl: String? = null,
     override val type: String? = null,
 ) : Tournament {
+
+    companion object {
+        private val logger = getLogger("SwissTournament")
+    }
     /** Total rounds expected for this tournament. */
     var numberOfRounds = 0
     private val names: MutableMap<String, Player> = mutableMapOf()
@@ -90,7 +94,7 @@ class SwissTournament(
         names.asSequence()
             .filter {
                 it.value.active
-            }.forEach { (k, v) ->
+            }.forEach { (_, v) ->
                 playersHeap += v
             }
     }
@@ -175,6 +179,7 @@ class SwissTournament(
         numberOfRounds = log2(names.size.toDouble()).toInt() + names.size % 2
         val games = mutableListOf<Match>()
         val pairedPlayers = mutableListOf<Player>()
+        refreshHeap()
         if (customFirstRoundPairs.isNotEmpty()) {
             games += customFirstRoundPairs
             for (game in customFirstRoundPairs) {

@@ -17,6 +17,7 @@ package io.github.lunalobos.chess4kt
 
 import kotlin.random.Random
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class SwissTournamentTest {
@@ -29,14 +30,26 @@ class SwissTournamentTest {
         val tournament = SwissTournament(EloCalculator())
         tournament.playersComparator = tiebreakerComparatorOf("fidePerformance", "buchholz", "sonnebornBerger")
         val tiebreakers = listOf("fidePerformance", "buchholz", "sonnebornBerger").map { tiebreakerOf(it) }
-        mocker.chessPlayers(500, 1800, 2200)
+        mocker.chessPlayers(13, 1800, 2200)
             .map{ (name, elo) -> Player(name, elo) }
             .forEach { tournament.addPlayer(it) }
         val firstRound = tournament.nextRound()
-        firstRound.forEach { runGame(it) }
+        assertEquals(13/2 + 1, firstRound.size)
+        firstRound.filterIsInstance<MockMatch>().forEach {
+            assertEquals(it.white.score, scoreOf("1.0"))
+        }
+        assertEquals(scoreOf("1.0"), tournament.leaderboard.first().score )
+        firstRound.filter{ it.black != null }.forEach {
+            assertEquals(Outcome.IN_GAME, it.outcome)
+            runGame(it)
+        }
+
         while(!tournament.completed){
             val round = tournament.nextRound()
-            round.forEach { runGame(it) }
+            round.filter{ it.black != null }.forEach {
+                assertEquals(Outcome.IN_GAME, it.outcome)
+                runGame(it)
+            }
         }
         logger.debug(
             "\n" + tournament.leaderboard.map {
@@ -48,6 +61,7 @@ class SwissTournamentTest {
                 }"
             }.joinToString("\n")
         )
+        assertTrue { tournament.finishedMatches.isNotEmpty() }
         assertTrue { tournament.completed }
     }
 
