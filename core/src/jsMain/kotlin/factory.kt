@@ -206,6 +206,7 @@ fun tournament(
     }
 }
 
+@JsExport
 /**
  * Factory function that maps a string identifier to a concrete [Tiebreaker] strategy.
  *
