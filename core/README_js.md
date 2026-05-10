@@ -412,6 +412,22 @@ const foo = playerOf("foo", 1600);
 const bar = playerOf("bar", 1600);
 ```
 
+### Tiebreakers
+
+This is a class for defining tournament tie-breaking strategies.
+
+#### Methods
+
+| Method     | Arguments        | Return type | Description                                                  |
+|------------|------------------|-------------|--------------------------------------------------------------|
+| `getValue` | player: `Player` | `Score`     | alculates the specific tie-breaker value for a given player. |
+
+#### Factories
+
+| Function       | Arguments        | Return Type  | Description                                                                       |
+|----------------|------------------|--------------|-----------------------------------------------------------------------------------|
+| `tiebreakerOf` | `name`: `string` | `Tiebreaker` | Factory function that maps a string identifier to a concrete Tiebreaker instance. |
+
 ### Match
 
 The `Match` class represents a match between two players. It can't be directly instantiated, you need to use a
@@ -470,11 +486,11 @@ are two types: arena and swiss instances. Both are further detailed in the examp
 
 #### Methods
 
-| Method         | Arguments                                                                                                         | Return Type            | Description                                                                                                                                                      |
-|----------------|-------------------------------------------------------------------------------------------------------------------|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `addPlayer`    | `player`: `Player`                                                                                                | None                   | Adds a player to the tournament. Player's name most be unique.                                                                                                   |
-| `removePlayer` | `player`: `Player`                                                                                                | None                   | Removes a player from the tournament                                                                                                                             |
-| `nextRound`    | None                                                                                                              | `ReadonlyArray<Match>` | Generates a list of new pairings.                                                                                                                                |
+| Method         | Arguments                                                                                                           | Return Type            | Description                                                                                                                                                      |
+|----------------|---------------------------------------------------------------------------------------------------------------------|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `addPlayer`    | `player`: `Player`                                                                                                  | None                   | Adds a player to the tournament. Player's name most be unique.                                                                                                   |
+| `removePlayer` | `player`: `Player`                                                                                                  | None                   | Removes a player from the tournament                                                                                                                             |
+| `nextRound`    | None                                                                                                                | `ReadonlyArray<Match>` | Generates a list of new pairings.                                                                                                                                |
 | `addMatch`     | `white`: string, `black`: `Nullable<string>`, `outcome`: string, `id`: `Nullable<any>`, `round`: `Nullable<number>` | `boolean`              | Adds a match to the tournament for the specified round. This method is ideal for cases where external logic is being used or an instance is being reconstructed. |
 
 #### Factories

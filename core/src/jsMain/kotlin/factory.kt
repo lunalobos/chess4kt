@@ -201,5 +201,20 @@ fun tournament(
             timeControl,
             timeControlType
         )
-    )
+    ).apply {
+        this.tiebreakers = tiebreakers
+    }
+}
+
+/**
+ * Factory function that maps a string identifier to a concrete [Tiebreaker] strategy.
+ *
+ * @param name The unique identifier for the tie-breaker.
+ * Must be one of: "blackGames", "progressive", "sonnebornBerger",
+ * "fidePerformance", "linearPerformance", or "buchholz".
+ * @return An instance of the requested [Tiebreaker].
+ * @throws IllegalStateException if the provided [name] does not match any supported tie-breaker.
+ */
+fun tiebreakerOf(name: String): Tiebreaker {
+    return Tiebreaker(io.github.lunalobos.chess4kt.tiebreakerOf(name))
 }
