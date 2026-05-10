@@ -42,7 +42,7 @@ class Tournament internal constructor(internal val backedTournament: io.github.l
         }
 
     /**
-     *  |
+     * Tournament's tiebreakers.
      */
     @OptIn(ExperimentalWasmJsInterop::class)
     var tiebreakers: JsArray<String> = arrayOf("fidePerformance", "buchholz", "progressive", "sonnebornBerger")

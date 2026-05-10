@@ -16,7 +16,7 @@
 package io.github.lunalobos.chess4kt
 
 /**
- * Internal contract for defining tournament tie-breaking strategies.
+ * Contract for defining tournament tie-breaking strategies.
  * Implementing classes must define how to calculate a specific score for a player.
  * The interface automatically handles the creation of a descending Comparator
  * based on that score.
@@ -27,7 +27,7 @@ package io.github.lunalobos.chess4kt
 interface Tiebreaker {
 
     /**
-     *
+     * The tiebreaker name.
      */
     val name: String
 
