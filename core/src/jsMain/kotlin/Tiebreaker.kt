@@ -1,5 +1,6 @@
 package io.github.lunalobos.chess4kt.js
 
+@JsExport
 /**
  * Class for defining tournament tie-breaking strategies.
  *
