@@ -48,6 +48,9 @@ open class RatedMatch(
     override var outcome: Outcome = Outcome.IN_GAME
         set(value) {
             field = value
+            if(value == Outcome.IN_GAME) {
+                return
+            }
             if (value.ordinal != Outcome.SUSPENDED.ordinal) {
                 white.against.add(black)
                 black.against.add(white)
