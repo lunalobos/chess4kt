@@ -179,7 +179,7 @@ fun tiebreakerOf(name: String): Tiebreaker {
 fun tiebreakerComparatorOf(vararg names: String): Comparator<Player> {
     return names.asSequence()
         .map { tiebreakerOf(it).comparator }
-        .reduce { ac, curr -> ac.thenComparator { a, b -> -curr.compare(a, b) } }
+        .reduce { ac, curr -> ac.thenComparator { a, b -> curr.compare(a, b) } }
 }
 
 internal val defaultTiebreakerComparator =
