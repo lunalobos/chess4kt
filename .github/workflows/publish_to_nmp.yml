@@ -21,7 +21,7 @@ jobs:
           java-version: 21
 
       - name: Transpile to JS
-        run: ./gradlew clean jsNodeProductionLibraryDistribution --no-configuration-cache
+        run: ./gradlew clean jsNodeProductionLibraryDistribution --no-configuration-cache --no-build-cache
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
