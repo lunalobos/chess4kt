@@ -17,6 +17,7 @@ package io.github.lunalobos.chess4kt
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.fail
 import kotlin.time.Clock.System.now
 import kotlin.time.ExperimentalTime
 
@@ -295,5 +296,65 @@ class PgnParserTest {
         val games = parseGames(pgnInput)
 
         assertEquals(null, games[0].result)
+    }
+
+    @Test
+    fun endLineComment(){
+        try {
+            val pgnInput = """
+            [Event "Chess Station Bullet Match"]
+            [Site "chess-station.net"]
+            [Date "2026.06.25"]
+            [Round "1"]
+            [White "reid.nitzsche"]
+            [Black "adolph.durgan"]
+            [Result "1/2-1/2"]
+            [ECO "A06"]
+            [Id "019eff4a-592a-7473-a8c4-67b1314921aa"]
+            [Variant "standard"]
+            [TimeControl "60+0"]
+            [Time "11:58:43"]
+            [TimeControlType "bullet"]
+            [Rated "true"]
+            [WhiteElo "1600"]
+            [BlackElo "1600"]
+            [EventDate "2026.06.25"]
+            [Opening "A06"]
+            [Timestamp "2026-06-25T11:58:43-03:00"]
+
+            1.Nf3 {[%emt 0:00:00]} 1...d5 {[%emt 0:00:00.108]} 2.Ng5 {[%emt 0:00:00.1]} 2...e5 {[%emt 0:00:00.105]} 3.Nxf7 {[%emt 0:00:00.87]} 3...Kxf7 {[%emt 0:00:00.91]} 4.Nc3 {[%emt 0:00:00.88]} 4...d4 {[%emt 0:00:00.136]} 5.Nb5 {[%emt 0:00:00.84]} 5...h5 {[%emt 0:00:00.87]} 6.Nxc7 {[%emt 0:00:00.94]} 6...a5 {[%emt 0:00:00.77]} 7.e3 {[%emt 0:00:00.91]} 7...h4 {[%emt 0:00:00.1]} 8.Qf3+ {[%emt 0:00:00.82]} 8...Nf6 {[%emt 0:00:00.112]} 9.exd4 {[%emt 0:00:00.94]} 9...Qxd4 {[%emt 0:00:00.107]} 10.Qxb7 {[%emt 0:00:00.1]} 10...Qxf2+ {[%emt 0:00:00.136]} 11.Kxf2 {[%emt 0:00:00.79]} 11...Kg6 {[%emt 0:00:00.9]} 12.Qb5 {[%emt 0:00:00.86]} 12...Bg4 {[%emt 0:00:00.9]} 13.Qxe5 {[%emt 0:00:00.91]} 13...Kh7 {[%emt 0:00:00.104]} 14.Qg5 {[%emt 0:00:00.83]} 14...Bd6 {[%emt 0:00:00.83]} 15.Ke1 {[%emt 0:00:00.79]} 15...Ne4 {[%emt 0:00:00.73]} 16.d3 {[%emt 0:00:00.82]} 16...Nxg5 {[%emt 0:00:00.78]} 17.Bf4 {[%emt 0:00:00.86]} 17...Bxf4 {[%emt 0:00:00.69]} 18.Ne8 {[%emt 0:00:00.7]} 18...Rxe8+ {[%emt 0:00:00.73]} 19.Kf2 {[%emt 0:00:00.7]} 19...Bf3 {[%emt 0:00:00.64]} 20.Re1 {[%emt 0:00:00.79]} 20...Be2 {[%emt 0:00:00.77]} 21.Rxe2 {[%emt 0:00:00.74]} 21...Nf3 {[%emt 0:00:00.75]} 22.h3 {[%emt 0:00:00.76]} 22...g5 {[%emt 0:00:00.57]} 23.Re5 {[%emt 0:00:00.62]} 23...Rxe5 {[%emt 0:00:00.6]} 24.g4 {[%emt 0:00:00.48]} 24...a4 {[%emt 0:00:00.52]} 25.Be2 {[%emt 0:00:00.62]} 25...Bg3+ {[%emt 0:00:00.59]} 26.Kxf3 {[%emt 0:00:00.52]} 26...Kh8 {[%emt 0:00:00.45]} 27.Rg1 {[%emt 0:00:00.6]} 27...Bh2 {[%emt 0:00:00.52]} 28.c3 {[%emt 0:00:00.64]} 28...Raa5 {[%emt 0:00:00.51]} 29.Rg2 {[%emt 0:00:00.63]} 29...Rad5 {[%emt 0:00:00.54]} 30.Rg3 {[%emt 0:00:00.51]} 30...Rxd3+ {[%emt 0:00:00.45]} 31.Bxd3 {[%emt 0:00:00.52]} 31...Re1 {[%emt 0:00:00.58]} 32.Bc2 {[%emt 0:00:00.47]} 32...Bg1 {[%emt 0:00:00.63]} 33.Bxa4 {[%emt 0:00:00.54]} 33...Bc5 {[%emt 0:00:00.54]} 34.Bc2 {[%emt 0:00:00.46]} 34...Ba7 {[%emt 0:00:00.48]} 35.Kg2 {[%emt 0:00:00.48]} 35...Rg1+ {[%emt 0:00:00.47]} 36.Kf3 {[%emt 0:00:00.43]} 36...Rxg3+ {[%emt 0:00:00.38]} 37.Ke2 {[%emt 0:00:00.4]} 37...Rxh3 {[%emt 0:00:00.43]} 38.c4 {[%emt 0:00:00.49]} 38...Rh2+ {[%emt 0:00:00.41]} 39.Kd1 {[%emt 0:00:00.4]} 39...Rh1+ {[%emt 0:00:00.41]} 40.Kd2 {[%emt 0:00:00.55]} 40...Nc6 {[%emt 0:00:00.45]} 41.Be4 {[%emt 0:00:00.47]} 41...Ne5 {[%emt 0:00:00.39]} 42.b3 {[%emt 0:00:00.46]} 42...h3 {[%emt 0:00:00.6]} 43.Bxh1 {[%emt 0:00:00.43]} 43...Be3+ {[%emt 0:00:00.35]} 44.Kxe3 {[%emt 0:00:00.32]} 44...Nxg4+ {[%emt 0:00:00.35]} 45.Kd2 {[%emt 0:00:00.35]} 45...Ne3 {[%emt 0:00:00.35]} 46.Kxe3 {[%emt 0:00:00.36]} 46...g4 {[%emt 0:00:00.33]} 47.Kd2 {[%emt 0:00:00.3]} 47...h2 {[%emt 0:00:00.28]} 48.Bc6 {[%emt 0:00:00.4]} 48...g3 {[%emt 0:00:00.34]} 49.a3 {[%emt 0:00:00.34]} 49...Kg7 {[%emt 0:00:00.33]} 50.Be4 {[%emt 0:00:00.31]} 50...Kf8 {[%emt 0:00:00.35]} 51.Bc6 {[%emt 0:00:00.33]} 51...Kg7 {[%emt 0:00:00.31]} 52.Kd3 {[%emt 0:00:00.34]} 52...Kg6 {[%emt 0:00:00.36]} 53.Bf3 {[%emt 0:00:00.31]} 53...Kg7 {[%emt 0:00:00.29]} 54.b4 {[%emt 0:00:00.37]} 54...Kf7 {[%emt 0:00:00.34]} 55.Bc6 {[%emt 0:00:00.36]} 55...Kg6 {[%emt 0:00:00.36]} 56.Bf3 {[%emt 0:00:00.35]} 56...Kg7 {[%emt 0:00:00.33]} 57.b5 {[%emt 0:00:00.36]} 57...Kf7 {[%emt 0:00:00.33]} 58.Bc6 {[%emt 0:00:00.38]} 58...Kg7 {[%emt 0:00:00.34]} 59.b6 {[%emt 0:00:00.33]} 59...Kg6 {[%emt 0:00:00.3]} 60.Bf3 {[%emt 0:00:00.31]} 60...Kg7 {[%emt 0:00:00.35]} 61.Bc6 {[%emt 0:00:00.38]} 61...Kg6 {[%emt 0:00:00.36]} 62.Bf3 {[%emt 0:00:00.41]} 62...Kg7 {[%emt 0:00:00.35]} 63.Bc6 {[%emt 0:00:00.42]} 1/2-1/2 ; three repetitions
+            
+            [Event "Zurich CC Blitz 2014"]
+            [Site "Zurich SUI"]
+            [Date "2014.01.29"]
+            [Round "1.1"]
+            [White "Carlsen,M"]
+            [Black "Caruana,F"]
+            [Result "*"]
+            [WhiteElo "2872"]
+            [BlackElo "2782"]
+            [ECO "B42"]
+            [EventDate "2014.01.29"]
+            [WhiteTitle "GM"]
+            [BlackTitle "GM"]
+            [Opening "Sicilian"]
+            [Variation "Kan, Polugaievsky variation"]
+            [WhiteFideId "1503014"]
+            [BlackFideId "2020009"]
+
+            1.e4 c5 2.Nf3 e6 3.d4 cxd4 4.Nxd4 a6 5.Bd3 Bc5 6.c3 d6 7.Nd2 Nf6 8.O-O O-O
+            9.a4 e5 10.N4b3 Ba7 11.Nc4 Be6 12.Qe2 Nc6 13.Bg5 h6 14.Bh4 g5 15.Bg3 Ne7 
+            16.Nbd2 Ng6 17.Rfe1 h5 18.h3 h4 19.Bh2 g4 20.Kh1 gxh3 21.gxh3 Bxh3 22.Rg1 
+            Kg7 23.Ne3 Bxe3 24.Qxe3 Ng4 25.Qf3 Qf6 26.Rxg4 Qxf3+ 27.Nxf3 Bxg4 28.Nxh4 
+            Nxh4 29.Rg1 Nf3 30.Rxg4+ Kf6 31.Rg3 Nxh2 32.Kxh2 Rh8+ 33.Kg2 Rag8 34.Bc4 
+            Rxg3+ 35.fxg3 a5 *
+        """.trimIndent()
+
+            val games = parseGames(pgnInput)
+
+        } catch (e: Parser.ParserException) {
+            fail(e.message)
+        }
+
     }
 }

@@ -37,11 +37,10 @@ internal class Parser(val tokens: List<Token>) {
     fun parseGames(idSupplier: () -> Any? = { null }): List<Game> {
         do {
             parseGame(idSupplier)
-            currentToken = nextTokenOrFail("error in main function ")
-        } while (currentToken.type != TokenType.EOF)
+        } while (currentToken.type != TokenType.EOF && iterator.hasNext())
+
         return games
     }
-
     private fun parseGame(idSupplier: () -> Any?) {
         if (currentToken.type != TokenType.LBRACKET) {
             throw logger.error(ParserException(malformedPgn()))
@@ -58,6 +57,7 @@ internal class Parser(val tokens: List<Token>) {
             idSupplier
         )
         parseMoves(currentGame?.root ?: throw logger.error(ParserException("current game can't be null")))
+
         if (currentToken.type == TokenType.RESULT) {
             currentGame?.apply {
                 result = when (currentToken.value) {
@@ -67,10 +67,16 @@ internal class Parser(val tokens: List<Token>) {
                     else -> throw logger.error(ParserException(malformedPgn()))
                 }
             }
+            currentToken = if (iterator.hasNext()) iterator.next() else currentToken
         } else if (currentToken.type == TokenType.STAR) {
             currentGame?.apply {
                 result = null
             }
+            currentToken = if (iterator.hasNext()) iterator.next() else currentToken
+        }
+
+        if (currentToken.type == TokenType.END_LINE_COMMENT || currentToken.type == TokenType.COMMENT) {
+            currentToken = if (iterator.hasNext()) iterator.next() else currentToken
         }
 
         currentGame?.let {
