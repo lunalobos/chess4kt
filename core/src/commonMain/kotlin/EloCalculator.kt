@@ -48,7 +48,7 @@ open class EloCalculator(
      * @param black The player playing as black.
      * @param outcome The result of the match (e.g., White Win, Black Win, or Draw).
      */
-    fun calculate(white: Player, black: Player, outcome: Outcome) {
+    open fun calculate(white: Player, black: Player, outcome: Outcome) {
         val wExponent = (black.currentElo - white.currentElo).toDouble() / rangeFactor
         val wExpected = 1 / (1 + logisticBase.pow(wExponent))
         val bExponent = (white.currentElo - black.currentElo).toDouble() / rangeFactor
