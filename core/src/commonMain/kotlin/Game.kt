@@ -179,7 +179,6 @@ class Game : Iterable<Game.Node> {
     val id: Any?
 
 
-
     internal constructor(
         tags: Map<String, String>,
         gameMode: GameMode,
@@ -327,11 +326,8 @@ class Game : Iterable<Game.Node> {
     override fun toString(): String {
         val sb = StringBuilder()
         sb.append(tagsToString()).append("\n")
-        iterator().asSequence()
-            .filter { it is MoveNode }
-            .forEach { sb.append(it.toString()) }
-        sb.append(result?.str ?: "*")
-            .append(finalComment?.let { "{$it}" } ?: "")
+        iterator().asSequence().filter { it is MoveNode }.forEach { sb.append(it.toString()) }
+        sb.append(result?.str ?: "*").append(finalComment?.let { "{$it}" } ?: "")
             .append(finalEndLineComment?.let { " ; $it\n" } ?: "")
 
         return sb.toString()
@@ -339,19 +335,14 @@ class Game : Iterable<Game.Node> {
 
     private fun tagsToString(): String {
         val mainTags = arrayOf("event", "site", "date", "round", "white", "black", "result", "ECO")
-        val sb = mainTags.asSequence()
-            .map { tupleOf(it, tags[it] ?: "unknown") }
-            .also {
+        val sb = mainTags.asSequence().map { tupleOf(it, tags[it] ?: "unknown") }.also {
                 if (tags["result"] == "unknown") {
                     tags["result"] = "*"
                 }
-            }
-            .fold(StringBuilder()) { acc, (name, value) ->
+            }.fold(StringBuilder()) { acc, (name, value) ->
                 acc.append("[${name.capitalize()} \"$value\"]\n")
             }
-        tags.entries.asSequence()
-            .filter { it.key !in mainTags }
-            .forEach { (name, value) ->
+        tags.entries.asSequence().filter { it.key !in mainTags }.forEach { (name, value) ->
                 sb.append("[${name.capitalize()} \"$value\"]\n")
             }
         return sb.toString()
@@ -584,8 +575,8 @@ class Game : Iterable<Game.Node> {
         }
     }
 
-    private class IdGenerator (var curr: Int = 0){
-        fun next(): Int{
+    private class IdGenerator(var curr: Int = 0) {
+        fun next(): Int {
             return curr++;
         }
     }
@@ -641,8 +632,7 @@ class Game : Iterable<Game.Node> {
             notation: Notation
         ): Node {
             if (immutable()) {
-                logger.warn("trying to make move $move on immutable game id=$id")
-                return this
+                throw GameModeException("trying to make move $move on immutable game: ${"${tags["white"]}-${tags["black"]}, ${tags["date"]}"}")
             }
             if (children.size == 1 && gameMode == GameMode.MATCH) {
                 throw GameModeException("Match mode cannot accept variations (RAVs); only the main line is allowed.")
@@ -653,13 +643,7 @@ class Game : Iterable<Game.Node> {
                     Notation.UCI -> moveOf(move)
                 }
                 val child = MoveNode(
-                    position.move(m),
-                    m,
-                    initialComment,
-                    comment,
-                    endLineComment,
-                    suffixAnnotations,
-                    this
+                    position.move(m), m, initialComment, comment, endLineComment, suffixAnnotations, this
                 )
                 children.add(child)
                 if (children.size == 1) {
@@ -702,7 +686,7 @@ class Game : Iterable<Game.Node> {
         override var suffixAnnotations: List<Int>?,
         override var parent: Node?,
         override val id: Int = idGenerator.next(),
-        ) : Node {
+    ) : Node {
         override val children = mutableListOf<Node>()
 
 
@@ -718,8 +702,7 @@ class Game : Iterable<Game.Node> {
             } else if (other !is MoveNode) {
                 false
             } else {
-                move == other.move && position == other.position && comment == other.comment &&
-                        suffixAnnotations == other.suffixAnnotations && endLineComment == other.endLineComment
+                move == other.move && position == other.position && comment == other.comment && suffixAnnotations == other.suffixAnnotations && endLineComment == other.endLineComment
             }
         }
 
@@ -731,9 +714,7 @@ class Game : Iterable<Game.Node> {
             val sb = StringBuilder()
             initialComment?.let {
                 sb.append("{").append(
-                    it
-                        .replace("\n", "")
-                        .replace(Regex("\\s+"), " ")
+                    it.replace("\n", "").replace(Regex("\\s+"), " ")
                 ).append("} ")
             }
             val p = parent ?: throw UnexpectedGameInternalError("node parent can't be null")
@@ -748,16 +729,12 @@ class Game : Iterable<Game.Node> {
             suffixAnnotations?.let { it.forEach { suffix -> sb.append("$").append(suffix).append(" ") } }
             comment?.let {
                 sb.append("{").append(
-                    it
-                        .replace("\n", "")
-                        .replace(Regex("\\s+"), " ")
+                    it.replace("\n", "").replace(Regex("\\s+"), " ")
                 ).append("} ")
             }
             endLineComment?.let {
                 sb.append(" ; ").append(
-                    it
-                        .replace("\n", "")
-                        .replace(Regex("\\s+"), " ")
+                    it.replace("\n", "").replace(Regex("\\s+"), " ")
                 ).append("\n")
             }
             if (p.children.size > 1 && mainChild()) {
@@ -768,9 +745,7 @@ class Game : Iterable<Game.Node> {
                         }
                         sb.append("\t".repeat(tabulation))
                         sb.append("( ")
-                        NodeIterator(p.children[i]).asSequence()
-                            .filter { it is MoveNode }
-                            .map { it as MoveNode }
+                        NodeIterator(p.children[i]).asSequence().filter { it is MoveNode }.map { it as MoveNode }
                             .forEach { sb.append(it.toString(tabulation + 1)) }
                         sb.append(")\n")
                     }
@@ -788,8 +763,9 @@ class Game : Iterable<Game.Node> {
             notation: Notation
         ): Node {
             if (immutable()) {
-                logger.warn("trying to make move $move on immutable game id=$id")
-                return this
+                throw GameModeException(
+                    "trying to make move $move on immutable game: ${"${tags["white"]}-${tags["black"]}, ${tags["date"]}"}"
+                )
             }
             if (children.isNotEmpty() && gameMode == GameMode.MATCH) {
                 throw GameModeException("Match mode cannot accept variations. Only the main line is allowed.")
@@ -800,13 +776,7 @@ class Game : Iterable<Game.Node> {
                     Notation.UCI -> moveOf(move)
                 }
                 val child = MoveNode(
-                    position.move(m),
-                    m,
-                    initialComment,
-                    comment,
-                    endLineComment,
-                    suffixAnnotations,
-                    this
+                    position.move(m), m, initialComment, comment, endLineComment, suffixAnnotations, this
                 )
                 children.add(child)
                 if (children.size > 1) {
@@ -835,13 +805,7 @@ class Game : Iterable<Game.Node> {
         override fun copy(parent: Node?): Node {
             return parent?.let {
                 MoveNode(
-                    position,
-                    move,
-                    initialComment,
-                    comment,
-                    endLineComment,
-                    suffixAnnotations,
-                    it
+                    position, move, initialComment, comment, endLineComment, suffixAnnotations, it
                 )
             }?.apply {
                 children.addAll(this@MoveNode.children.map { it.copy(this) })
@@ -859,8 +823,7 @@ class Game : Iterable<Game.Node> {
      * of modification once the game is over. In an [ANALYSIS] game, immutability is not necessary.
      */
     enum class GameMode(internal val value: Boolean) {
-        MATCH(true),
-        ANALYSIS(false)
+        MATCH(true), ANALYSIS(false)
     }
 
     /**
@@ -907,9 +870,7 @@ class Game : Iterable<Game.Node> {
      * Enum that represents the result of a game.
      */
     enum class Result(val str: String) {
-        WHITE_WIN("1-0"),
-        BLACK_WIN("0-1"),
-        DRAW("1/2-1/2");
+        WHITE_WIN("1-0"), BLACK_WIN("0-1"), DRAW("1/2-1/2");
     }
 
     private class NodeIterator(var curr: Node?) : Iterator<Node> {
@@ -938,8 +899,7 @@ class Game : Iterable<Game.Node> {
         }
 
         fun warning(node: Node): Boolean {
-            return positions.entries.asSequence()
-                .filter { (_, count) -> count == 2 }
+            return positions.entries.asSequence().filter { (_, count) -> count == 2 }
                 .any { (position, _) -> position in node.position.children.map { it.v1 } }
         }
 
