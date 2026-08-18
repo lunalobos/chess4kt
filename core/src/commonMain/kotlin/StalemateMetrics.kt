@@ -15,11 +15,13 @@
  */
 package io.github.lunalobos.chess4kt
 
-internal fun isStalemate(bitboards: LongArray, isWhiteMove: Boolean, legalMoves: Long): Boolean {
-    val (friends,enemies) = friendsAndEnemies(bitboards, isWhiteMove)
-    val kingSquare = (bitboards[if (isWhiteMove) Piece.WK.ordinal - 1 else Piece.BK.ordinal - 1])
-        .countTrailingZeroBits()
-    val threats = immediateThreats(bitboards, friends, enemies)
-    val isInCheck = (1L shl kingSquare) and threats
-    return (isInCheck == 0L) && (legalMoves == 0L)
+internal class StalemateMetrics(private val visibleMetrics: VisibleMetrics) {
+    fun isStalemate(bitboards: LongArray, isWhiteMove: Boolean, legalMoves: Long): Boolean {
+        val (friends,enemies) = friendsAndEnemies(bitboards, isWhiteMove)
+        val kingSquare = (bitboards[if (isWhiteMove) Piece.WK.ordinal - 1 else Piece.BK.ordinal - 1])
+            .countTrailingZeroBits()
+        val threats = visibleMetrics.immediateThreats(bitboards, friends, enemies)
+        val isInCheck = (1L shl kingSquare) and threats
+        return (isInCheck == 0L) && (legalMoves == 0L)
+    }
 }

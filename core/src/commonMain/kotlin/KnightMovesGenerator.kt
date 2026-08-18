@@ -15,25 +15,31 @@
  */
 package io.github.lunalobos.chess4kt
 
-internal fun yieldQueenMoves(
-    visibleSquaresQueen: (square: Int, friends: Long, enemies: Long) -> Long,
-    moveFunction: (origin: Int, target: Int) -> Move
-): (
-    br: Long, square: Int, pieceType: Int, kingSquare: Int, friends: Long, enemies: Long,
-    checkMask: Long, inCheckMask: Long
-) -> RegularPieceMoves {
-    return { br: Long, square: Int, pieceType: Int, kingSquare: Int, friends: Long, enemies: Long,
-             checkMask: Long, inCheckMask: Long ->
-        val defense = defenseDirection(kingSquare, square)
-        val pseudoLegalMoves = visibleSquaresQueen(square, friends, enemies)
-        val pin = longArrayOf(-1L, pseudoLegalMoves and checkMask and defense)
+
+
+internal class KnightMovesGenerator(
+    private val movesObj: Moves
+) {
+    private val knightMovesMatrix =
+        knightMatrix.map { it.map { sq -> 1L shl sq }.reduceOrNull { acc, element -> acc or element } ?: 0L }
+            .toLongArray()
+
+    fun knightMoves(
+        br: Long, square: Int, pieceType: Int, enemies: Long, friends: Long, checkMask: Long, inCheckMask: Long
+    ): RegularPieceMoves {
+        val emptyOrEnemy = friends.inv()
+        val moves: Long = knightMovesMatrix[square]
         val pinMask = pin[((br and checkMask) ushr (br and checkMask).countTrailingZeroBits()).toInt()]
-        RegularPieceMoves(
+        return RegularPieceMoves(
             pieceType,
             square,
             enemies,
-            pseudoLegalMoves and pinMask and inCheckMask,
-            moveFunction
+            moves and emptyOrEnemy and pinMask and inCheckMask,
+            movesObj
         )
+    }
+
+    companion object {
+        internal val pin = longArrayOf(-1L, 0L)
     }
 }

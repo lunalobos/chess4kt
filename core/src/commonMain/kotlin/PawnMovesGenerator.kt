@@ -17,56 +17,46 @@ package io.github.lunalobos.chess4kt
 
 //private val logger = getLogger("io.github.lunalobos.chess4kt.pawnGenerator")
 
-internal fun isPromotion(finalSquare: Int): Long {
-    return (((((finalSquare ushr 3).toLong() and 7L) ushr 2) and ((((finalSquare ushr 3).toLong() and 7L) ushr 1) and 1L)
-            and (((finalSquare ushr 3).toLong() and 7L) and 1L))
-            or (((((63 - finalSquare) ushr 3).toLong() and 7L) ushr 2) and (((((63 - finalSquare) ushr 3).toLong() and 7L) ushr 1) and 1L)
-            and ((((63 - finalSquare) ushr 3).toLong() and 7L) and 1L)))
-}
+internal class PawnMovesGenerator(
+    private val visibleMetrics: VisibleMetrics,
+    private val moves: Moves,
+    private val checkMetrics: CheckMetrics,
+) {
 
-private fun transformEnPassant(enPassant: Int, wm: Boolean): Int {
-    return 8 * (-2 * (if(wm) 1 else 0) + 1) + enPassant
-}
-
-private fun isEnPassant(originSquare: Int, finalSquare: Int, wm: Boolean): Long {
-    val difference = (finalSquare - originSquare).toLong()
-    val maskedDifference = 16L and (if(wm) difference else (difference.inv() + 1))
-    return maskedDifference ushr 4
-}
-
-private fun generateEnPassantCaptureBitboard(
-    move: Long, pieceType: Int, originSquare: Int, bitboards: LongArray,
-    wm: Boolean
-): Long {
-    if (move == 0L) {
-        return 0L
+    private fun transformEnPassant(enPassant: Int, wm: Boolean): Int {
+        return 8 * (-2 * (if (wm) 1 else 0) + 1) + enPassant
     }
-    val capture = 1L shl (move.countTrailingZeroBits() + (if (wm) -8 else 8))
-    val newBitboards = bitboards.copyOf()
-    for (index in 0..11) {
-        newBitboards[index] = newBitboards[index] and (capture.inv())
-    }
-    newBitboards[pieceType - 1] = (newBitboards[pieceType - 1] and (1L shl originSquare).inv()) or move
-    return if (inCheck(newBitboards, wm)) {
-        0L
-    } else {
-        move
-    }
-}
 
-internal fun yieldPawmMoves(
-    visibleSquaresRook: (square: Int, friends: Long, enemies: Long) -> Long,
-    regularMoveFunction: (origin: Int, target: Int) -> Move,
-    promotionMoveFunction: (origin: Int, target: Int, promotionPiece: Int) -> Move
-): (
-    br: Long, square: Int, pieceType: Int, matrix1: Array<IntArray>, matrix2: Array<IntArray>, kingSquare: Int,
-    enemies: Long, friends: Long, ep: Int, wm: Boolean, bitboards: LongArray, checkMask: Long, inCheckMask: Long
-) -> PawnMoves
+    private fun isEnPassant(originSquare: Int, finalSquare: Int, wm: Boolean): Long {
+        val difference = (finalSquare - originSquare).toLong()
+        val maskedDifference = 16L and (if (wm) difference else (difference.inv() + 1))
+        return maskedDifference ushr 4
+    }
 
-{
-    return { br: Long, square: Int, pieceType: Int, matrix1: Array<IntArray>, matrix2: Array<IntArray>, kingSquare: Int,
-             enemies: Long, friends: Long, ep: Int, wm: Boolean, bitboards: LongArray, checkMask: Long, inCheckMask: Long,
-              ->
+    private fun generateEnPassantCaptureBitboard(
+        move: Long, pieceType: Int, originSquare: Int, bitboards: LongArray,
+        wm: Boolean
+    ): Long {
+        if (move == 0L) {
+            return 0L
+        }
+        val capture = 1L shl (move.countTrailingZeroBits() + (if (wm) -8 else 8))
+        val newBitboards = bitboards.copyOf()
+        for (index in 0..11) {
+            newBitboards[index] = newBitboards[index] and (capture.inv())
+        }
+        newBitboards[pieceType - 1] = (newBitboards[pieceType - 1] and (1L shl originSquare).inv()) or move
+        return if (checkMetrics.inCheck(newBitboards, wm)) {
+            0L
+        } else {
+            move
+        }
+    }
+
+    fun pawnMoves(
+        br: Long, square: Int, pieceType: Int, matrix1: Array<IntArray>, matrix2: Array<IntArray>, kingSquare: Int,
+        enemies: Long, friends: Long, ep: Int, wm: Boolean, bitboards: LongArray, checkMask: Long, inCheckMask: Long
+    ): PawnMoves {
         val captureArray = matrix2[square]
         var captureMoves = 0L
         var captureCoronationMoves = 0L
@@ -91,7 +81,7 @@ internal fun yieldPawmMoves(
             advanceMoves = advanceMoves or (((1L and isPromotion(squareToOccupy).inv()
                     and isEnPassant(square, squareToOccupy, wm).inv())) shl squareToOccupy)
         }
-        val visible = visibleSquaresRook(square, friends, enemies)
+        val visible = visibleMetrics.visibleSquaresRook(square, friends, enemies)
         advanceMoves = advanceMoves and (friends or enemies or visible.inv()).inv()
         advancePromotionMoves = advancePromotionMoves and (friends or enemies or visible.inv()).inv()
         advanceEnPassantMoves = advanceEnPassantMoves and (friends or enemies or visible.inv()).inv()
@@ -108,7 +98,7 @@ internal fun yieldPawmMoves(
         val legalMoves = pseudoLegalMoves and pinMask1 and inCheckMask
         val legalPromotionMoves = pseudoPromotionMoves and pinMask2 and inCheckMask
         val legalAdvanceEnPassantMoves = advanceEnPassantMoves and pinMask3 and inCheckMask
-        PawnMoves(
+        return PawnMoves(
             pieceType,
             square,
             enemies,
@@ -122,8 +112,16 @@ internal fun yieldPawmMoves(
                 bitboards,
                 wm
             ),
-            regularMoveFunction,
-            promotionMoveFunction
+            moves
         )
+    }
+
+    companion object {
+        internal fun isPromotion(finalSquare: Int): Long {
+            return (((((finalSquare ushr 3).toLong() and 7L) ushr 2) and ((((finalSquare ushr 3).toLong() and 7L) ushr 1) and 1L)
+                    and (((finalSquare ushr 3).toLong() and 7L) and 1L))
+                    or (((((63 - finalSquare) ushr 3).toLong() and 7L) ushr 2) and (((((63 - finalSquare) ushr 3).toLong() and 7L) ushr 1) and 1L)
+                    and ((((63 - finalSquare) ushr 3).toLong() and 7L) and 1L)))
+        }
     }
 }

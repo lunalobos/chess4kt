@@ -17,11 +17,9 @@ package io.github.lunalobos.chess4kt
 
 //private val logger = getLogger("io.github.lunalobos.chess4kt.bitboardGenerator")
 
-internal fun yieldCheckInfo(
-    visibleSquares: (bits: LongArray, directionsIndexes: IntArray, square: Int, wm: Boolean) -> Long
-): (kingPiece: Int, bits: LongArray, wm: Boolean, pawnsDirections: IntArray) -> CheckInfo {
-    return { kingPiece: Int, bits: LongArray, wm: Boolean, pawnsDirections: IntArray ->
-        //logger.traceEntry("checkInfo", kingPiece, bits, wm, pawnsDirections)
+internal class CheckInfoGenerator(private val visibleMetrics: VisibleMetrics) {
+
+    fun checkInfo(kingPiece: Int, bits: LongArray, wm: Boolean, pawnsDirections: IntArray): CheckInfo {
         var inCheckMask = 0L
         var checkCount = 0
         val kingSquare = bits[kingPiece - 1].countTrailingZeroBits()
@@ -62,7 +60,7 @@ internal fun yieldCheckInfo(
         // bishops directions
         val enemyBishopsAndQueens = bits[enemies[2] - 1] or bits[enemies[4] - 1]
         for (i in 0..3) {
-            val visible: Long = visibleSquares(
+            val visible: Long = visibleMetrics.visibleSquares(
                 bits,
                 intArrayOf(i),
                 kingSquare,
@@ -77,7 +75,7 @@ internal fun yieldCheckInfo(
         // rooks directions
         val enemyRooksAndQueens = bits[enemies[3] - 1] or bits[enemies[4] - 1]
         for (i in 4..7) {
-            val visible: Long = visibleSquares(
+            val visible: Long = visibleMetrics.visibleSquares(
                 bits,
                 intArrayOf(i),
                 kingSquare,
@@ -95,15 +93,12 @@ internal fun yieldCheckInfo(
             else -> 0L
         }
         //logger.traceExit("checkInfo", CheckInfo(isInCheck, inCheckMask))
-        CheckInfo(isInCheck, inCheckMask)
+        return CheckInfo(isInCheck, inCheckMask)
     }
 }
 
-internal fun yieldCheckMask(
-    visibleSquares: (bits: LongArray, directionsIndexes: IntArray, square: Int, wm: Boolean) -> Long
-): (Int, Long, Long, Boolean, LongArray) -> Long {
-    return { kingSquare: Int, enemies: Long, friends: Long, wm: Boolean, bitboards: LongArray ->
-        //logger.traceEntry("checkMask", kingSquare, enemies, friends, wm, bitboards)
+internal class CheckMaskGenerator(private val visibleMetrics: VisibleMetrics) {
+    fun checkMask(kingSquare: Int, enemies: Long, friends: Long, wm: Boolean, bitboards: LongArray): Long {
         val empty = (enemies or friends).inv()
         val enemyRook: Int
         val enemyQueen: Int
@@ -119,7 +114,7 @@ internal fun yieldCheckMask(
         }
         var checkMask = 0L
         for (j in 0..3) {
-            val visibleEmptyOrFriendsRD: Long = visibleSquares(
+            val visibleEmptyOrFriendsRD: Long = visibleMetrics.visibleSquares(
                 bitboards,
                 intArrayOf(rookDirections[j]),
                 kingSquare,
@@ -130,7 +125,7 @@ internal fun yieldCheckMask(
             for (i in 0..11) {
                 testBitsRD[i] = testBitsRD[i] and friendsRD.inv()
             }
-            val visibleEmptyOrEnemyRD: Long = visibleSquares(
+            val visibleEmptyOrEnemyRD: Long = visibleMetrics.visibleSquares(
                 testBitsRD,
                 intArrayOf(rookDirections[j]), kingSquare,
                 wm
@@ -139,7 +134,7 @@ internal fun yieldCheckMask(
             checkMask = checkMask or (if (isPresent(enemiesThreadsRD)) (friendsRD or visibleEmptyOrEnemyRD) else 0L)
         }
         for (j in 0..3) {
-            val visibleEmptyOrFriendsBD: Long = visibleSquares(
+            val visibleEmptyOrFriendsBD: Long = visibleMetrics.visibleSquares(
                 bitboards,
                 intArrayOf(bishopDirections[j]),
                 kingSquare,
@@ -150,7 +145,7 @@ internal fun yieldCheckMask(
             for (i in 0..11) {
                 testBitsBD[i] = testBitsBD[i] and friendsBD.inv()
             }
-            val visibleEmptyOrEnemyBD: Long = visibleSquares(
+            val visibleEmptyOrEnemyBD: Long = visibleMetrics.visibleSquares(
                 testBitsBD,
                 intArrayOf(bishopDirections[j]),
                 kingSquare,
@@ -160,39 +155,22 @@ internal fun yieldCheckMask(
             checkMask = checkMask or (if (isPresent(enemiesThreadsBD)) (friendsBD or visibleEmptyOrEnemyBD) else 0L)
         }
         //logger.traceExit("checkMask",checkMask)
-        checkMask
+        return checkMask
     }
 }
 
-internal fun yieldMovesInfo(
-    pawnMoves: (
-        br: Long, square: Int, pieceType: Int, matrix1: Array<IntArray>, matrix2: Array<IntArray>, kingSquare: Int,
-        enemies: Long, friends: Long, ep: Int, wm: Boolean, bitboards: LongArray, checkMask: Long, inCheckMask: Long,
-    ) -> PawnMoves,
-    knightMoves: (
-        br: Long, square: Int, pieceType: Int, enemies: Long, friends: Long, checkMask: Long, inCheckMask: Long
-    ) -> RegularPieceMoves,
-    bishopMoves: (
-        br: Long, square: Int, pieceType: Int, kingSquare: Int, enemies: Long, friends: Long,
-        checkMask: Long, inCheckMask: Long
-    ) -> RegularPieceMoves,
-    rookMoves: (
-        br: Long, square: Int, pieceType: Int, kingSquare: Int, enemies: Long,
-        friends: Long, checkMask: Long, inCheckMask: Long
-    ) -> RegularPieceMoves,
-    queenMoves: (
-        br: Long, square: Int, pieceType: Int, kingSquare: Int, friends: Long, enemies: Long,
-        checkMask: Long, inCheckMask: Long
-    ) -> RegularPieceMoves,
-    kingMoves: (
-        square: Int, pieceType: Int, enemies: Long, friends: Long, inCheck: Boolean, bitboards: LongArray,
-        wm: Boolean, wk: Long, wq: Long, bk: Long, bq: Long
-    ) -> KingMoves,
-    checkMask: (kingSquare: Int, enemies: Long, friends: Long, wm: Boolean, bitboards: LongArray) -> Long,
-    checkInfo: (kingPiece: Int, bits: LongArray, wm: Boolean, pawnsDirections: IntArray) -> CheckInfo
-): (bitboards: LongArray, wm: Boolean, wk: Boolean, wq: Boolean, bk: Boolean, bq: Boolean, enPassant: Int) -> MovesInfo {
-    return { bitboards: LongArray, wm: Boolean, wk: Boolean, wq: Boolean, bk: Boolean, bq: Boolean, enPassant: Int ->
-        //logger.traceEntry("movesInfo", bitboards, wm, wk, wq, bk, bq, enPassant)
+internal class MovesInfoGenerator(
+    private val pawnMovesGenerator: PawnMovesGenerator,
+    private val knightMovesGenerator: KnightMovesGenerator,
+    private val bishopMovesGenerator: BishopMovesGenerator,
+    private val rookMovesGenerator: RookMovesGenerator,
+    private val queenMovesGenerator: QueenMovesGenerator,
+    private val kingMovesGenerator: KingMovesGenerator,
+    private val checkMaskGenerator: CheckMaskGenerator,
+    private val checkInfoGenerator: CheckInfoGenerator
+    ) {
+
+    fun movesInfo(bitboards: LongArray, wm: Boolean, wk: Boolean, wq: Boolean, bk: Boolean, bq: Boolean, enPassant: Int): MovesInfo {
         val pawnPiece: Int
         val knightPiece: Int
         val bishopPiece: Int
@@ -244,7 +222,7 @@ internal fun yieldMovesInfo(
                     or bitboards[Piece.WQ.ordinal - 1] or bitboards[Piece.WK.ordinal - 1])
         }
 
-        val (inCheck, inCheckMask) = checkInfo(
+        val (inCheck, inCheckMask) = checkInfoGenerator.checkInfo(
             kingPiece,
             bitboards,
             wm,
@@ -252,13 +230,13 @@ internal fun yieldMovesInfo(
         )
         //logger.trace("inCheck=$inCheck")
         //logger.trace("inCheckMask=${Bitboard(inCheckMask).toSquares()}")
-        val checkMask = checkMask(
+        val checkMask = checkMaskGenerator.checkMask(
             kingSquare, enemies, friends, wm, bitboards
         )
         //logger.trace("checkMask=${Bitboard(checkMask).toSquares()}")
         // Pawn Moves
         val pawnMoves = bitboardToList(bitboards[pawnPiece - 1]) {
-            pawnMoves(
+            pawnMovesGenerator.pawnMoves(
                 it, it.countTrailingZeroBits(), pawnPiece,
                 matrix1, matrix2, kingSquare, enemies,
                 friends, enPassant, wm, bitboards, checkMask,
@@ -267,34 +245,34 @@ internal fun yieldMovesInfo(
         }
         // Knight Moves
         val knightMoves = bitboardToList(bitboards[knightPiece - 1]) {
-            knightMoves(
+            knightMovesGenerator.knightMoves(
                 it, it.countTrailingZeroBits(), knightPiece, enemies,
                 friends, checkMask, inCheckMask
             )
         }
         // Bishop Moves
         val bishopMoves = bitboardToList(bitboards[bishopPiece - 1]) {
-            bishopMoves(
+            bishopMovesGenerator.bishopMoves(
                 it, it.countTrailingZeroBits(), bishopPiece, kingSquare,
                 enemies, friends, checkMask, inCheckMask
             )
         }
         // Rook Moves
         val rookMoves = bitboardToList(bitboards[rookPiece - 1]) {
-            rookMoves(
+            rookMovesGenerator.rookMoves(
                 it, it.countTrailingZeroBits(), rookPiece, kingSquare,
                 enemies, friends, checkMask, inCheckMask
             )
         }
         // Queen Moves
         val queenMoves = bitboardToList(bitboards[queenPiece - 1]) {
-            queenMoves(
+            queenMovesGenerator.queenMoves(
                 it, it.countTrailingZeroBits(), queenPiece, kingSquare,
                 friends, enemies, checkMask, inCheckMask
             )
         }
         // King Moves
-        val kingMoves = kingMoves(
+        val kingMoves = kingMovesGenerator.kingMoves(
             bitboards[kingPiece - 1].countTrailingZeroBits(),
             kingPiece,
             enemies,
@@ -312,6 +290,6 @@ internal fun yieldMovesInfo(
             "movesInfo",
             MovesInfo(pawnMoves, knightMoves, bishopMoves, rookMoves, queenMoves, kingMoves)
         )*/
-        MovesInfo(pawnMoves, knightMoves, bishopMoves, rookMoves, queenMoves, kingMoves)
+        return MovesInfo(pawnMoves, knightMoves, bishopMoves, rookMoves, queenMoves, kingMoves)
     }
 }

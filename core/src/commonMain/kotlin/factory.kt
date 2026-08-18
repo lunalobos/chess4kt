@@ -51,18 +51,9 @@ internal fun bitboardsOf(vararg pairs: Pair<Piece, Square>): LongArray {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-//-----------------------------------------------move factory functions------------------------------------------------
+//------------------------------------------move factory beans and functions-------------------------------------------
 
-private val moves = yieldMoves()
-
-private val movesMap = moves.asSequence()
-    .filter { it != null }
-    .fold(mutableMapOf<String, Move>()) { map, m ->
-        map[m.toString()] = m!!
-        map
-    }
-
-internal val moveFromOriginTarget = yieldMoveFromOriginTarget(moves)
+internal val movesObj = Moves()
 
 /**
  * Creates a [Move] object from the specified origin and target squares (using Int as the squares types).
@@ -73,9 +64,7 @@ internal val moveFromOriginTarget = yieldMoveFromOriginTarget(moves)
  * @since 1.0.0-beta.1
  * @author lunalobos
  */
-fun moveOf(origin: Int, target: Int) = moveFromOriginTarget(origin, target)
-
-internal val moveFromOriginTargetPromotion = yieldMoveFromOriginTargetPromotion(moves)
+fun moveOf(origin: Int, target: Int) = movesObj.moveFromOriginTarget(origin, target)
 
 /**
  * Creates a [Move] object from the specified origin and target squares (using Int as the squares types) and the
@@ -89,11 +78,7 @@ internal val moveFromOriginTargetPromotion = yieldMoveFromOriginTargetPromotion(
  * @since 1.0.0-beta.1
  * @author lunalobos
  */
-fun moveOf(origin: Int, target: Int, promotionPiece: Int) = moveFromOriginTargetPromotion(
-    origin, target, promotionPiece
-)
-
-internal val moveFromOriginTargetObjects = yieldMoveFromOriginTargetObjects(moves)
+fun moveOf(origin: Int, target: Int, promotionPiece: Int) = movesObj.moveFromOriginTargetPromotion(origin, target, promotionPiece)
 
 /**
  * Creates a [Move] object from the origin square and target square [Square] enum constants.
@@ -104,9 +89,7 @@ internal val moveFromOriginTargetObjects = yieldMoveFromOriginTargetObjects(move
  * @since 1.0.0-beta.1
  * @author lunalobos
  */
-fun moveOf(origin: Square, target: Square) = moveFromOriginTargetObjects(origin, target)
-
-internal val moveFromOriginTargetPromotionObjects = yieldMoveFromOriginTargetPromotionObjects(moves)
+fun moveOf(origin: Square, target: Square) = movesObj.moveFromOriginTargetObjects(origin, target)
 
 /**
  * Creates a [Move] object from the origin square, target square, and the promotion piece, using [Square] and [Piece]
@@ -120,11 +103,9 @@ internal val moveFromOriginTargetPromotionObjects = yieldMoveFromOriginTargetPro
  * @author lunalobos
  * @since 1.0.0-beta.1
  */
-fun moveOf(origin: Square, target: Square, promotionPiece: Piece) = moveFromOriginTargetPromotionObjects(
+fun moveOf(origin: Square, target: Square, promotionPiece: Piece) = movesObj.moveFromOriginTargetPromotionObjects(
     origin, target, promotionPiece
 )
-
-internal val moveFromString = yieldMoveFromString(movesMap)
 
 /**
  * Creates a [Move] object from its UCI notation string (e.g., "e7e8q").
@@ -135,59 +116,20 @@ internal val moveFromString = yieldMoveFromString(movesMap)
  * @since 1.0.0-beta.1
  * @author lunalobos
  */
-fun moveOf(move: String) = moveFromString(move)
+fun moveOf(move: String) = movesObj.moveFromString(move)
 
 
 //---------------------------------------------------------------------------------------------------------------------
 
-//---------------------------------------------visible metrics functions-----------------------------------------------
+//----------------------------------------visible metrics beans and functions------------------------------------------
 
-private val computeVisible = yieldComputeVisible()
+internal val visibleMetrics = VisibleMetrics()
 
-private val whitePawnCaptureMoves = yieldWhitePawnCaptureMoves()
+internal val checkMetrics = CheckMetrics(visibleMetrics)
 
-internal val visibleSquaresWhitePawn = yieldVisibleSquaresWhitePawn(whitePawnCaptureMoves)
+internal val checkmateMetrics = CheckmateMetrics(visibleMetrics)
 
-private val blackPawnCaptureMoves = yieldBlackPawnCaptureMoves()
-
-internal val visibleSquaresBlackPawn = yieldVisibleSquaresBlackPawn(blackPawnCaptureMoves)
-
-private val knightMovesMatrix = yieldKnightMovesMatrix()
-
-internal val visibleSquaresKnight = yieldVisibleSquaresKnight(knightMovesMatrix)
-
-internal val visibleSquaresBishop = yieldVisibleSquaresBishopAlternative(computeVisible)
-
-internal val visibleSquaresRook = yieldVisibleSquaresRookAlternative(computeVisible)
-
-internal val visibleSquaresQueen = yieldVisibleSquaresQueen(visibleSquaresBishop, visibleSquaresRook)
-
-private val kingMovesMatrix = yieldKingMovesMatrix()
-
-internal val visibleSquaresKing = yieldVisibleSquaresKing(kingMovesMatrix)
-
-private val calculators = yieldCalculators(
-    visibleSquaresWhitePawn,
-    visibleSquaresBlackPawn,
-    visibleSquaresKnight,
-    visibleSquaresBishop,
-    visibleSquaresRook,
-    visibleSquaresQueen,
-    visibleSquaresKing
-)
-
-internal val immediateThreats = yieldImmediateThreats(calculators)
-
-internal val threats = yieldThreats(
-    visibleSquaresKnight,
-    visibleSquaresBishop,
-    visibleSquaresRook,
-    visibleSquaresQueen,
-    visibleSquaresKing,
-    calculators
-)
-
-internal val visibleSquares = yieldVisibleSquares(computeVisible)
+internal val stalemateMetrics = StalemateMetrics(visibleMetrics)
 
 /**
  * Calculates a bitboard of all squares "visible" or attacked by a specific piece
@@ -209,75 +151,76 @@ internal val visibleSquares = yieldVisibleSquares(computeVisible)
  */
 fun visibleSquares(piece: Piece, square: Square, position: Position): Long {
     return when(piece){
-        Piece.WP -> visibleSquaresWhitePawn(square.ordinal, position.friends)
-        Piece.WN, Piece.BN -> visibleSquaresKnight(square.ordinal, position.friends)
-        Piece.WB, Piece.BB -> visibleSquaresBishop(square.ordinal, position.friends, position.enemies)
-        Piece.WR, Piece.BR -> visibleSquaresRook(square.ordinal, position.friends, position.enemies)
-        Piece.WQ, Piece.BQ -> visibleSquaresQueen(square.ordinal, position.friends, position.enemies)
-        Piece.WK, Piece.BK -> visibleSquaresKing(square.ordinal, position.friends)
-        Piece.BP -> visibleSquaresBlackPawn(square.ordinal, position.friends)
+        Piece.WP -> visibleMetrics.visibleSquaresWhitePawn(square.ordinal, position.friends)
+        Piece.WN, Piece.BN -> visibleMetrics.visibleSquaresKnight(square.ordinal, position.friends)
+        Piece.WB, Piece.BB -> visibleMetrics.visibleSquaresBishop(square.ordinal, position.friends, position.enemies)
+        Piece.WR, Piece.BR -> visibleMetrics.visibleSquaresRook(square.ordinal, position.friends, position.enemies)
+        Piece.WQ, Piece.BQ -> visibleMetrics.visibleSquaresQueen(square.ordinal, position.friends, position.enemies)
+        Piece.WK, Piece.BK -> visibleMetrics.visibleSquaresKing(square.ordinal, position.friends)
+        Piece.BP -> visibleMetrics.visibleSquaresBlackPawn(square.ordinal, position.friends)
         else -> error("Invalid piece $piece")
     }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-//---------------------------------------------pawn generator functions------------------------------------------------
+//---------------------------------------------pawn generator beans------------------------------------------------
 
-internal val pawnMoves = yieldPawmMoves(
-    visibleSquaresRook,
-    moveFromOriginTarget,
-    moveFromOriginTargetPromotion
+internal val pawnMovesGenerator = PawnMovesGenerator(
+    visibleMetrics,
+    movesObj,
+    checkMetrics,
 )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-//--------------------------------------------knight generator functions-----------------------------------------------
+//--------------------------------------------knight generator beans-----------------------------------------------
 
-internal val knightMoves = yieldKnightMoves(moveFromOriginTarget, knightMovesMatrix)
-
-//---------------------------------------------------------------------------------------------------------------------
-
-//--------------------------------------------bishop generator functions-----------------------------------------------
-
-internal val bishopMoves = yieldBishopMoves(visibleSquaresBishop, moveFromOriginTarget)
+internal val knightMovesGenerator = KnightMovesGenerator(movesObj)
 
 //---------------------------------------------------------------------------------------------------------------------
 
-//---------------------------------------------rook generator functions------------------------------------------------
+//--------------------------------------------bishop generator beans-----------------------------------------------
 
-internal val rookMoves = yieldRookMoves(visibleSquaresRook, moveFromOriginTarget)
-
-//---------------------------------------------------------------------------------------------------------------------
-
-//--------------------------------------------queen generator functions------------------------------------------------
-
-internal val queenMoves = yieldQueenMoves(visibleSquaresQueen, moveFromOriginTarget)
+internal val bishopMovesGenerator = BishopMovesGenerator(movesObj, visibleMetrics)
 
 //---------------------------------------------------------------------------------------------------------------------
 
-//---------------------------------------------king generator functions------------------------------------------------
+//---------------------------------------------rook generator beans------------------------------------------------
 
-internal val kingMoves = yieldKingMoves(kingMovesMatrix, threats, moveFromOriginTarget)
+internal val rookMovesGenerator = RookMovesGenerator(movesObj, visibleMetrics)
 
 //---------------------------------------------------------------------------------------------------------------------
 
-//-------------------------------------------bitboard generator functions----------------------------------------------
+//--------------------------------------------queen generator beans------------------------------------------------
 
-internal val checkInfo = yieldCheckInfo(visibleSquares)
+internal val queenMovesGenerator = QueenMovesGenerator(movesObj, visibleMetrics)
 
-internal val checkMask = yieldCheckMask(visibleSquares)
+//---------------------------------------------------------------------------------------------------------------------
 
-internal val movesInfo = yieldMovesInfo(
-    pawnMoves,
-    knightMoves,
-    bishopMoves,
-    rookMoves,
-    queenMoves,
-    kingMoves,
-    checkMask,
-    checkInfo
+//---------------------------------------------king generator beans------------------------------------------------
+
+internal val kingMovesGenerator = KingMovesGenerator(movesObj, visibleMetrics)
+
+//---------------------------------------------------------------------------------------------------------------------
+
+//-------------------------------------------bitboard generator beans----------------------------------------------
+
+internal val checkInfoGenerator = CheckInfoGenerator(visibleMetrics)
+
+internal val checkMaskGenerator = CheckMaskGenerator(visibleMetrics)
+
+internal val movesInfoGenerator = MovesInfoGenerator(
+    pawnMovesGenerator,
+    knightMovesGenerator,
+    bishopMovesGenerator,
+    rookMovesGenerator,
+    queenMovesGenerator,
+    kingMovesGenerator,
+    checkMaskGenerator,
+    checkInfoGenerator
 )
+
 
 //---------------------------------------------------------------------------------------------------------------------
 

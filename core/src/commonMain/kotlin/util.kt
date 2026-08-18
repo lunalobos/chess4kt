@@ -280,7 +280,7 @@ internal fun positionFromFen(fen: String): Position {
     val bitboards = Position(fen).bitboards
 
     // side to move in check
-    val validCheck = !inCheck(bitboards, !position.whiteMove)
+    val validCheck = !checkMetrics.inCheck(bitboards, !position.whiteMove)
 
     // pawns in 8th rank
     val wpBitboards = bitboards[Piece.WP.ordinal - 1]
@@ -505,7 +505,7 @@ fun Position.move(move: Move): Position {
  */
 fun Position.move(move: String, notation: Notation = Notation.UCI): Position {
     return when (notation) {
-        Notation.UCI -> moveFromString(move).let { m -> children.find { it.v2 == m }?.v1 }
+        Notation.UCI -> movesObj.moveFromString(move).let { m -> children.find { it.v2 == m }?.v1 }
             ?: throw MoveException("illegal move $move")
 
         Notation.SAN -> sanToMove(this, move).let { m -> children.find { it.v2 == m }?.v1 }
@@ -524,7 +524,7 @@ fun Position.move(move: String, notation: Notation = Notation.UCI): Position {
  * @author lunalobos
  */
 fun Position.isLegal(move: Move): Boolean {
-    val m = moveFromOriginTargetPromotion(move.origin, move.target, move.promotionPiece)
+    val m = movesObj.moveFromOriginTargetPromotion(move.origin, move.target, move.promotionPiece)
     return children.any { it.v2 == m }
 }
 
@@ -848,7 +848,7 @@ internal fun toSan(position: Position, move: Move, pieces: Array<String> = piece
     sbSAN.append(getColLetter(move.target)).append(getRow(move.target) + 1)
 
     // Determine if it is a promotion. If so, append "=" + promotedPiece to the destination square.
-    val isPromotion = move.promotionPiece != -1 && (isPromotion(move.target) == 1L)
+    val isPromotion = move.promotionPiece != -1 && (PawnMovesGenerator.isPromotion(move.target) == 1L)
     if (isPromotion) {
         sbSAN.append("=").append(pieces[move.promotionPiece])
     }

@@ -31,7 +31,7 @@ class PawnGeneratorTest {
             BP to D5
         )
         val expected = Bitboard.fromSquares(D5, E5).value
-        val actual = pawnMoves(
+        val actual = pawnMovesGenerator.pawnMoves(
             bitboards[WP.ordinal - 1],
             E4.ordinal,
             WP.ordinal,
@@ -58,7 +58,7 @@ class PawnGeneratorTest {
             BP to D5
         )
         val expected = Bitboard.fromSquares(D6, E6).value
-        val actual = pawnMoves(
+        val actual = pawnMovesGenerator.pawnMoves(
             bitboards[WP.ordinal - 1],
             E5.ordinal,
             WP.ordinal,
@@ -85,7 +85,7 @@ class PawnGeneratorTest {
             BP to D5
         )
         val expected = Bitboard.fromSquares(E3, E4).value
-        val actual = pawnMoves(
+        val actual = pawnMovesGenerator.pawnMoves(
             bitboards[WP.ordinal - 1],
             E2.ordinal,
             WP.ordinal,
@@ -112,7 +112,7 @@ class PawnGeneratorTest {
             WP to E7
         )
         val expected = Bitboard.fromSquares(E8).value
-        val actual = pawnMoves(
+        val actual = pawnMovesGenerator.pawnMoves(
             bitboards[WP.ordinal - 1],
             E7.ordinal,
             WP.ordinal,

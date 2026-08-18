@@ -15,12 +15,15 @@
  */
 package io.github.lunalobos.chess4kt
 
-internal fun isCheckmate(bitboards: LongArray, wm: Boolean, legalMoves: Long): Boolean {
-    val (friends, enemies) = friendsAndEnemies(bitboards, wm)
-    val kingSquare: Int = (bitboards[if (wm) Piece.WK.ordinal - 1 else Piece.BK.ordinal - 1])
-        .countTrailingZeroBits()
-    val enemiesVisible = immediateThreats(bitboards, friends, enemies)
-    val kingVisible = visibleSquaresKing(kingSquare, friends) and (1L shl kingSquare)
-    val kingInCheckAndHasNoMoves = (kingVisible and enemiesVisible) == kingVisible
-    return kingInCheckAndHasNoMoves && legalMoves == 0L
+//private val logger = getLogger("io.github.lunalobos.chess4kt.checkMetrics")
+
+internal class CheckMetrics(
+    private val visibleMetrics: VisibleMetrics
+) {
+    fun inCheck(bitboards: LongArray, wm: Boolean): Boolean{
+        val (friends, enemies) = friendsAndEnemies(bitboards, wm)
+        val kingBitboard = bitboards[if (wm) Piece.WK.ordinal - 1 else Piece.BK.ordinal - 1]
+        val threats = visibleMetrics.immediateThreats(bitboards, friends, enemies)
+        return isPresent(kingBitboard and threats)
+    }
 }

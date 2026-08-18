@@ -32,7 +32,7 @@ class KnightGeneratorTest {
             BP to D4
         )
         val expected = Bitboard.fromSquares(D4, D2, G1, H2, H4, G5)
-        val actual = knightMoves(
+        val actual = knightMovesGenerator.knightMoves(
             bitboards[WN.ordinal -1],
             F3.ordinal,
             WN.ordinal,

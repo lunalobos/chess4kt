@@ -33,7 +33,7 @@ class QueenGeneratorTest {
         )
         val expected = Bitboard.fromSquares(D2, D3, D4, D5, D6, D7, D8, C1, E2, F3, G4, C2, B3, A4)
         val actual = Bitboard(
-            queenMoves(
+            queenMovesGenerator.queenMoves(
                 bitboards[WQ.ordinal - 1],
                 D1.ordinal,
                 WQ.ordinal,

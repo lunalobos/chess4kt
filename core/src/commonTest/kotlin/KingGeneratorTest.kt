@@ -33,7 +33,7 @@ class KingGeneratorTest {
         )
         val expected = Bitboard.fromSquares(G1, E2, F2, F1)
         val actual = Bitboard(
-            kingMoves(
+            kingMovesGenerator.kingMoves(
                 E1.ordinal,
                 WK.ordinal,
                 Bitboard.fromSquares(E8, D8).value,

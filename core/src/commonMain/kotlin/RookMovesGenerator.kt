@@ -15,22 +15,20 @@
  */
 package io.github.lunalobos.chess4kt
 
-internal fun yieldRookMoves(
-    visibleSquaresRook: (square: Int, friends: Long, enemies: Long) -> Long,
-    moveFunction: (origin: Int, target: Int) -> Move
-): (
-    br: Long, square: Int, pieceType: Int, kingSquare: Int, enemies: Long,
-    friends: Long, checkMask: Long, inCheckMask: Long
-) -> RegularPieceMoves {
-    return { br: Long, square: Int, pieceType: Int, kingSquare: Int, enemies: Long,
-             friends: Long, checkMask: Long, inCheckMask: Long ->
+internal class RookMovesGenerator(
+    private val movesObj: Moves,
+    private val visibleMetrics: VisibleMetrics
+){
+
+    fun rookMoves(br: Long, square: Int, pieceType: Int, kingSquare: Int, enemies: Long,
+                  friends: Long, checkMask: Long, inCheckMask: Long): RegularPieceMoves{
         val defense = defenseDirection(kingSquare, square)
-        val pseudoLegalMoves = visibleSquaresRook(square, friends, enemies)
+        val pseudoLegalMoves = visibleMetrics.visibleSquaresRook(square, friends, enemies)
         val pin = longArrayOf(-1L, pseudoLegalMoves and checkMask and defense)
         val pinMask = pin[((br and checkMask) ushr br.countTrailingZeroBits()).toInt()]
-        RegularPieceMoves(
+        return RegularPieceMoves(
             pieceType, square, enemies, pseudoLegalMoves and pinMask and inCheckMask,
-            moveFunction
+            movesObj
         )
     }
 }

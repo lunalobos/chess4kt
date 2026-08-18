@@ -27,7 +27,7 @@ class StalemateMetrics {
         val bitboards = bitboardsOf(WK to H1, BQ to G3, BK to E8)
         val wm = true
         val legalMoves = 0L
-        assertTrue(isStalemate(bitboards, wm, legalMoves))
+        assertTrue(stalemateMetrics.isStalemate(bitboards, wm, legalMoves))
     }
 
     @Test
@@ -35,6 +35,6 @@ class StalemateMetrics {
         val bitboards = bitboardsOf(WK to E1, BK to E8, BQ to D4)
         val wm = true
         val legalMoves = Bitboard.fromSquares(E2, F1, F2).value
-        assertFalse(isStalemate(bitboards, wm, legalMoves))
+        assertFalse(stalemateMetrics.isStalemate(bitboards, wm, legalMoves))
     }
 }

@@ -43,7 +43,7 @@ class BitboardGeneratorTest {
             positionsJson10
         ).flatMap { Json.decodeFromString<List<Pos>>(it) }.also { logger.debug("positions array length ${it.size}") }
             .asSequence().map { posToBasicPos(it) }.forEach { (bitboards, wm, ep, wk, wq, bk, bq, moves) ->
-                val mi = movesInfo(bitboards, wm, wk, wq, bk, bq, ep)
+                val mi = movesInfoGenerator.movesInfo(bitboards, wm, wk, wq, bk, bq, ep)
                 val actual = mi.movesList
                 assertEquals(
                     moves.toSet(), actual.toSet(), "position ${fen(bitboards, wm, ep, wk, wq, bk, bq)}"
@@ -88,7 +88,7 @@ class BitboardGeneratorTest {
             BK to G8
         )
 
-        val (inCheck, inCheckMask) = checkInfo(
+        val (inCheck, inCheckMask) = checkInfoGenerator.checkInfo(
             BK.ordinal, bitboards, false, blackPawnMatrix2[G8.ordinal]
         )
 
@@ -134,7 +134,7 @@ class BitboardGeneratorTest {
         val bk = false
         val bq = false
         val ep = H4.ordinal
-        val mi = movesInfo(
+        val mi = movesInfoGenerator.movesInfo(
             bitboards,
             wm,
             wk,

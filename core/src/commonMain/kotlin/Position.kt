@@ -90,7 +90,7 @@ class Position {
      * Internal data structure containing pre-calculated legal moves and attack information for the current position.
      */
     internal val mi: MovesInfo get() {
-        return movesInfo(
+        return movesInfoGenerator.movesInfo(
             bitboards,
             whiteMove,
             whiteCastleKingside,
@@ -105,17 +105,17 @@ class Position {
     /**
      * True if the current side to move is in check. False otherwise.
      */
-    val check: Boolean by lazy { inCheck(bitboards, whiteMove) }
+    val check: Boolean by lazy { checkMetrics.inCheck(bitboards, whiteMove) }
 
     /**
      * True if the position is a checkmate (the current side is in check and has no legal moves). False otherwise.
      */
-    val checkmate: Boolean by lazy { isCheckmate(bitboards, whiteMove, moves) }
+    val checkmate: Boolean by lazy { checkmateMetrics.isCheckmate(bitboards, whiteMove, moves) }
 
     /**
      * True if the position is a stalemate (the current side is not in check but has no legal moves). False otherwise.
      */
-    val stalemate: Boolean by lazy { isStalemate(bitboards, whiteMove, moves) }
+    val stalemate: Boolean by lazy { stalemateMetrics.isStalemate(bitboards, whiteMove, moves) }
 
     /**
      * True if the position is a draw due to insufficient mating material (e.g., King vs. King). False otherwise.

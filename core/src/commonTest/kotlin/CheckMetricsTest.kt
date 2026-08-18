@@ -26,13 +26,13 @@ class CheckMetricsTest {
     fun check(){
         val bitboards = bitboardsOf(WK to E1, BK to E8, BQ to E4)
         val wm = true
-        assertTrue(inCheck(bitboards, wm))
+        assertTrue(checkMetrics.inCheck(bitboards, wm))
     }
 
     @Test
     fun noCheck(){
         val bitboards = bitboardsOf(WK to E1, BK to E8)
         val wm = true
-        assertFalse (inCheck(bitboards, wm))
+        assertFalse (checkMetrics.inCheck(bitboards, wm))
     }
 }
