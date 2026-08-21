@@ -9,7 +9,7 @@ import kotlin.js.collections.JsReadonlyArray
  * This is a facade created to enable exporting the code to JS, though it can also be used directly within the JS
  * modules of any KMP project.
  */
-@OptIn(kotlin.js.ExperimentalJsExport::class)
+@OptIn(ExperimentalJsExport::class)
 @JsExport
 class Tournament internal constructor(internal val backedTournament: io.github.lunalobos.chess4kt.Tournament) {
 
@@ -66,39 +66,6 @@ class Tournament internal constructor(internal val backedTournament: io.github.l
         set(value) {
             backedTournament.completed = value
         }
-
-    /**
-     * The unique identifier for this tournament.
-     *
-     * @since v1.0.0-beta9c
-     */
-    val id: Any?
-        get() = backedTournament.id
-
-    /**
-     * The display name of the tournament.
-     *
-     * @since v1.0.0-beta9c
-     */
-    val name: String?
-        get() = backedTournament.name
-
-    /**
-     * The specific time settings for the matches (e.g., "3+2", "10|0").
-     * Returns null if no specific time control has been defined.
-     *
-     * @since v1.0.0-beta9c
-     */
-    val timeControl: String?
-        get() = backedTournament.timeControl
-
-    /**
-     * The category of the tournament based on the time control (e.g., "blitz", "bullet", "rapid").
-     *
-     * @since v1.0.0-beta9c
-     */
-    val type: String?
-        get() = backedTournament.type
 
     /**
      * Current matches being played.

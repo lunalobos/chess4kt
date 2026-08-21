@@ -21,7 +21,7 @@ import kotlin.test.assertFalse
 import io.github.lunalobos.chess4kt.Square.*
 import io.github.lunalobos.chess4kt.Piece.*
 
-class StalemateMetrics {
+class StalemateMetricsTest {
     @Test
     fun stalemate(){
         val bitboards = bitboardsOf(WK to H1, BQ to G3, BK to E8)
@@ -29,6 +29,8 @@ class StalemateMetrics {
         val legalMoves = 0L
         assertTrue(stalemateMetrics.isStalemate(bitboards, wm, legalMoves))
     }
+
+
 
     @Test
     fun noStalemate(){

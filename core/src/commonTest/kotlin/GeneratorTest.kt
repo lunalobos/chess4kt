@@ -36,6 +36,19 @@ class GeneratorTest {
     @Ignore
     @OptIn(ExperimentalTime::class)
     @Test
+    fun debugPosition() {
+        val position = positionOf().move("a2a3").move("b7b5")
+        val d1 = now()
+        logger.debug(position.children.map{ it.v2}.joinToString("\n"))
+        assertEquals(19, generationTest(1, position))
+
+        val d2 = now()
+        logger.debug("GeneratorTest-Position${1} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
+    }
+
+    //@Ignore
+    @OptIn(ExperimentalTime::class)
+    @Test
     fun position1() {
         val position = positionOf()
         val d1 = now()
@@ -48,7 +61,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${1} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    @Ignore
+    //@Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions2() {
@@ -63,7 +76,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${2} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    @Ignore
+    //@Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions3() {
@@ -79,7 +92,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${3} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    @Ignore
+    //@Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions4() {
@@ -94,7 +107,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${4} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    @Ignore
+    //@Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions5() {
@@ -109,7 +122,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${5} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    @Ignore
+    //@Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions6() {

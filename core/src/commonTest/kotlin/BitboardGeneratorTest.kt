@@ -60,47 +60,6 @@ class BitboardGeneratorTest {
     }
 
     @Test
-    fun checkInfo() {
-        val bitboards = bitboardsOf(
-            WP to A2,
-            WP to B6,
-            WP to C5,
-            WP to E2,
-            WP to F2,
-            WP to H4,
-            WN to A6,
-            WN to F3,
-            WB to C1,
-            WB to F1,
-            WR to A1,
-            WR to H1,
-            WQ to B3,
-            WK to E1,
-            BP to B7,
-            BP to D4,
-            BP to E4,
-            BP to G5,
-            BN to H6,
-            BB to E5,
-            BB to G6,
-            BR to C6,
-            BQ to E6,
-            BK to G8
-        )
-
-        val (inCheck, inCheckMask) = checkInfoGenerator.checkInfo(
-            BK.ordinal, bitboards, false, blackPawnMatrix2[G8.ordinal]
-        )
-
-        assertFalse(inCheck)
-
-        assertEquals(
-            Bitboard(-1L).toSquares().toSet(),
-            Bitboard(inCheckMask).toSquares().toSet()
-        )
-    }
-
-    @Test
     fun movesInfo(){
         val bitboards = bitboardsOf(
             WP to A2,

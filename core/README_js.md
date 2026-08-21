@@ -199,10 +199,8 @@ A utility class designed to group a `Position` and a `Move` together.
 
 ## Notation
 
-This non-instantiable class represents the types of move notation supported by this library.
-The library provides two predefined instances: `UCI` (long algebraic notation used in the UCI protocol) and `SAN` (
-standard
-algebraic notation).
+This non-instantiable class represents the types of move notation supported by this library. The library provides two
+predefined instances: `UCI` (long algebraic notation used in the UCI protocol) and `SAN` (standard algebraic notation).
 
 ### Properties
 
@@ -212,9 +210,9 @@ algebraic notation).
 
 ## Game and Node
 
-The `Game` class represents a match or an analysis game.
-It is basically a tree of `Node` objects with some other properties like tags.
-If an instance is used to represent a documented match then its structure becomes like a linked list.
+The `Game` class represents a match or an analysis game. It is basically a tree of `Node` objects with some other
+properties like tags. If an instance is used to represent a documented match then its structure becomes like a linked
+list.
 
 ### Properties
 
@@ -430,8 +428,7 @@ This is a class for defining tournament tie-breaking strategies.
 
 ### Match
 
-The `Match` class represents a match between two players. It can't be directly instantiated, you need to use a
-factory.
+The `Match` class represents a match between two players. It can't be directly instantiated, you need to use a factory.
 
 #### Properties
 
@@ -463,8 +460,8 @@ const match = matchOf(white, black);
 ### Tournament
 
 The `Tournament` class is the most important one in this set, as it allows us to manage and automate the tournament
-management logic. It cannot be instantiated directly; instead, it must be obtained through a factory. So far, there
-are two types: arena and swiss instances. Both are further detailed in the examples below.
+management logic. It cannot be instantiated directly; instead, it must be obtained through a factory. So far, there are
+two types: arena and swiss instances. Both are further detailed in the examples below.
 
 #### Properties
 
@@ -495,9 +492,9 @@ are two types: arena and swiss instances. Both are further detailed in the examp
 
 #### Factories
 
-| Function     | Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Return Type  | Description                                                                   |
-|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|-------------------------------------------------------------------------------|
-| `tournament` | `type`: `string`,  `tiebreakers`: `Array<String>` default `["fidePerformance", "buchholz", "progressive", "sonnebornBerger"]`, `impactFactor`: `number` default `32`, `rangeFactor`: `number` default `400`, `logisticBase`: `number` default `10`, `idGenerator`: `Nullable<() => any>` default `null`, `id`: `Nullable<any>` default `null`, `name`: `Nullable<string>` default `null`, `timeControl`: `Nullable<string>` default `null`, `timeControlType`: `Nullable<string>` default `null` | `Tournament` | Factory function to create a Tournament instance based on the specified type. |
+| Function     | Arguments                                                                                                                                                                                                                                                                                               | Return Type  | Description                                                                   |
+|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|-------------------------------------------------------------------------------|
+| `tournament` | `type`: `string`,  `tiebreakers`: `Array<String>` default `["fidePerformance", "buchholz", "progressive", "sonnebornBerger"]`, `impactFactor`: `number` default `32`, `rangeFactor`: `number` default `400`, `logisticBase`: `number` default `10`, `idGenerator`: `Nullable<() => any>` default `null` | `Tournament` | Factory function to create a Tournament instance based on the specified type. |
 
 #### Examples
 
@@ -580,11 +577,11 @@ console.log(myTournament.leaderboard.map(e => e.toString() + ` - ${e.score.toStr
 
 *Creating an arena tournament*
 
-Arena-type tournaments do not actually have rounds; instead, games are generated at specific time intervals.
-Regardless, new games are obtained via `nextRound()`. This type of tournament are managed using external variables,
-such as elapsed time, and they do not end until the developer decides they should. The following example
-is only intended to show the class's behavior when used in arena mode; it is not meant to illustrate the actual
-management of an arena tournament, which is typically more complex.
+Arena-type tournaments do not actually have rounds; instead, games are generated at specific time intervals. Regardless,
+new games are obtained via `nextRound()`. This type of tournament are managed using external variables, such as elapsed
+time, and they do not end until the developer decides they should. The following example is only intended to show the
+class's behavior when used in arena mode; it is not meant to illustrate the actual management of an arena tournament,
+which is typically more complex.
 
 ```javascript
 import {tournament, playerOf} from "./chess4js.mjs";

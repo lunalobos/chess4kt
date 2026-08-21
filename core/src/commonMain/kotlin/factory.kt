@@ -24,7 +24,7 @@ import io.github.lunalobos.chess4kt.Game.*
 
 private val loggers: MutableMap<String, Logger> = mutableMapOf()
 
-private val defaultFilterLevel = Level.WARN
+private val defaultFilterLevel = Level.DEBUG
 
 internal fun getLogger(name: String): Logger {
     return loggers.getOrPut(name) { Logger(name, defaultFilterLevel) }
@@ -421,16 +421,12 @@ fun tournament(
     type: String,
     eloCalculator: EloCalculator = EloCalculator(),
     comparator: Comparator<Player> = defaultTiebreakerComparator,
-    idGenerator: (() -> Any)? = null,
-    id: Any? = null,
-    name: String? = null,
-    timeControl: String? = null,
-    timeControlType: String? = null,
+    idGenerator: (() -> Any)? = null
 ): Tournament {
     return when (type) {
-        "arena" -> ArenaTournament(eloCalculator, idGenerator, id, name, timeControl, timeControlType)
+        "arena" -> ArenaTournament(eloCalculator, idGenerator)
             .apply { playersComparator = comparator }
-        "swiss" -> SwissTournament(eloCalculator, idGenerator, id, name, timeControl, timeControlType)
+        "swiss" -> SwissTournament(eloCalculator, idGenerator)
             .apply { playersComparator = comparator }
         else -> error("unknown tournament type $type")
     }

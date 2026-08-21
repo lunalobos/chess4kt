@@ -184,22 +184,14 @@ fun tournament(
     impactFactor: Double = 32.0,
     rangeFactor: Double = 400.0,
     logisticBase: Double = 10.0,
-    idGenerator: (() -> Any)? = null,
-    id: String? = null,
-    name: String? = null,
-    timeControl: String? = null,
-    timeControlType: String? = null,
+    idGenerator: (() -> Any)? = null
 ): Tournament {
     return Tournament(
         io.github.lunalobos.chess4kt.tournament(
             type,
             EloCalculator(impactFactor, rangeFactor, logisticBase),
             tiebreakerComparatorOf(*tiebreakers),
-            idGenerator,
-            id,
-            name,
-            timeControl,
-            timeControlType
+            idGenerator
         )
     ).apply {
         this.tiebreakers = tiebreakers

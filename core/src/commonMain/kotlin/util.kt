@@ -79,6 +79,11 @@ internal fun isPresent(bitboard: Long): Boolean {
     return (signum * signum) == 1
 }
 
+internal fun isPresentAsInt(bitboard: Long): Int {
+    val signum = bitboard.sign
+    return (signum * signum)
+}
+
 internal fun stringRepresentation(squares: IntArray, fen: String): String {
     val sb = StringBuilder()
     sb.append("\n+---+---+---+---+---+---+---+---+ \n")

@@ -26,4 +26,9 @@ internal class CheckMetrics(
         val threats = visibleMetrics.immediateThreats(bitboards, friends, enemies)
         return isPresent(kingBitboard and threats)
     }
+
+    fun inCheck(friends: Long, enemies: Long, kingBitboard: Long, bitboards: LongArray): Boolean{
+        val threats = visibleMetrics.immediateThreats(bitboards, friends, enemies)
+        return isPresent(kingBitboard and threats)
+    }
 }
