@@ -30,11 +30,11 @@ internal class Eco {
     val positionMap: Map<Position, EcoInfo>
 
     @OptIn(ExperimentalTime::class)
-    constructor(positionOf: (String) -> Position) {
+    constructor() {
         val d1 = now()
         movesMap = loadMoves()
         //fillEcoMap()
-        positionMap = loadPositions2(positionOf)
+        positionMap = loadPositions2()
         val d2 = now()
         logger.info("time ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
@@ -49,7 +49,8 @@ internal class Eco {
     }
     */
 
-    private fun loadPositions2(positionOf: (String) -> Position): Map<Position, EcoInfo> {
+    private fun loadPositions2(): Map<Position, EcoInfo> {
+        val positionOf: (String) -> Position = { fen -> positionFromFenUnsafe(fen)}
         return mutableMapOf<Position, EcoInfo>().apply {
             this.putAll(positions1(positionOf))
             this.putAll(positions2(positionOf))
@@ -138,7 +139,7 @@ internal class Eco {
                 strings.add(sb.toString())
 
                 sb = StringBuilder()
-            } else if (c == stringSeparator && sb.length == 0) {
+            } else if (c == stringSeparator && sb.isEmpty()) {
                 val bucket = Bucket(stringSeparator)
                 previousString = true
                 while (bucket.hasSpace && !stack.isEmpty()) {

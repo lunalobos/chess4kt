@@ -15,7 +15,7 @@
  */
 package io.github.lunalobos.chess4kt
 
-internal data class CastleInfo (
+internal data class CastleInfo(
     var wk: Boolean,
     var wq: Boolean,
     var bk: Boolean,
@@ -28,7 +28,7 @@ internal data class CastleInfo (
         val lcSquares: IntArray
         val rookBits: Long
         val kingBits: Long
-        if(wm){
+        if (wm) {
             scMask = castleMask[1][0]
             lcMask = castleMask[1][1]
             scSquares = castleSquares[1][0]
@@ -45,13 +45,41 @@ internal data class CastleInfo (
         }
         val scBitsMasked = ((rookBits and scMask[1]) ushr scSquares[1]) and ((kingBits and scMask[0]) ushr scSquares[0])
         val lcBitsMasked = ((rookBits and lcMask[1]) ushr lcSquares[1]) and ((kingBits and lcMask[0]) ushr lcSquares[0])
-        if(wm){
+        if (wm) {
             wk = isPresent(scBitsMasked) && wk
             wq = isPresent(lcBitsMasked) && wq
         } else {
             bk = isPresent(scBitsMasked) && bk
             bq = isPresent(lcBitsMasked) && bq
         }
+        return this
+    }
+
+    fun applyCastleRulesWhite(bitboards: LongArray): CastleInfo {
+        val scMask = castleMask[1][0]
+        val lcMask = castleMask[1][1]
+        val scSquares = castleSquares[1][0]
+        val lcSquares = castleSquares[1][1]
+        val rookBits = bitboards[Piece.WR.ordinal - 1]
+        val kingBits = bitboards[Piece.WK.ordinal - 1]
+        val scBitsMasked = ((rookBits and scMask[1]) ushr scSquares[1]) and ((kingBits and scMask[0]) ushr scSquares[0])
+        val lcBitsMasked = ((rookBits and lcMask[1]) ushr lcSquares[1]) and ((kingBits and lcMask[0]) ushr lcSquares[0])
+        wk = isPresent(scBitsMasked) && wk
+        wq = isPresent(lcBitsMasked) && wq
+        return this
+    }
+
+    fun applyCastleRulesBlack(bitboards: LongArray): CastleInfo {
+        val scMask = castleMask[0][0]
+        val lcMask = castleMask[0][1]
+        val scSquares = castleSquares[0][0]
+        val lcSquares = castleSquares[0][1]
+        val rookBits = bitboards[Piece.BR.ordinal - 1]
+        val kingBits = bitboards[Piece.BK.ordinal - 1]
+        val scBitsMasked = ((rookBits and scMask[1]) ushr scSquares[1]) and ((kingBits and scMask[0]) ushr scSquares[0])
+        val lcBitsMasked = ((rookBits and lcMask[1]) ushr lcSquares[1]) and ((kingBits and lcMask[0]) ushr lcSquares[0])
+        bk = isPresent(scBitsMasked) && bk
+        bq = isPresent(lcBitsMasked) && bq
         return this
     }
 }

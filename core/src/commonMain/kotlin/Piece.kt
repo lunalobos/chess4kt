@@ -67,7 +67,7 @@ enum class Piece(
     /**
      * Black Pawn
      */
-    BP(Side.BLACK),
+    BP(BLACK),
 
     /**
      * Black Knight

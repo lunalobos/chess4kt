@@ -15,7 +15,7 @@
  */
 package io.github.lunalobos.chess4kt
 
-internal class VisibleMetrics() {
+internal class VisibleMetrics {
 
     private val opts = longArrayOf(0L, 1L, 3L, 7L, 15L, 31L, 63L, 127L)
     private val visibleOptions = Array(64) { arrayOfNulls<LongArray>(8) }
@@ -149,50 +149,48 @@ internal class VisibleMetrics() {
         return enemiesVisible
     }
 
-
-    fun threats(bitboards: LongArray, friends: Long, enemies: Long, kingSquare: Int, wm: Boolean): Long {
+    fun threatsWhite(bitboards: LongArray, friends: Long, enemies: Long, kingSquare: Int): Long {
         var enemiesVisible = 0L
         val visibleKing = visibleSquaresKing(kingSquare, friends)
         val effectiveFriends = friends or (visibleKing and enemies)
         val effectiveEnemies = enemies and (visibleKing and enemies).inv()
-        val enemyPawn = 6 * (if (wm) 1 else 0)
-        val pawnFunction = calculators[enemyPawn + 1]
-        var pawnBitboard = bitboards[enemyPawn]
+        val pawnFunction = calculators[Piece.BP.ordinal]
+        var pawnBitboard = bitboards[Piece.BP.ordinal - 1]
         while (pawnBitboard != 0L) {
             val bitboard = pawnBitboard and -pawnBitboard
             pawnBitboard = pawnBitboard and bitboard.inv()
             val square = bitboard.countTrailingZeroBits()
             enemiesVisible = enemiesVisible or pawnFunction(square, effectiveEnemies, effectiveFriends)
         }
-        var knightBitboard = bitboards[enemyPawn + 1]
+        var knightBitboard = bitboards[Piece.BN.ordinal - 1]
         while (knightBitboard != 0L) {
             val bitboard = knightBitboard and -knightBitboard
             knightBitboard = knightBitboard and bitboard.inv()
             val square = bitboard.countTrailingZeroBits()
             enemiesVisible = enemiesVisible or visibleSquaresKnight(square, effectiveEnemies)
         }
-        var bishopBitboard = bitboards[enemyPawn + 2]
+        var bishopBitboard = bitboards[Piece.BB.ordinal - 1]
         while (bishopBitboard != 0L) {
             val bitboard = bishopBitboard and -bishopBitboard
             bishopBitboard = bishopBitboard and bitboard.inv()
             val square = bitboard.countTrailingZeroBits()
             enemiesVisible = enemiesVisible or visibleSquaresBishop(square, effectiveEnemies, effectiveFriends)
         }
-        var rookBitboard = bitboards[enemyPawn + 3]
+        var rookBitboard = bitboards[Piece.BR.ordinal - 1]
         while (rookBitboard != 0L) {
             val bitboard = rookBitboard and -rookBitboard
             rookBitboard = rookBitboard and bitboard.inv()
             val square = bitboard.countTrailingZeroBits()
             enemiesVisible = enemiesVisible or visibleSquaresRook(square, effectiveEnemies, effectiveFriends)
         }
-        var queenBitboard = bitboards[enemyPawn + 4]
+        var queenBitboard = bitboards[Piece.BQ.ordinal - 1]
         while (queenBitboard != 0L) {
             val bitboard = queenBitboard and -queenBitboard
             queenBitboard = queenBitboard and bitboard.inv()
             val square = bitboard.countTrailingZeroBits()
             enemiesVisible = enemiesVisible or visibleSquaresQueen(square, effectiveEnemies, effectiveFriends)
         }
-        var kingBitboard = bitboards[enemyPawn + 5]
+        var kingBitboard = bitboards[Piece.BK.ordinal - 1]
         while (kingBitboard != 0L) {
             val bitboard = kingBitboard and -kingBitboard
             kingBitboard = kingBitboard and bitboard.inv()
@@ -202,20 +200,54 @@ internal class VisibleMetrics() {
         return enemiesVisible
     }
 
-    fun visibleSquares(bitboards: LongArray, directionsIndexes: IntArray, square: Int, wm: Boolean): Long {
-        val black = bitboards[6] or bitboards[7] or bitboards[8] or bitboards[9] or bitboards[10] or bitboards[11]
-        val white = bitboards[0] or bitboards[1] or bitboards[2] or bitboards[3] or bitboards[4] or bitboards[5]
-        val friends: Long
-        val enemies: Long
-        if (wm) {
-            friends = white
-            enemies = black
-        } else {
-            friends = black
-            enemies = white
+    fun threatsBlack(bitboards: LongArray, friends: Long, enemies: Long, kingSquare: Int): Long {
+        var enemiesVisible = 0L
+        val visibleKing = visibleSquaresKing(kingSquare, friends)
+        val effectiveFriends = friends or (visibleKing and enemies)
+        val effectiveEnemies = enemies and (visibleKing and enemies).inv()
+        val pawnFunction = calculators[Piece.WP.ordinal]
+        var pawnBitboard = bitboards[Piece.WP.ordinal - 1]
+        while (pawnBitboard != 0L) {
+            val bitboard = pawnBitboard and -pawnBitboard
+            pawnBitboard = pawnBitboard and bitboard.inv()
+            val square = bitboard.countTrailingZeroBits()
+            enemiesVisible = enemiesVisible or pawnFunction(square, effectiveEnemies, effectiveFriends)
         }
-        return computeVisible(
-            square, directionsIndexes, queenMegamatrix[square], friends, enemies
-        )
+        var knightBitboard = bitboards[Piece.WN.ordinal - 1]
+        while (knightBitboard != 0L) {
+            val bitboard = knightBitboard and -knightBitboard
+            knightBitboard = knightBitboard and bitboard.inv()
+            val square = bitboard.countTrailingZeroBits()
+            enemiesVisible = enemiesVisible or visibleSquaresKnight(square, effectiveEnemies)
+        }
+        var bishopBitboard = bitboards[Piece.WB.ordinal - 1]
+        while (bishopBitboard != 0L) {
+            val bitboard = bishopBitboard and -bishopBitboard
+            bishopBitboard = bishopBitboard and bitboard.inv()
+            val square = bitboard.countTrailingZeroBits()
+            enemiesVisible = enemiesVisible or visibleSquaresBishop(square, effectiveEnemies, effectiveFriends)
+        }
+        var rookBitboard = bitboards[Piece.WR.ordinal - 1]
+        while (rookBitboard != 0L) {
+            val bitboard = rookBitboard and -rookBitboard
+            rookBitboard = rookBitboard and bitboard.inv()
+            val square = bitboard.countTrailingZeroBits()
+            enemiesVisible = enemiesVisible or visibleSquaresRook(square, effectiveEnemies, effectiveFriends)
+        }
+        var queenBitboard = bitboards[Piece.WQ.ordinal - 1]
+        while (queenBitboard != 0L) {
+            val bitboard = queenBitboard and -queenBitboard
+            queenBitboard = queenBitboard and bitboard.inv()
+            val square = bitboard.countTrailingZeroBits()
+            enemiesVisible = enemiesVisible or visibleSquaresQueen(square, effectiveEnemies, effectiveFriends)
+        }
+        var kingBitboard = bitboards[Piece.WK.ordinal - 1]
+        while (kingBitboard != 0L) {
+            val bitboard = kingBitboard and -kingBitboard
+            kingBitboard = kingBitboard and bitboard.inv()
+            val square = bitboard.countTrailingZeroBits()
+            enemiesVisible = enemiesVisible or visibleSquaresKing(square, effectiveEnemies)
+        }
+        return enemiesVisible
     }
 }

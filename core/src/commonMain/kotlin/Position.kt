@@ -28,11 +28,7 @@ import io.github.lunalobos.chess4kt.Square.*
  * @since 1.0.0-beta.1
  * @author lunalobos
  */
-class Position {
-
-    internal companion object {
-        private val emptyPossibilities = listOf('1', '2', '3', '4', '5', '6', '7', '8')
-    }
+sealed class Position {
 
     /**
      * Array of Long integers used as **Bitboards**. The index in the array is equal to the ordinal value minus one
@@ -47,7 +43,7 @@ class Position {
     /**
      * True if it is White's turn to move. False if it is Black's turn.
      */
-    val whiteMove: Boolean
+    abstract val whiteMove: Boolean
 
     /**
      * The square index (0-63) where a pawn can be captured en passant.
@@ -89,17 +85,8 @@ class Position {
     /**
      * Internal data structure containing pre-calculated legal moves and attack information for the current position.
      */
-    internal val mi: MovesInfo get() {
-        return movesInfoGenerator.movesInfo(
-            bitboards,
-            whiteMove,
-            whiteCastleKingside,
-            whiteCastleQueenside,
-            blackCastleKingside,
-            blackCastleQueenside,
-            enPassant
-        )
-    }
+    internal abstract val mi: MovesInfo
+
     private val moves: Long by lazy { mi.moves }
 
     /**
@@ -177,7 +164,7 @@ class Position {
     }
 
     // startpos
-    internal constructor() {
+    constructor() {
         bitboards = arrayOf(
             arrayOf(A2, B2, C2, D2, E2, F2, G2, H2),
             arrayOf(B1, G1),
@@ -192,7 +179,6 @@ class Position {
             arrayOf(D8),
             arrayOf(E8)
         ).map { squares -> Bitboard.fromSquares(*squares).value }.toLongArray()
-        whiteMove = true
         enPassant = -1
         whiteCastleKingside = true
         whiteCastleQueenside = true
@@ -203,9 +189,8 @@ class Position {
     }
 
     // manual constructor
-    internal constructor(
+    constructor(
         bitboards: LongArray,
-        whiteMove: Boolean,
         enPassant: Int,
         whiteCastleKingside: Boolean,
         whiteCastleQueenside: Boolean,
@@ -215,7 +200,6 @@ class Position {
         hm: Int
     ) {
         this.bitboards = bitboards
-        this.whiteMove = whiteMove
         this.enPassant = enPassant
         this.whiteCastleKingside = whiteCastleKingside
         this.whiteCastleQueenside = whiteCastleQueenside
@@ -226,7 +210,7 @@ class Position {
     }
 
     // fen constructor
-    internal constructor(fen: String) {
+    /*constructor(fen: String) {
         val sqrs = IntArray(64)
         val parts = fen.split(" ")
         val rows = parts[0].split("/")
@@ -310,7 +294,7 @@ class Position {
 
         // moves counter
         movesCounter = parts[5].toInt()
-    }
+    }*/
 
     override fun hashCode(): Int = zobrist.hashCode()
 

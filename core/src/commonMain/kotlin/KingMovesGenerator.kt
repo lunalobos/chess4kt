@@ -16,20 +16,15 @@
 package io.github.lunalobos.chess4kt
 
 internal class KingMovesGenerator(
-    private val movesObj: Moves,
-    private val visibleMetrics: VisibleMetrics
+    private val movesObj: Moves, private val visibleMetrics: VisibleMetrics
 ) {
 
-    private val kingMovesMatrix = kingMatrix
-        .map { it.map { sq -> 1L shl sq }.reduceOrNull { acc, element -> acc or element } ?: 0L }.toLongArray()
+    private val kingMovesMatrix =
+        kingMatrix.map { it.map { sq -> 1L shl sq }.reduceOrNull { acc, element -> acc or element } ?: 0L }
+            .toLongArray()
 
     private fun isShortCastleWhiteEnable(
-        kingSquare: Int,
-        enemies: Long,
-        friends: Long,
-        wk: Long,
-        inCheck: Long,
-        threats: Long
+        kingSquare: Int, enemies: Long, friends: Long, wk: Long, inCheck: Long, threats: Long
     ): Long {
         val kingLocation = ((1L shl kingSquare) and (1L shl 4)) ushr 4
         val piecesInterruption1 = ((1L shl 5) and (enemies or friends)) ushr 5
@@ -38,13 +33,9 @@ internal class KingMovesGenerator(
         val check2 = (threats and (1L shl 6)) ushr 6
         return kingLocation and piecesInterruption1.inv() and piecesInterruption2.inv() and wk and check1.inv() and check2.inv() and inCheck.inv()
     }
+
     private fun isShortCastleBlackEnable(
-        kingSquare: Int,
-        enemies: Long,
-        friends: Long,
-        bk: Long,
-        inCheck: Long,
-        threats: Long
+        kingSquare: Int, enemies: Long, friends: Long, bk: Long, inCheck: Long, threats: Long
     ): Long {
         val kingLocation = ((1L shl kingSquare) and (1L shl 60)) ushr 60
         val piecesInterruption1 = ((1L shl 61) and (enemies or friends)) ushr 61
@@ -55,12 +46,7 @@ internal class KingMovesGenerator(
     }
 
     private fun isLongCastleWhiteEnable(
-        kingSquare: Int,
-        enemies: Long,
-        friends: Long,
-        wq: Long,
-        inCheck: Long,
-        threats: Long
+        kingSquare: Int, enemies: Long, friends: Long, wq: Long, inCheck: Long, threats: Long
     ): Long {
         val kingLocation = ((1L shl kingSquare) and (1L shl 4)) ushr 4
         val piecesInterruption1 = ((1L shl 2) and (enemies or friends)) ushr 2
@@ -68,17 +54,11 @@ internal class KingMovesGenerator(
         val piecesInterruption3 = ((1L shl 1) and (enemies or friends)) ushr 1
         val check1 = (threats and (1L shl 3)) ushr 3
         val check2 = (threats and (1L shl 2)) ushr 2
-        return (kingLocation and piecesInterruption1.inv() and piecesInterruption2.inv() and piecesInterruption3.inv() and wq
-                and check1.inv() and check2.inv() and inCheck.inv())
+        return (kingLocation and piecesInterruption1.inv() and piecesInterruption2.inv() and piecesInterruption3.inv() and wq and check1.inv() and check2.inv() and inCheck.inv())
     }
 
     private fun isLongCastleBlackEnable(
-        kingSquare: Int,
-        enemies: Long,
-        friends: Long,
-        bq: Long,
-        inCheck: Long,
-        threats: Long
+        kingSquare: Int, enemies: Long, friends: Long, bq: Long, inCheck: Long, threats: Long
     ): Long {
         val kingLocation = ((1L shl kingSquare) and (1L shl 60)) ushr 60
         val piecesInterruption1 = ((1L shl 58) and (enemies or friends)) ushr 58
@@ -86,50 +66,62 @@ internal class KingMovesGenerator(
         val piecesInterruption3 = ((1L shl 57) and (enemies or friends)) ushr 57
         val check1 = (threats and (1L shl 58)) ushr 58
         val check2 = (threats and (1L shl 59)) ushr 59
-        return (kingLocation and piecesInterruption1.inv() and piecesInterruption2.inv() and piecesInterruption3.inv() and bq
-                and check1.inv() and check2.inv() and inCheck.inv())
+        return (kingLocation and piecesInterruption1.inv() and piecesInterruption2.inv() and piecesInterruption3.inv() and bq and check1.inv() and check2.inv() and inCheck.inv())
     }
 
-    fun kingMoves(
-        square: Int, pieceType: Int, enemies: Long, friends: Long, inCheck: Boolean, bitboards: LongArray,
-        wm: Boolean, wk: Long, wq: Long, bk: Long, bq: Long
+    fun kingMovesWhite(
+        square: Int,
+        enemies: Long,
+        friends: Long,
+        inCheck: Boolean,
+        bitboards: LongArray,
+        wk: Long,
+        wq: Long,
     ): KingMoves {
         val emptyOrEnemy = friends.inv()
         val moves = kingMovesMatrix[square]
-        val threats = visibleMetrics.threats(bitboards, friends and (1L shl square).inv(), enemies, square, wm)
+        val threats = visibleMetrics.threatsWhite(bitboards, friends and (1L shl square).inv(), enemies, square)
         val regularMoves: Long = moves and emptyOrEnemy and threats.inv()
         return if (inCheck) {
-            KingMoves(pieceType, square, enemies, regularMoves, 0L, movesObj)
+            KingMoves(Piece.WK.ordinal, square, enemies, regularMoves, 0L, movesObj)
         } else {
             var castleMoves = 0L
             val inCheckArg = if (inCheck) 1L else 0L
-            castleMoves =
-                castleMoves or (isShortCastleWhiteEnable(square, enemies, friends, wk, inCheckArg, threats) shl 6)
+            castleMoves = castleMoves or (isShortCastleWhiteEnable(
+                square, enemies, friends, wk, inCheckArg, threats
+            ) shl 6)
             castleMoves = castleMoves or (isLongCastleWhiteEnable(
-                square,
-                enemies,
-                friends,
-                wq,
-                inCheckArg,
-                threats
+                square, enemies, friends, wq, inCheckArg, threats
             ) shl 2)
+            KingMoves(Piece.WK.ordinal, square, enemies, regularMoves, castleMoves, movesObj)
+        }
+    }
+
+    fun kingMovesBlack(
+        square: Int,
+        enemies: Long,
+        friends: Long,
+        inCheck: Boolean,
+        bitboards: LongArray,
+        bk: Long,
+        bq: Long
+    ): KingMoves {
+        val emptyOrEnemy = friends.inv()
+        val moves = kingMovesMatrix[square]
+        val threats = visibleMetrics.threatsBlack(bitboards, friends and (1L shl square).inv(), enemies, square)
+        val regularMoves: Long = moves and emptyOrEnemy and threats.inv()
+        return if (inCheck) {
+            KingMoves(Piece.BK.ordinal, square, enemies, regularMoves, 0L, movesObj)
+        } else {
+            var castleMoves = 0L
+            val inCheckArg = if (inCheck) 1L else 0L
             castleMoves = castleMoves or (isShortCastleBlackEnable(
-                square,
-                enemies,
-                friends,
-                bk,
-                inCheckArg,
-                threats
+                square, enemies, friends, bk, inCheckArg, threats
             ) shl 62)
             castleMoves = castleMoves or (isLongCastleBlackEnable(
-                square,
-                enemies,
-                friends,
-                bq,
-                inCheckArg,
-                threats
+                square, enemies, friends, bq, inCheckArg, threats
             ) shl 58)
-            KingMoves(pieceType, square, enemies, regularMoves, castleMoves, movesObj)
+            KingMoves(Piece.BK.ordinal, square, enemies, regularMoves, castleMoves, movesObj)
         }
     }
 }

@@ -226,7 +226,7 @@ internal val movesInfoGenerator = MovesInfoGenerator(
 
 //--------------------------------------------position factory functions-----------------------------------------------
 
-internal val startpos = Position()
+internal val startpos = StarterPosition()
 
 /**
  * Returns the standard starting [Position] (the startpos FEN).
@@ -257,7 +257,7 @@ fun positionOf(fen: String): Position {
 
 //---------------------------------------------------eco functions-----------------------------------------------------
 
-private val eco = Eco({ fen -> Position(fen)})
+private val eco = Eco()
 
 internal fun ecoInfo(moves: String): EcoInfo? {
     return eco.movesMap[moves]

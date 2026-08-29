@@ -26,87 +26,53 @@ internal class MovesInfoGenerator(
     private val kingMovesGenerator: KingMovesGenerator,
     private val checkMaskGenerator: CheckMaskGenerator,
     private val checkInfoGenerator: CheckInfoGenerator
-    ) {
+) {
 
-    fun movesInfo(bitboards: LongArray, wm: Boolean, wk: Boolean, wq: Boolean, bk: Boolean, bq: Boolean, enPassant: Int): MovesInfo {
-        val knightPiece: Int
-        val bishopPiece: Int
-        val rookPiece: Int
-        val queenPiece: Int
-        val kingPiece: Int
-        val kingSquare: Int
-        val friends: Long
-        val enemies: Long
-        val inCheck: Boolean
-        val inCheckMask: Long
-        val checkMask: Long
-        val pawnMoves: MutableList<PawnMoves>
-        if (wm) {
-
-            knightPiece = Piece.WN.ordinal
-            bishopPiece = Piece.WB.ordinal
-            rookPiece = Piece.WR.ordinal
-            queenPiece = Piece.WQ.ordinal
-            kingPiece = Piece.WK.ordinal
-            kingSquare = bitboards[kingPiece - 1].countTrailingZeroBits()
-            friends = (bitboards[Piece.WP.ordinal - 1] or bitboards[Piece.WN.ordinal - 1]
-                    or bitboards[Piece.WB.ordinal - 1] or bitboards[Piece.WR.ordinal - 1]
-                    or bitboards[Piece.WQ.ordinal - 1] or bitboards[Piece.WK.ordinal - 1])
-            enemies = (bitboards[Piece.BP.ordinal - 1] or bitboards[Piece.BN.ordinal - 1]
-                    or bitboards[Piece.BB.ordinal - 1] or bitboards[Piece.BR.ordinal - 1]
-                    or bitboards[Piece.BQ.ordinal - 1] or bitboards[Piece.BK.ordinal - 1])
-            val checkInfo = checkInfoGenerator.checkInfoWhite(
-                friends,
-                enemies,
-                bitboards,
-                kingSquare
+    fun movesInfoWhite(
+        bitboards: LongArray,
+        wk: Boolean,
+        wq: Boolean,
+        enPassant: Int
+    ): MovesInfo {
+        val knightPiece = Piece.WN.ordinal
+        val bishopPiece = Piece.WB.ordinal
+        val rookPiece = Piece.WR.ordinal
+        val queenPiece = Piece.WQ.ordinal
+        val kingPiece = Piece.WK.ordinal
+        val kingSquare = bitboards[kingPiece - 1].countTrailingZeroBits()
+        val friends = (bitboards[Piece.WP.ordinal - 1] or bitboards[Piece.WN.ordinal - 1]
+                or bitboards[Piece.WB.ordinal - 1] or bitboards[Piece.WR.ordinal - 1]
+                or bitboards[Piece.WQ.ordinal - 1] or bitboards[Piece.WK.ordinal - 1])
+        val enemies = (bitboards[Piece.BP.ordinal - 1] or bitboards[Piece.BN.ordinal - 1]
+                or bitboards[Piece.BB.ordinal - 1] or bitboards[Piece.BR.ordinal - 1]
+                or bitboards[Piece.BQ.ordinal - 1] or bitboards[Piece.BK.ordinal - 1])
+        val checkInfo = checkInfoGenerator.checkInfoWhite(
+            friends,
+            enemies,
+            bitboards,
+            kingSquare
+        )
+        val (inCheck, inCheckMask) = checkInfo
+        val checkMask = checkMaskGenerator.checkMaskWhite(
+            kingSquare, enemies, friends, bitboards
+        )
+        val pawnMoves = bitboardToList(bitboards[Piece.WP.ordinal - 1]) {
+            pawnMovesGenerator.pawnMovesWhite(
+                it, it.countTrailingZeroBits(),
+                kingSquare, enemies,
+                friends, enPassant, bitboards, checkMask,
+                inCheckMask
             )
-            inCheck = checkInfo.inCheck
-            inCheckMask = checkInfo.inCheckMask
-            checkMask = checkMaskGenerator.checkMaskWhite(
-                kingSquare, enemies, friends, bitboards
-            )
-            pawnMoves = bitboardToList(bitboards[Piece.WP.ordinal - 1]) {
-                pawnMovesGenerator.pawnMovesWhite(
-                    it, it.countTrailingZeroBits(),
-                    kingSquare, enemies,
-                    friends, enPassant, bitboards, checkMask,
-                    inCheckMask
-                )
-            }
-        } else {
-            knightPiece = Piece.BN.ordinal
-            bishopPiece = Piece.BB.ordinal
-            rookPiece = Piece.BR.ordinal
-            queenPiece = Piece.BQ.ordinal
-            kingPiece = Piece.BK.ordinal
-            kingSquare = bitboards[kingPiece - 1].countTrailingZeroBits()
-            friends = (bitboards[Piece.BP.ordinal - 1] or bitboards[Piece.BN.ordinal - 1]
-                    or bitboards[Piece.BB.ordinal - 1] or bitboards[Piece.BR.ordinal - 1]
-                    or bitboards[Piece.BQ.ordinal - 1] or bitboards[Piece.BK.ordinal - 1])
-            enemies = (bitboards[Piece.WP.ordinal - 1] or bitboards[Piece.WN.ordinal - 1]
-                    or bitboards[Piece.WB.ordinal - 1] or bitboards[Piece.WR.ordinal - 1]
-                    or bitboards[Piece.WQ.ordinal - 1] or bitboards[Piece.WK.ordinal - 1])
-            val checkInfo = checkInfoGenerator.checkInfoBlack(
-                friends,
-                enemies,
-                bitboards,
-                kingSquare
-            )
-            inCheck = checkInfo.inCheck
-            inCheckMask = checkInfo.inCheckMask
-            checkMask = checkMaskGenerator.checkMaskBlack(
-                kingSquare, enemies, friends, bitboards
-            )
-            pawnMoves = bitboardToList(bitboards[Piece.BP.ordinal - 1]) {
-                pawnMovesGenerator.pawnMovesBlack(
-                    it, it.countTrailingZeroBits(),
-                    kingSquare, enemies,
-                    friends, enPassant, bitboards, checkMask,
-                    inCheckMask
-                )
-            }
         }
+        val kingMoves = kingMovesGenerator.kingMovesWhite(
+            bitboards[kingPiece - 1].countTrailingZeroBits(),
+            enemies,
+            friends,
+            inCheck,
+            bitboards,
+            if (wk) 1L else 0L,
+            if (wq) 1L else 0L,
+        )
 
         // Knight Moves
         val knightMoves = bitboardToList(bitboards[knightPiece - 1]) {
@@ -137,25 +103,92 @@ internal class MovesInfoGenerator(
             )
         }
 
-        // King Moves
-        val kingMoves = kingMovesGenerator.kingMoves(
+        /*.traceExit(
+            "movesInfo",
+            MovesInfo(pawnMoves, knightMoves, bishopMoves, rookMoves, queenMoves, kingMoves)
+        )*/
+        return MovesInfoBlack(pawnMoves, knightMoves, bishopMoves, rookMoves, queenMoves, kingMoves)
+    }
+
+    fun movesInfoBlack(
+        bitboards: LongArray,
+        bk: Boolean,
+        bq: Boolean,
+        enPassant: Int
+    ): MovesInfo {
+        val knightPiece = Piece.BN.ordinal
+        val bishopPiece = Piece.BB.ordinal
+        val rookPiece = Piece.BR.ordinal
+        val queenPiece = Piece.BQ.ordinal
+        val kingPiece = Piece.BK.ordinal
+        val kingSquare = bitboards[kingPiece - 1].countTrailingZeroBits()
+        val friends: Long = (bitboards[Piece.BP.ordinal - 1] or bitboards[Piece.BN.ordinal - 1]
+                or bitboards[Piece.BB.ordinal - 1] or bitboards[Piece.BR.ordinal - 1]
+                or bitboards[Piece.BQ.ordinal - 1] or bitboards[Piece.BK.ordinal - 1])
+        val enemies: Long = (bitboards[Piece.WP.ordinal - 1] or bitboards[Piece.WN.ordinal - 1]
+                or bitboards[Piece.WB.ordinal - 1] or bitboards[Piece.WR.ordinal - 1]
+                or bitboards[Piece.WQ.ordinal - 1] or bitboards[Piece.WK.ordinal - 1])
+        val checkInfo = checkInfoGenerator.checkInfoBlack(
+            friends,
+            enemies,
+            bitboards,
+            kingSquare
+        )
+        val (inCheck, inCheckMask) = checkInfo
+        val checkMask: Long = checkMaskGenerator.checkMaskBlack(
+            kingSquare, enemies, friends, bitboards
+        )
+        val pawnMoves = bitboardToList(bitboards[Piece.BP.ordinal - 1]) {
+            pawnMovesGenerator.pawnMovesBlack(
+                it, it.countTrailingZeroBits(),
+                kingSquare, enemies,
+                friends, enPassant, bitboards, checkMask,
+                inCheckMask
+            )
+        }
+        val kingMoves = kingMovesGenerator.kingMovesBlack(
             bitboards[kingPiece - 1].countTrailingZeroBits(),
-            kingPiece,
             enemies,
             friends,
             inCheck,
             bitboards,
-            wm,
-            if (wk) 1L else 0L,
-            if (wq) 1L else 0L,
             if (bk) 1L else 0L,
             if (bq) 1L else 0L
         )
+
+        // Knight Moves
+        val knightMoves = bitboardToList(bitboards[knightPiece - 1]) {
+            knightMovesGenerator.knightMoves(
+                it, it.countTrailingZeroBits(), knightPiece, enemies,
+                friends, checkMask, inCheckMask
+            )
+        }
+        // Bishop Moves
+        val bishopMoves = bitboardToList(bitboards[bishopPiece - 1]) {
+            bishopMovesGenerator.bishopMoves(
+                it, it.countTrailingZeroBits(), bishopPiece, kingSquare,
+                enemies, friends, checkMask, inCheckMask
+            )
+        }
+        // Rook Moves
+        val rookMoves = bitboardToList(bitboards[rookPiece - 1]) {
+            rookMovesGenerator.rookMoves(
+                it, it.countTrailingZeroBits(), rookPiece, kingSquare,
+                enemies, friends, checkMask, inCheckMask
+            )
+        }
+        // Queen Moves
+        val queenMoves = bitboardToList(bitboards[queenPiece - 1]) {
+            queenMovesGenerator.queenMoves(
+                it, it.countTrailingZeroBits(), queenPiece, kingSquare,
+                friends, enemies, checkMask, inCheckMask
+            )
+        }
 
         /*.traceExit(
             "movesInfo",
             MovesInfo(pawnMoves, knightMoves, bishopMoves, rookMoves, queenMoves, kingMoves)
         )*/
-        return MovesInfo(pawnMoves, knightMoves, bishopMoves, rookMoves, queenMoves, kingMoves)
+        return MovesInfoWhite(pawnMoves, knightMoves, bishopMoves, rookMoves, queenMoves, kingMoves)
     }
 }

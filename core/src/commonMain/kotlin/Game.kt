@@ -335,7 +335,7 @@ class Game : Iterable<Game.Node> {
 
     private fun tagsToString(): String {
         val mainTags = arrayOf("event", "site", "date", "round", "white", "black", "result", "ECO")
-        val sb = mainTags.asSequence().map { tupleOf(it, tags[it] ?: "unknown") }.also {
+        val sb = mainTags.asSequence().map { Pair(it, tags[it] ?: "unknown") }.also {
                 if (tags["result"] == "unknown") {
                     tags["result"] = "*"
                 }
@@ -900,7 +900,7 @@ class Game : Iterable<Game.Node> {
 
         fun warning(node: Node): Boolean {
             return positions.entries.asSequence().filter { (_, count) -> count == 2 }
-                .any { (position, _) -> position in node.position.children.map { it.v1 } }
+                .any { (position, _) -> position in node.position.children.map { it.first } }
         }
 
         fun remove(node: Node) {

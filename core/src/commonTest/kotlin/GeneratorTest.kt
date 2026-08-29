@@ -37,10 +37,11 @@ class GeneratorTest {
     @OptIn(ExperimentalTime::class)
     @Test
     fun debugPosition() {
-        val position = positionOf().move("a2a3").move("b7b5")
+        val position = positionOf("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
+            .move("a1b1")
         val d1 = now()
-        logger.debug(position.children.map{ it.v2}.joinToString("\n"))
-        assertEquals(19, generationTest(1, position))
+        logger.debug(position.children.map{ it.second }.joinToString("\n"))
+        assertEquals(43, generationTest(1, position))
 
         val d2 = now()
         logger.debug("GeneratorTest-Position${1} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
@@ -136,7 +137,6 @@ class GeneratorTest {
         val d2 = now()
         logger.debug("GeneratorTest-Position${6} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
-
 
     private fun generationTest(depth: Int, position: Position): Int {
         if (depth == 0) return 1
