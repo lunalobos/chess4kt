@@ -25,19 +25,18 @@ internal class PawnMoves(
     val advanceEpMoves: Long,
     val promotionMoves: Long,
     val epCapture: Long,
-    private val regularMoveFunction: (origin: Int, target: Int) -> Move,
-    private val promotionMoveFunction: (origin: Int, target: Int, promotionPiece: Int) -> Move
+    private val moves: Moves
 ) {
     val regularMovesList: List<Move> by lazy {
-        bitboardToList(regularMoves) { regularMoveFunction(originSquare, it.countTrailingZeroBits()) }
+        bitboardToList(regularMoves) { moves.moveFromOriginTarget(originSquare, it.countTrailingZeroBits()) }
     }
     val advanceEpMovesList: List<Move> by lazy {
-        bitboardToList(advanceEpMoves) { regularMoveFunction(originSquare, it.countTrailingZeroBits()) }
+        bitboardToList(advanceEpMoves) { moves.moveFromOriginTarget(originSquare, it.countTrailingZeroBits()) }
     }
     val promotionMovesList: List<Move> by lazy {
         bitboardToCollectedList(promotionMoves) { move ->
             (if (pawnPiece == WP.ordinal) sequenceOf(WQ, WR, WB, WN) else sequenceOf(BQ, BR, BB, BN))
-                .map { promotionMoveFunction(originSquare, move.countTrailingZeroBits(), it.ordinal) }.toList()
+                .map { moves.moveFromOriginTargetPromotion(originSquare, move.countTrailingZeroBits(), it.ordinal) }.toList()
         }
     }
     val epCaptureMove: Move? by lazy {

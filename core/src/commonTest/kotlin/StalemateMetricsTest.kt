@@ -16,31 +16,27 @@
 package io.github.lunalobos.chess4kt
 
 import kotlin.test.Test
-import io.github.lunalobos.chess4kt.Piece.*
+import kotlin.test.assertTrue
+import kotlin.test.assertFalse
 import io.github.lunalobos.chess4kt.Square.*
-import kotlin.test.assertEquals
+import io.github.lunalobos.chess4kt.Piece.*
 
-class KnightGeneratorTest {
+class StalemateMetricsTest {
+    @Test
+    fun stalemate(){
+        val bitboards = bitboardsOf(WK to H1, BQ to G3, BK to E8)
+        val wm = true
+        val legalMoves = 0L
+        assertTrue(stalemateMetrics.isStalemate(bitboards, wm, legalMoves))
+    }
+
+
 
     @Test
-    fun f3(){
-        val bitboards = bitboardsOf(
-            WN to F3,
-            WP to E5,
-            WK to E1,
-            BK to E8,
-            BP to D4
-        )
-        val expected = Bitboard.fromSquares(D4, D2, G1, H2, H4, G5)
-        val actual = knightMoves(
-            bitboards[WN.ordinal -1],
-            F3.ordinal,
-            WN.ordinal,
-            Bitboard.fromSquares(E8, D4).value,
-            Bitboard.fromSquares(F3, E5, E1).value,
-            0L,
-            -1L
-        ).moves
-        assertEquals(expected, Bitboard(actual))
+    fun noStalemate(){
+        val bitboards = bitboardsOf(WK to E1, BK to E8, BQ to D4)
+        val wm = true
+        val legalMoves = Bitboard.fromSquares(E2, F1, F2).value
+        assertFalse(stalemateMetrics.isStalemate(bitboards, wm, legalMoves))
     }
 }

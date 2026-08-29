@@ -21,17 +21,17 @@ internal class KingMoves(
     val enemies: Long,
     val regularMoves: Long,
     val castleMoves: Long,
-    private val regularMoveFunction: (origin: Int, target: Int) -> Move,
+    private val movesObj: Moves,
 ) {
     val regularMovesList: List<Move> by lazy {
         bitboardToList(regularMoves) {
-            regularMoveFunction(originSquare, it.countTrailingZeroBits())
+            movesObj.moveFromOriginTarget(originSquare, it.countTrailingZeroBits())
         }
     }
 
     val castleMovesList: List<Move> by lazy {
         bitboardToList(castleMoves) {
-            regularMoveFunction(originSquare, it.countTrailingZeroBits())
+            movesObj.moveFromOriginTarget(originSquare, it.countTrailingZeroBits())
         }
     }
 

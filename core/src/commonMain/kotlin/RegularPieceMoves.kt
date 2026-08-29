@@ -17,19 +17,19 @@ package io.github.lunalobos.chess4kt
 
 internal class RegularPieceMoves(
     val piece: Int, val square: Int, val enemies: Long, val moves: Long,
-    private val moveFunction: (origin: Int, target: Int) -> Move
+    private val movesObj: Moves,
 ) {
     val allMovesList: List<Move> by lazy {
         bitboardToList(moves) {
-            moveFunction(square, it.countTrailingZeroBits())
+            movesObj.moveFromOriginTarget(square, it.countTrailingZeroBits())
         }
     }
 
-    override fun toString(): String {
+    /*override fun toString(): String {
         return "RegularPieceMoves(piece=${Piece.entries[piece]}, origin=${Square.entries[square]}, enemies=${
             Bitboard(
                 enemies
             ).toSquares()
         }, moves=$allMovesList)"
-    }
+    }*/
 }

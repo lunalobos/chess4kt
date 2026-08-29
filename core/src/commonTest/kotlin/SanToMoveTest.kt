@@ -78,7 +78,7 @@ class SanToMoveTest {
     @Test
     fun e8q() {
         val sanMove = "e8=Q"
-        val position = Position("8/1k1KP3/8/8/8/8/8/8 w - - 0 0")
+        val position = positionOf("8/1k1KP3/8/8/8/8/8/8 w - - 0 1")
         val uciMove = sanToMove(position, sanMove)
         val expectedUCIMove = "e7e8q"
         assertEquals(expectedUCIMove, uciMove.toString())

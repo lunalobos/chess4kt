@@ -46,35 +46,6 @@ interface Tournament {
     val idGenerator: (() -> Any)?
 
     /**
-     * The unique identifier for this tournament.
-     *
-     * @since v1.0.0-beta9c
-     */
-    val id: Any?
-
-    /**
-     * The display name of the tournament.
-     *
-     * @since v1.0.0-beta9c
-     */
-    val name: String?
-
-    /**
-     * The specific time settings for the matches (e.g., "3+2", "10|0").
-     * Returns null if no specific time control has been defined.
-     *
-     * @since v1.0.0-beta9c
-     */
-    val timeControl: String?
-
-    /**
-     * The category of the tournament based on the time control (e.g., "blitz", "bullet", "rapid").
-     *
-     * @since v1.0.0-beta9c
-     */
-    val type: String?
-
-    /**
      * Adds a player to the tournament. The player's name must be unique.
      *
      * @param player The player to be added.

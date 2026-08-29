@@ -26,7 +26,7 @@ class VisibleMetricTest {
         val friends = Bitboard.fromSquares(D4, G1, C1).value
         val enemies = Bitboard.fromSquares(B3, G4).value
         val expected = Bitboard.fromSquares(C2, B3, E2, F3, G4, E1, F1, D2, D3).value
-        val result = visibleSquaresQueen(D1.ordinal, friends, enemies)
+        val result = visibleMetrics.visibleSquaresQueen(D1.ordinal, friends, enemies)
         assertEquals(expected, result)
     }
 }

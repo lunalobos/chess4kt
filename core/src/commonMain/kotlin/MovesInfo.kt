@@ -15,7 +15,7 @@
  */
 package io.github.lunalobos.chess4kt
 
-internal class MovesInfo(
+internal sealed class MovesInfo(
     val pawnMoves: List<PawnMoves>,
     val knightMoves: List<RegularPieceMoves>,
     val bishopMoves: List<RegularPieceMoves>,
@@ -45,4 +45,6 @@ internal class MovesInfo(
     override fun toString(): String{
         return "MovesInfo(moves = $movesList)"
     }
+
+    abstract fun generateChildren(position: Position): List<Pair<Position, Move>>
 }

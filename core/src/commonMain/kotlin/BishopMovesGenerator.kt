@@ -15,21 +15,24 @@
  */
 package io.github.lunalobos.chess4kt
 
-internal fun yieldBishopMoves(
-    visibleSquaresBishop: (square: Int, friends: Long, enemies: Long) -> Long,
-    moveFunction: (origin: Int, target: Int) -> Move
-): (br: Long, square: Int, pieceType: Int, kingSquare: Int, enemies: Long, friends: Long,
-    checkMask: Long, inCheckMask: Long) -> RegularPieceMoves {
-    return { br: Long, square: Int, pieceType: Int, kingSquare: Int, enemies: Long, friends: Long,
-    checkMask: Long, inCheckMask: Long ->
-        val pseudoLegalMoves: Long = visibleSquaresBishop(square, friends, enemies)
+internal class BishopMovesGenerator(
+    private val movesObj: Moves, private val visibleMetrics: VisibleMetrics
+) {
+    fun bishopMoves(
+        br: Long,
+        square: Int,
+        pieceType: Int,
+        kingSquare: Int,
+        enemies: Long,
+        friends: Long,
+        checkMask: Long,
+        inCheckMask: Long
+    ): RegularPieceMoves {
+        val pseudoLegalMoves: Long = visibleMetrics.visibleSquaresBishop(square, friends, enemies)
         val pin = longArrayOf(-1L, pseudoLegalMoves and checkMask and defenseDirection(kingSquare, square))
         val isPin = pin[((br and checkMask) ushr (br and checkMask).countTrailingZeroBits()).toInt()]
-        RegularPieceMoves(
-            pieceType,
-            square,
-            enemies,
-            pseudoLegalMoves and isPin and inCheckMask,
-            moveFunction)
+        return RegularPieceMoves(
+            pieceType, square, enemies, pseudoLegalMoves and isPin and inCheckMask, movesObj
+        )
     }
 }

@@ -32,7 +32,7 @@ class RookGeneratorTest {
         )
         val expected = Bitboard.fromSquares(H2, H3, H4, H5, G1, F1)
         val actual = Bitboard(
-            rookMoves(
+            rookMovesGenerator.rookMoves(
                 bitboards[WR.ordinal -1],
                 H1.ordinal,
                 WR.ordinal,

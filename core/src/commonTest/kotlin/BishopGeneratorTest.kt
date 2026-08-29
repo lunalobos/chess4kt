@@ -32,7 +32,7 @@ class BishopGeneratorTest {
             BK to E8
         )
         val expected = Bitboard.fromSquares(E2, G2)
-        val actual = Bitboard(bishopMoves(
+        val actual = Bitboard(bishopMovesGenerator.bishopMoves(
             bitboards[WB.ordinal - 1],
             F1.ordinal,
             WN.ordinal,

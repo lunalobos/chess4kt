@@ -79,6 +79,11 @@ internal fun isPresent(bitboard: Long): Boolean {
     return (signum * signum) == 1
 }
 
+internal fun isPresentAsInt(bitboard: Long): Int {
+    val signum = bitboard.sign
+    return (signum * signum)
+}
+
 internal fun stringRepresentation(squares: IntArray, fen: String): String {
     val sb = StringBuilder()
     sb.append("\n+---+---+---+---+---+---+---+---+ \n")
@@ -188,12 +193,12 @@ internal fun toFen(
     return fenSB.toString().trim { it <= ' ' }
 }
 
-internal fun <T> bitboardToList(
+internal inline fun <T> bitboardToList(
     bitboard: Long,
     entitiesFactory: (Long) -> T
 ): MutableList<T> {
     var copy = bitboard
-    val list = mutableListOf<T>()
+    val list = linkedListOf<T>()
     while (copy != 0L) {
         val lowestOneBit = copy and -copy
         list.add(entitiesFactory(lowestOneBit))
@@ -202,12 +207,12 @@ internal fun <T> bitboardToList(
     return list
 }
 
-internal fun <T> bitboardToCollectedList(
+internal inline fun <T> bitboardToCollectedList(
     bitboard: Long,
     entitiesFactory: (Long) -> List<T>
 ): MutableList<T> {
     var copy = bitboard
-    val list = mutableListOf<T>()
+    val list = linkedListOf<T>()
     while (copy != 0L) {
         val lowestOneBit = copy and -copy
         list.addAll(entitiesFactory(lowestOneBit))
@@ -221,9 +226,9 @@ internal fun Bitboard.toSquares(): List<Square> {
     return bitboardToList(value) { Square.get(it.countTrailingZeroBits()) }
 }
 
-internal fun <T> bitboardToSequence(
+internal inline fun <T> bitboardToSequence(
     bitboard: Long,
-    entitiesFactory: (Long) -> T
+    crossinline entitiesFactory: (Long) -> T
 ): Sequence<T> = sequence {
     var copy = bitboard
     while (copy != 0L) {
@@ -233,9 +238,9 @@ internal fun <T> bitboardToSequence(
     }
 }
 
-internal fun <T> bitboardToCollectedSequence(
+/*internal inline fun <T> bitboardToCollectedSequence(
     bitboard: Long,
-    entitiesFactory: (Long) -> Sequence<T>
+    crossinline entitiesFactory: (Long) -> Sequence<T>
 ): Sequence<T> = sequence {
     var copy = bitboard
     while (copy != 0L) {
@@ -243,7 +248,7 @@ internal fun <T> bitboardToCollectedSequence(
         yieldAll(entitiesFactory(lowestOneBit))
         copy = copy and lowestOneBit.inv()
     }
-}
+}*/
 
 internal fun getColIndex(column: String): Int {
     return binarySearch(COLS, column)
@@ -269,18 +274,22 @@ internal fun getSquareIndex(col: Int, row: Int): Int {
     return col + row * 8
 }
 
+internal fun <T> linkedListOf(): MutableList<T> {
+    return LinkedList()
+}
+
 internal fun positionFromFen(fen: String): Position {
     // fen format
     if (!isValidFenFormat(fen)) {
         throw IllegalArgumentException("invalid fen $fen")
     }
 
-    val position = Position(fen)
+    val position = positionFromFenUnsafe(fen)
 
-    val bitboards = Position(fen).bitboards
+    val bitboards = position.bitboards
 
     // side to move in check
-    val validCheck = !inCheck(bitboards, !position.whiteMove)
+    val validCheck = !checkMetrics.inCheck(bitboards, !position.whiteMove)
 
     // pawns in 8th rank
     val wpBitboards = bitboards[Piece.WP.ordinal - 1]
@@ -439,7 +448,7 @@ val Position.enPassantSquare: Square?
         return if (enPassant == -1) {
             null
         } else {
-            Square.valueOf("${getColLetter(getCol(enPassant))?.uppercase() ?: ""}${(if (getRow(enPassant) == 3) 3 else 6)}")
+            Square.valueOf("${getColLetter(getCol(enPassant)).uppercase()}${(if (getRow(enPassant) == 3) 3 else 6)}")
         }
     }
 
@@ -469,14 +478,6 @@ val Position.gameOver: Boolean get() = checkmate || stalemate || lackOfMaterial
  */
 val Position.sideToMove: Side get() = if (whiteMove) Side.WHITE else Side.BLACK
 
-/**
- * A list of tuples, where each tuple represents a legal move from this position and the resulting new position
- * (Tuple<Position, Move>). This list effectively defines the legal branches of the game tree from the current position.
- *
- * @since 1.0.0-beta.1
- * @author lunalobos
- */
-val Position.children: List<Tuple<Position, Move>> get() = generateChildren(mi, this)
 
 /**
  * Retrieves the new [Position] that results from executing the provided legal [Move]. Throws a MoveException if the
@@ -489,7 +490,7 @@ val Position.children: List<Tuple<Position, Move>> get() = generateChildren(mi, 
  * @author lunalobos
  */
 fun Position.move(move: Move): Position {
-    return children.find { it.v2 == move }?.v1 ?: throw MoveException("illegal move $move")
+    return children.find { it.second == move }?.first ?: throw MoveException("illegal move $move")
 }
 
 /**
@@ -505,10 +506,10 @@ fun Position.move(move: Move): Position {
  */
 fun Position.move(move: String, notation: Notation = Notation.UCI): Position {
     return when (notation) {
-        Notation.UCI -> moveFromString(move).let { m -> children.find { it.v2 == m }?.v1 }
+        Notation.UCI -> movesObj.moveFromString(move).let { m -> children.find { it.second == m }?.first }
             ?: throw MoveException("illegal move $move")
 
-        Notation.SAN -> sanToMove(this, move).let { m -> children.find { it.v2 == m }?.v1 }
+        Notation.SAN -> sanToMove(this, move).let { m -> children.find { it.second == m }?.first }
             ?: throw MoveException("illegal move $move")
     }
 
@@ -524,8 +525,8 @@ fun Position.move(move: String, notation: Notation = Notation.UCI): Position {
  * @author lunalobos
  */
 fun Position.isLegal(move: Move): Boolean {
-    val m = moveFromOriginTargetPromotion(move.origin, move.target, move.promotionPiece)
-    return children.any { it.v2 == m }
+    val m = movesObj.moveFromOriginTargetPromotion(move.origin, move.target, move.promotionPiece)
+    return children.any { it.second == m }
 }
 
 /**
@@ -540,8 +541,8 @@ fun Position.isLegal(move: Move): Boolean {
  */
 fun Position.isLegal(move: String, notation: Notation = Notation.UCI): Boolean {
     return when (notation) {
-        Notation.UCI -> children.any { it.v2.toString() == move }
-        Notation.SAN -> children.any { toSan(this, it.v2) == move }
+        Notation.UCI -> children.any { it.second.toString() == move }
+        Notation.SAN -> children.any { toSan(this, it.second) == move }
     }
 }
 
@@ -675,11 +676,11 @@ internal fun String.capitalize(): String {
     }
 }
 
-internal fun String.unCapitalize(): String {
+/*internal fun String.unCapitalize(): String {
     return this.replaceFirstChar {
         if (it.isUpperCase()) it.lowercase() else it.toString()
     }
-}
+}*/
 
 /**
  * Removes the last node in the main line, effectively undoing the last move, and returns the parent node.
@@ -805,7 +806,7 @@ internal fun toSan(position: Position, move: Move, pieces: Array<String> = piece
 
     // Determine if there are one or more pieces of the same type that can move to the same destination.
     val moves: List<Move> = position.children.asSequence()
-        .map { it.v2 }
+        .map { it.second }
         .filter { m -> m.target == move.target }
         .filter { m -> entries[position.squares[m.origin]] === entries[position.squares[move.origin]] }
         .filter { m -> m.origin != move.origin }
@@ -848,7 +849,7 @@ internal fun toSan(position: Position, move: Move, pieces: Array<String> = piece
     sbSAN.append(getColLetter(move.target)).append(getRow(move.target) + 1)
 
     // Determine if it is a promotion. If so, append "=" + promotedPiece to the destination square.
-    val isPromotion = move.promotionPiece != -1 && (isPromotion(move.target) == 1L)
+    val isPromotion = move.promotionPiece != -1 && (PawnMovesGenerator.isPromotion(move.target) == 1L)
     if (isPromotion) {
         sbSAN.append("=").append(pieces[move.promotionPiece])
     }
@@ -933,17 +934,30 @@ fun Position.flipSide(): Position {
     if (checkmate || check) {
         error("this position can't be flipped because it derives to an illegal position")
     }
-    return Position(
-        bitboards,
-        !whiteMove,
-        enPassant,
-        whiteCastleKingside,
-        whiteCastleQueenside,
-        blackCastleKingside,
-        blackCastleQueenside,
-        movesCounter,
-        halfMovesCounter
-    )
+    if(whiteMove) {
+        return BlackPosition(
+            bitboards,
+            enPassant,
+            whiteCastleKingside,
+            whiteCastleQueenside,
+            blackCastleKingside,
+            blackCastleQueenside,
+            movesCounter,
+            halfMovesCounter
+        )
+    } else {
+        return WhitePosition(
+            bitboards,
+            enPassant,
+            whiteCastleKingside,
+            whiteCastleQueenside,
+            blackCastleKingside,
+            blackCastleQueenside,
+            movesCounter,
+            halfMovesCounter
+        )
+    }
+
 }
 
 /**
@@ -994,3 +1008,12 @@ fun Position.transpositionId(): String {
     sb.append(halfMovesCounter)
     return sb.toString()
 }
+
+/**
+ * A list of pairs, where each tuple represents a legal move from this position and the resulting new position
+ * (Tuple<Position, Move>). This list effectively defines the legal branches of the game tree from the current position.
+ *
+ * @since 1.0.0-beta.10
+ * @author lunalobos
+ */
+val Position.children get() = mi.generateChildren(this)

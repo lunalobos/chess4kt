@@ -27,7 +27,7 @@ class CheckmateMetricsTest {
         val bitboards = bitboardsOf(WK to E1, BK to E3, BQ to H1)
         val wm = true
         val legalMoves = 0L
-        assertTrue(isCheckmate(bitboards, wm, legalMoves))
+        assertTrue(checkmateMetrics.isCheckmate(bitboards, wm, legalMoves))
     }
 
     @Test
@@ -35,6 +35,12 @@ class CheckmateMetricsTest {
         val bitboards = bitboardsOf(WK to E1, BK to E8, BQ to E4)
         val wm = true
         val legalMoves = Bitboard.fromSquares(F1, F2, D1, D2).value
-        assertFalse(isCheckmate(bitboards, wm, legalMoves))
+        assertFalse(checkmateMetrics.isCheckmate(bitboards, wm, legalMoves))
+    }
+
+    @Test
+    fun noCheckmate2(){
+        val position = positionOf("rnb1k2r/1p1pbppp/p3p3/8/4P1n1/2NBBN2/PPP2PPq/R2Q1RK1 w kq - 0 10")
+        assertFalse(position.checkmate)
     }
 }

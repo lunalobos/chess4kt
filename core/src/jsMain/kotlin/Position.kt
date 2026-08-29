@@ -150,7 +150,7 @@ class Position internal constructor(internal val backedPosition: io.github.lunal
     val children
         get() = backedPosition.children.map {
             val obj = js("{}")
-            Tuple.of(Position(it.v1), Move(it.v2))
+            Tuple.of(Position(it.first), Move(it.second))
         }.asJsReadonlyArrayView()
 
     /**

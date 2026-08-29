@@ -167,10 +167,6 @@ fun matchOf(
  * to faster rating changes. Default is 32.0.
  * @param rangeFactor The scale factor used to determine win probability. In standard Elo (like Chess), this is
  * typically 400.0.
- * @param id The unique identifier for this tournament.
- * @param name The display name of the tournament.
- * @param timeControl The specific time settings for the matches (e.g., "3+2", "10|0").
- * @param timeControlType The category of the tournament based on the time control (e.g., "blitz", "bullet", "rapid").
  * @param idGenerator Unique ID generator for assigning identifiers to match objects.
  * @param logisticBase The base of the exponent in the logistic function.
  * @return A [Tournament] instance.
@@ -184,28 +180,21 @@ fun tournament(
     impactFactor: Double = 32.0,
     rangeFactor: Double = 400.0,
     logisticBase: Double = 10.0,
-    idGenerator: (() -> Any)? = null,
-    id: String? = null,
-    name: String? = null,
-    timeControl: String? = null,
-    timeControlType: String? = null,
+    idGenerator: (() -> Any)? = null
 ): Tournament {
     return Tournament(
         io.github.lunalobos.chess4kt.tournament(
             type,
             EloCalculator(impactFactor, rangeFactor, logisticBase),
             tiebreakerComparatorOf(*tiebreakers),
-            idGenerator,
-            id,
-            name,
-            timeControl,
-            timeControlType
+            idGenerator
         )
     ).apply {
         this.tiebreakers = tiebreakers
     }
 }
 
+@OptIn(ExperimentalJsExport::class)
 @JsExport
 /**
  * Factory function that maps a string identifier to a concrete [Tiebreaker] strategy.

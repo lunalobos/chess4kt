@@ -17,9 +17,18 @@ package io.github.lunalobos.chess4kt
 
 //private val logger = getLogger("io.github.lunalobos.chess4kt.checkMetrics")
 
-internal fun inCheck(bitboards: LongArray, wm: Boolean): Boolean {
-    val (friends, enemies) = friendsAndEnemies(bitboards, wm)
-    val kingBitboard = bitboards[if (wm) Piece.WK.ordinal - 1 else Piece.BK.ordinal - 1]
-    val threats = immediateThreats(bitboards, friends, enemies)
-    return isPresent(kingBitboard and threats)
+internal class CheckMetrics(
+    private val visibleMetrics: VisibleMetrics
+) {
+    fun inCheck(bitboards: LongArray, wm: Boolean): Boolean{
+        val (friends, enemies) = friendsAndEnemies(bitboards, wm)
+        val kingBitboard = bitboards[if (wm) Piece.WK.ordinal - 1 else Piece.BK.ordinal - 1]
+        val threats = visibleMetrics.immediateThreats(bitboards, friends, enemies)
+        return isPresent(kingBitboard and threats)
+    }
+
+    fun inCheck(friends: Long, enemies: Long, kingBitboard: Long, bitboards: LongArray): Boolean{
+        val threats = visibleMetrics.immediateThreats(bitboards, friends, enemies)
+        return isPresent(kingBitboard and threats)
+    }
 }

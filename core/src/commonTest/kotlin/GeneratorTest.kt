@@ -36,6 +36,20 @@ class GeneratorTest {
     @Ignore
     @OptIn(ExperimentalTime::class)
     @Test
+    fun debugPosition() {
+        val position = positionOf("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
+            .move("a1b1")
+        val d1 = now()
+        logger.debug(position.children.map{ it.second }.joinToString("\n"))
+        assertEquals(43, generationTest(1, position))
+
+        val d2 = now()
+        logger.debug("GeneratorTest-Position${1} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
+    }
+
+    //@Ignore
+    @OptIn(ExperimentalTime::class)
+    @Test
     fun position1() {
         val position = positionOf()
         val d1 = now()
@@ -48,7 +62,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${1} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    @Ignore
+    //@Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions2() {
@@ -63,7 +77,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${2} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    @Ignore
+    //@Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions3() {
@@ -79,7 +93,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${3} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    @Ignore
+    //@Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions4() {
@@ -94,7 +108,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${4} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    @Ignore
+    //@Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions5() {
@@ -109,7 +123,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${5} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    @Ignore
+    //@Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions6() {
@@ -123,7 +137,6 @@ class GeneratorTest {
         val d2 = now()
         logger.debug("GeneratorTest-Position${6} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
-
 
     private fun generationTest(depth: Int, position: Position): Int {
         if (depth == 0) return 1
