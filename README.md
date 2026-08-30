@@ -119,10 +119,9 @@ The [`Game`](https://chess4kt.pages.dev/core/io.github.lunalobos.chess4kt/-game/
 In **Match** mode, these nodes form a **simple linked list** (variations are typically not allowed). In **Analysis** mode, the nodes form a **tree**, enabling the storage of Recursive Annotation Variations (RAVs).
 
 ```mermaid
-
 ---
 config:
-  theme: neo-dark
+  theme: dark
   layout: dagre
   look: classic
 ---
@@ -153,7 +152,6 @@ style C fill:#424242,stroke:#333
 style D fill:#424242,stroke:#333
 style E fill:#424242,stroke:#333
 style F fill:#424242,stroke:#333
-
 ```
 
 The `<Game>` instance contains the **root node**; all other nodes can be traced back to this root using the `parent` property. The root node does not have an associated `Move` object.
