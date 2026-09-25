@@ -132,9 +132,11 @@ internal class Parser(val tokens: List<Token>) {
         return "malformed move text at line ${currentToken.line} token ${currentToken}"
     }
 
-    @OptIn(ExperimentalTime::class)
     private fun parseMoves(node: Game.Node): Game.Node {
-
+        if(currentToken.type == TokenType.RESULT || currentToken.type == TokenType.STAR) {
+            logger.warn("parsing a game with no moves, current tags: $currentTags")
+            return node
+        }
         var move: String? = null
         var initialComment: String? = null
         var comment: String? = null
