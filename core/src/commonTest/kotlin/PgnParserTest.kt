@@ -357,4 +357,41 @@ class PgnParserTest {
         }
 
     }
+
+    @Test
+    fun noMoves() {
+        try {
+            val pgn = """
+            [Event "46th Olympiad 2026"]
+            [Site "Samarkand UZB"]
+            [Date "2026.09.16"]
+            [Round "1.22"]
+            [Board "3"]
+            [White "Gorshtein,Ido"]
+            [Black "Mafaaz Khalid"]
+            [Result "1-0"]
+            [TimeControl "40/5400:1800+30"]
+            [WhiteTitle "GM"]
+            [BlackTitle "CM"]
+            [WhiteElo "2560"]
+            [BlackElo "2057"]
+            [WhiteTeam "Israel"]
+            [BlackTeam "Pakistan"]
+            [WhiteFideId "2815532"]
+            [BlackFideId "7818424"]
+            [EventDate "2026.09.16"]
+            [EventType "team"]
+            [SourceTitle "The Week in Chess 1663"]
+            [Source "Mark Crowther"]
+            [SourceDate "2026.09.21"]
+
+            1-0
+        """.trimIndent()
+            val games = parseGames(pgn)
+        } catch (e: Parser.ParserException) {
+            fail(e.message)
+        }
+
+    }
+
 }
