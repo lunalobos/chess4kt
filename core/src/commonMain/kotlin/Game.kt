@@ -391,7 +391,7 @@ class Game : Iterable<Game.Node> {
     }
 
     /**
-     * Each game can be interpreted as a series of interconnected nodes in a tree. Each node is move in the game and
+     * Each game can be interpreted as a series of interconnected nodes in a tree. Each node is a move in the game and
      * holds information about the board state after that move. Additionally, each node can have regular or end-of-line
      * comments, suffix annotations, as well as more than one child (from the second child onwards, they are
      * variations), and always only one parent node.
@@ -587,11 +587,13 @@ class Game : Iterable<Game.Node> {
         override var endLineComment: String? = null
         override var suffixAnnotations: List<Int>? = null
             set(value) {
-                throw UnsupportedOperationException("RootNode does not accept suffix annotations.")
+                logger.warn("RootNode does not accept suffix annotations.")
+                field = null
             }
         override var parent: Node? = null
             set(value) {
-                throw UnsupportedOperationException("RootNode does not accept a parent")
+                logger.warn("RootNode does not accept a parent")
+                field = null
             }
         override val move: Move? = null
 

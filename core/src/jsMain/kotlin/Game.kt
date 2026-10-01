@@ -18,6 +18,7 @@ package io.github.lunalobos.chess4kt.js
 import io.github.lunalobos.chess4kt.deleteBefore
 import io.github.lunalobos.chess4kt.deleteFromExclusive
 import io.github.lunalobos.chess4kt.deleteFromInclusive
+import kotlin.js.collections.JsMap
 
 /**
  * Class for manipulating games. It allows starting a game from a configurable initial position and with various
@@ -58,9 +59,20 @@ class Game internal constructor(private val backedGame: io.github.lunalobos.ches
      * Setting this property will update the "Result" tag in tags and set the game as immutable if MATCH is used.
      */
     var result: String?
-        get() = backedGame.result?.toString()
+        get() = backedGame.result?.str
         set(value) {
-            backedGame.result = value?.let { io.github.lunalobos.chess4kt.Game.Result.valueOf(it) }
+            when (value) {
+                "1-0" -> backedGame.result = io.github.lunalobos.chess4kt.Game.Result.valueOf("WHITE_WIN")
+                "0-1" -> backedGame.result = io.github.lunalobos.chess4kt.Game.Result.valueOf("BLACK_WIN")
+                "1/2-1/2" -> backedGame.result = io.github.lunalobos.chess4kt.Game.Result.valueOf("DRAW")
+                "WHITE_WIN", "BLACK_WIN", "DRAW" -> backedGame.result =
+                    io.github.lunalobos.chess4kt.Game.Result.valueOf(value)
+
+                "WW" -> backedGame.result = io.github.lunalobos.chess4kt.Game.Result.valueOf("WHITE_WIN")
+                "BW" -> backedGame.result = io.github.lunalobos.chess4kt.Game.Result.valueOf("BLACK_WIN")
+                "*" -> backedGame.result = null
+                else -> throw IllegalArgumentException("invalid result string $value")
+            }
         }
 
     /**
@@ -139,13 +151,10 @@ class Game internal constructor(private val backedGame: io.github.lunalobos.ches
     /**
      * Standard PGN tags (e.g., Event, Site, Date, Round, White, Black, Result).
      */
-    val tags: dynamic
+    @OptIn(ExperimentalJsCollectionsApi::class)
+    val tags: JsMap<String, String>
         get() {
-            val p: dynamic = js("({})")
-            backedGame.tags.entries.forEach {
-                p[it.key] = it.value
-            }
-            return p
+            return backedGame.tags.asJsMapView()
         }
 
 
@@ -175,7 +184,7 @@ class Game internal constructor(private val backedGame: io.github.lunalobos.ches
      * the object, indexing it in an in-memory or on-disk database, or leveraging the ID in any way that facilitates or
      * enables operations.
      */
-    fun toAnalysis(idSupplier: () -> Any? = { null }): Game{
+    fun toAnalysis(idSupplier: () -> Any? = { null }): Game {
         return Game(backedGame.toAnalysis(idSupplier))
     }
 
@@ -191,7 +200,7 @@ class Game internal constructor(private val backedGame: io.github.lunalobos.ches
      * Deletes all moves (the main line continuation and any variations) that follow the provided node.
      * The move represented by the node is effectively removed from the game.
      */
-    fun deleteFromInclusive(node: Node): Node{
+    fun deleteFromInclusive(node: Node): Node {
         return Node(backedGame.deleteFromInclusive(node.backedNode))
     }
 
@@ -200,7 +209,7 @@ class Game internal constructor(private val backedGame: io.github.lunalobos.ches
      * The node (and its position) becomes the new effective start of the game, creating a new RootNode.
      *
      */
-    fun deleteBefore(node: Node): Node{
+    fun deleteBefore(node: Node): Node {
         return Node(backedGame.deleteBefore(node.backedNode))
     }
 
@@ -208,7 +217,7 @@ class Game internal constructor(private val backedGame: io.github.lunalobos.ches
      * Updates the instance's ECO ranking based on the last move of the main line. In match mode this is automatic, but
      * in analysis this function must be called, otherwise the game will not be ranked.
      */
-    fun updateEco(){
+    fun updateEco() {
         backedGame.updateEco()
     }
 

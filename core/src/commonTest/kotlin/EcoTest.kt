@@ -63,4 +63,11 @@ class EcoTest {
         val ecoInfo = ecoInfo(position)
         assertNull(ecoInfo)
     }
+
+    @Test
+    fun e4() {
+        val ecoInfo = ecoInfo("e4")
+        assertEquals("B00", ecoInfo?.eco)
+        assertEquals("King's Pawn Opening; B00", ecoInfo?.name)
+    }
 }

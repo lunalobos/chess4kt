@@ -218,35 +218,35 @@ list.
 
 For the `Game` class:
 
-| Property                  | Type                | Description                                                                                                                                                                                          |
-|---------------------------|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `root`                    | `Node`              | The root node of the game tree. The setter is protected if the game is immutable.                                                                                                                    |
-| `ecoInfo`                 | `Nullable<EcoInfo>` | Stores the current ECO (Encyclopedia of Chess Openings) information for the main line. Setting this property will be ignored if the game is immutable (i.e., MATCH and result is set).               |
-| `id`                      | `Nullable<any>`     | A developer-provided unique identifier for serialization or tracking purposes (e.g., UUID or String).                                                                                                |
-| `result`                  | `Nullable<string>`  | The final result of the game. Setting this property will update the "Result" tag in tags and set the game as immutable if MATCH is used. The values can only be set to WHITE_WIN, BLACK_WIN or DRAW. |
-| `fiftyMoves`              | `boolean`           | Indicates whether the 50-move half-move limit has been reached (non-terminal).                                                                                                                       |
-| `finalComment`            | `Nullable<string>`  | An optional comment placed immediately after the game's result tag in PGN.                                                                                                                           |
-| `fiftyMovesRuleMode`      | `string`            | Determines how the fifty-move rule is enforced for this game instance. The values can only be set to IGNORE, STRICT or AWARE.                                                                        |
-| `finalEndLineComment`     | `Nullable<string>`  | An optional end-of-line comment placed immediately after the game's result tag in PGN.                                                                                                               |
-| `fiveRepetitions`         | `boolean`           | Indicates whether a position has been repeated five times, leading to an automatic draw according to FIDE rules (terminal).                                                                          |
-| `seventyFiveMoves`        | `boolean`           | Indicates whether the 75-move half-move limit has been reached, leading to an automatic draw (terminal).                                                                                             |
-| `threeRepetitionsMode`    | `string`            | Determines how the three-fold repetition rule is enforced for this game instance. The values can only be set to IGNORE, STRICT or AWARE.                                                             |
-| `threeRepetitionsWarning` | `boolean`           | Indicates that a three-fold repetition draw can be claimed, as the repetition is impending (e.g., the current move will complete the third repetition).                                              |
-| `tags`                    | `any`               | A read-only object with keys as PGN tags names in lowercase (e.g., Event, Site, Date, Round, White, Black, Result). and values as PGN tags values                                                    |
+| Property                  | Type                  | Description                                                                                                                                                                                          |
+|---------------------------|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `root`                    | `Node`                | Immutable. The root node of the game tree. The setter is protected if the game is immutable.                                                                                                         |
+| `ecoInfo`                 | `Nullable<EcoInfo>`   | Stores the current ECO (Encyclopedia of Chess Openings) information for the main line. Setting this property will be ignored if the game is immutable (i.e., MATCH and result is set).               |
+| `id`                      | `Nullable<any>`       | Immutable. A developer-provided unique identifier for serialization or tracking purposes (e.g., UUID or String).                                                                                     |
+| `result`                  | `Nullable<string>`    | The final result of the game. Setting this property will update the "Result" tag in tags and set the game as immutable if MATCH is used. The values can only be set to WHITE_WIN, BLACK_WIN or DRAW. |
+| `fiftyMoves`              | `boolean`             | Indicates whether the 50-move half-move limit has been reached (non-terminal).                                                                                                                       |
+| `finalComment`            | `Nullable<string>`    | An optional comment placed immediately after the game's result tag in PGN.                                                                                                                           |
+| `fiftyMovesRuleMode`      | `string`              | Determines how the fifty-move rule is enforced for this game instance. The values can only be set to IGNORE, STRICT or AWARE.                                                                        |
+| `finalEndLineComment`     | `Nullable<string>`    | An optional end-of-line comment placed immediately after the game's result tag in PGN.                                                                                                               |
+| `fiveRepetitions`         | `boolean`             | Indicates whether a position has been repeated five times, leading to an automatic draw according to FIDE rules (terminal).                                                                          |
+| `seventyFiveMoves`        | `boolean`             | Indicates whether the 75-move half-move limit has been reached, leading to an automatic draw (terminal).                                                                                             |
+| `threeRepetitionsMode`    | `string`              | Determines how the three-fold repetition rule is enforced for this game instance. The values can only be set to IGNORE, STRICT or AWARE.                                                             |
+| `threeRepetitionsWarning` | `boolean`             | Indicates that a three-fold repetition draw can be claimed, as the repetition is impending (e.g., the current move will complete the third repetition).                                              |
+| `tags`                    | `Map<String, String>` | A Map with keys as PGN tags names in camelCase (e.g., Event as event, EventDate as eventDate, Site as site, etc) and values as PGN tags values                                                       |
 
 For the `Node` class:
 
-| Property            | Type                              | Description                                                                                                  |
-|---------------------|-----------------------------------|--------------------------------------------------------------------------------------------------------------|
-| `position`          | `Position`                        | The position of the node, which is the result after executing the move.                                      |
-| `move`              | `Nullable<Move>`                  | The move of the node. It is null when it is the root node, which only has the starting position of the game. |
-| `children`          | `ReadonlyArray<Node>`             | The children of the node. The first child corresponds to the main line. The rest are variations (RAVs).      |
-| `initialComment`    | `Nullable<string>`                | The comment that precedes the move number in PGN (e.g., "{Comment} 1. e4").                                  |
-| `comment`           | `Nullable<string>`                | The regular comment that follows the move and any suffix annotations (e.g., 1. e4 {Comment}).                |
-| `endLineComment`    | `Nullable<string>`                | The end-of-line comment for the node, which follows a semicolon ; and goes until the end of the line.        |
-| `suffixAnnotations` | `Nullable<ReadonlyArray<number>>` | The list of suffix annotations (NAGs) for the node.                                                          |
-| `parent`            | `Nullable<Node>`                  | The parent node. It can only be null when it is the root node, which evidently cannot have a parent.         |
-| `id`                | `number`                          | An id for the node.                                                                                          |
+| Property            | Type                              | Description                                                                                                                                |
+|---------------------|-----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| `position`          | `Position`                        | Immutable. The position of the node, which is the result after executing the move.                                                         |
+| `move`              | `Nullable<Move>`                  | Immutable. The move of the node. It is null when it is the root node, which only has the starting position of the game.                    |
+| `children`          | `ReadonlyArray<Node>`             | Immutable. The children of the node. The first child corresponds to the main line. The rest are variations (RAVs).                         |
+| `initialComment`    | `Nullable<string>`                | Allways null in root node. The comment that precedes the move number in PGN (e.g., "{Comment} 1. e4").                                     |
+| `comment`           | `Nullable<string>`                | The regular comment that follows the move and any suffix annotations (e.g., 1. e4 {Comment}).                                              |
+| `endLineComment`    | `Nullable<string>`                | The end-of-line comment for the node, which follows a semicolon ; and goes until the end of the line.                                      |
+| `suffixAnnotations` | `Nullable<ReadonlyArray<number>>` | Allways null in root node. The list of suffix annotations (NAGs) for the node. Root node does'n accept setting this property.              |
+| `parent`            | `Nullable<Node>`                  | Allways null in root node. Immutable. The parent node. It can only be null when it is the root node, which evidently cannot have a parent. |
+| `id`                | `number`                          | Immutable. An id for the node.                                                                                                             |
 
 ### Methods
 
@@ -287,23 +287,134 @@ For the `Node` class
 
 ### Example
 
+The following example shows a simple way to use this class with the factory function strictMatch().
+
 ```js
 import {strictMatch} from "chess4js";
+import {v7 as uuidV7} from "uuid";
 
-const myGame = strictMatch(() => "someId");
-myGame.setTag("white", "foo")
-myGame.setTag("black", "bar")
-myGame.setTag("event", "foobared event")
-myGame.setTag("site", "foobared place")
-myGame.setTag("date", "1999.06.10")
+const game = strictMatch(() => uuidV7());
+game.setTag("white", "foo")
+game.setTag("black", "bar")
+game.setTag("event", "foobared event")
+game.setTag("site", "foobared place")
+game.setTag("date", "1999.06.10")
+game.setTag("eventDate", "1999.06.10")
 
-myGame.root.appendMove("e4")
+game.root.appendMove("e4")
     .appendMove("e5")
     .appendMove("Bc4")
     .appendMove("Nc6")
     .appendMove("Qh5")
     .appendMove("Nf6")
     .appendMove("Qxf7#")
+
+```
+
+If you need to add moves in long algebraic notation, used in the UCI protocol, you can do it like this:
+
+```js
+import {strictMatch} from "chess4js";
+import {v7 as uuidV7} from "uuid";
+
+const game = strictMatch(() => uuidV7());
+
+game.setTag("white", "foo")
+game.setTag("black", "bar")
+game.setTag("event", "foobared event")
+game.setTag("site", "foobared place")
+game.setTag("date", "1999.06.10")
+game.setTag("eventDate", "1999.06.10")
+
+game.root.appendUCIMove("e2e4")
+    .appendUCIMove("e7e5")
+    .appendUCIMove("f1c4")
+    .appendUCIMove("b8c6")
+    .appendUCIMove("d1h5")
+    .appendUCIMove("g8f6")
+    .appendUCIMove("h5f7")
+
+```
+
+If you need to set a game's result you can do it like this:
+
+```js
+import {analysisGame} from "chess4js";
+import {v7 as uuidV7} from "uuid";
+
+const game = analysisGame(() => uuidV7());
+
+// .. some code with the game object
+
+// valid values for this property are "1-0", "0-1", "1/2-1/2", "*", "WHITE_WIN", "BLACK_WIN", "DRAW", "WW" and "BW".
+game.result = "1-0"; // white wins
+game.result = "0-1"; // black wins
+game.result = "1/2-1/2"; // draw
+//-----------------------------------------------------------------------------------
+// on this case if you call game.result it will return a null value
+game.result = "*"; // suspended or with no result, its sets the internal value to null
+
+//-----------------------------------------------------------------------------------
+// on this case if you call game.result it will return "1-0"
+game.result = "WHITE_WIN"; // white wins
+
+//-----------------------------------------------------------------------------------
+// on this case if you call game.result it will return "0-1"
+game.result = "BLACK_WIN"; // black wins
+
+//-----------------------------------------------------------------------------------
+// on this case if you call game.result it will return "1/2-1/2"
+game.result = "DRAW"; // draw
+
+//-----------------------------------------------------------------------------------
+// on this case if you call game.result it will return "1-0"
+game.result = "WW"; // white wins
+
+//-----------------------------------------------------------------------------------
+// on this case if you call game.result it will return "0-1"
+game.result = "BW"; // black wins
+```
+
+If you need to set comments and suffix annotations you can do it like this:
+
+```js
+import { analysisGame } from "./chess4js.mjs";
+
+const game = analysisGame(() => "someId")
+game.setTag("white", "foo")
+game.setTag("black", "bar")
+game.setTag("event", "foobared event")
+game.setTag("site", "foobared place")
+game.setTag("date", "1999.06.10")
+game.setTag("round", "1")
+game.setTag("eventDate", "1999.06.10")
+
+const e4Node = game.root.appendUCIMove("e2e4");
+e4Node.comment = "The king's pawn opening."
+e4Node.suffixAnnotations = [1]; // ! good move
+
+game.result = "1-0";
+game.updateEco(); // analysis mode needs to call this method in order to classify the opening
+
+console.log(game.toString());
+```
+
+The log to the console will look like this:
+
+```console
+[Event "foobared event"]
+[Site "foobared place"]
+[Date "1999.06.10"]
+[Round "1"]
+[White "foo"]
+[Black "bar"]
+[Result "1-0"]
+[ECO "B00"]
+[Id "someId"]
+[EventDate "1999.06.10"]
+[Opening "King's Pawn Opening; B00"]
+
+1.e4 $1 {The king's pawn opening.} 1-0
 
 ```
 
