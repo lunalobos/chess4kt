@@ -29,6 +29,16 @@ class GameTest {
         val logger = getLogger("io.github.lunalobos.chess4kt.GameTest")
     }
 
+    @Test
+    fun e4(){
+        val game = strictMatch()
+        game.root
+            .appendMove("e4")
+        val ecoInfo = game.ecoInfo
+        assertEquals("B00", ecoInfo?.eco)
+        assertEquals("King's Pawn Opening; B00", ecoInfo?.name)
+    }
+
     @OptIn(ExperimentalTime::class)
     @Test
     fun checkmate() {

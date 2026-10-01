@@ -24,7 +24,7 @@ import io.github.lunalobos.chess4kt.Game.*
 
 private val loggers: MutableMap<String, Logger> = mutableMapOf()
 
-private val defaultFilterLevel = Level.DEBUG
+private val defaultFilterLevel = Level.WARN
 
 internal fun getLogger(name: String): Logger {
     return loggers.getOrPut(name) { Logger(name, defaultFilterLevel) }

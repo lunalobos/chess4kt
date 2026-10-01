@@ -55,23 +55,40 @@ class Node internal constructor(internal val backedNode: io.github.lunalobos.che
     /**
      * The comment that precedes the move number in PGN (e.g., "{Comment} 1. e4").
      */
-    val initialComment get() = backedNode.initialComment
+    var initialComment
+        get() = backedNode.initialComment
+        set(value) {
+            backedNode.initialComment = value
+        }
 
     /**
      * The regular comment that follows the move and any suffix annotations (e.g., 1. e4 {Comment}).
      */
-    val comment get() = backedNode.comment
+    var comment
+        get() = backedNode.comment
+        set(value) {
+            backedNode.comment = value
+        }
+
 
     /**
      * The end-of-line comment for the node, which follows a semicolon ; and goes until the end of the line.
      */
-    val endLineComment get() = backedNode.endLineComment
+    var endLineComment
+        get() = backedNode.endLineComment
+        set(value) {
+            backedNode.endLineComment = value
+        }
 
     /**
      * The list of suffix annotations (NAGs) for the node.
      */
     @OptIn(ExperimentalJsCollectionsApi::class)
-    val suffixAnnotations get() = backedNode.suffixAnnotations?.asJsReadonlyArrayView()
+    var suffixAnnotations
+        get() = backedNode.suffixAnnotations?.asJsReadonlyArrayView()
+        set(value) {
+            backedNode.suffixAnnotations = value?.toList()
+        }
 
     /**
      * The parent node. It can only be null when it is the root node, which evidently cannot have a parent.
@@ -99,6 +116,22 @@ class Node internal constructor(internal val backedNode: io.github.lunalobos.che
             suffixAnnotations?.toList(),
             io.github.lunalobos.chess4kt.Notation.valueOf(notation.name)
         )
+    )
+
+    /**
+     * Appends a move given as string in UCI notation (long algebraic) and returns the added node.
+     * If the node already has a child, the added move will be a variation (RAV). Returns the new node
+     * if the move is legal, or the current node if the move is illegal.
+     */
+    @OptIn(ExperimentalJsCollectionsApi::class)
+    fun appendUCIMove(
+        move: String,
+        initialComment: String? = null,
+        comment: String? = null,
+        endLineComment: String? = null,
+        suffixAnnotations: JsReadonlyArray<Int>? = null,
+    ) = appendMove(
+        move, initialComment, comment, endLineComment, suffixAnnotations, UCI
     )
 
     /**
@@ -151,7 +184,7 @@ class Node internal constructor(internal val backedNode: io.github.lunalobos.che
      *
      * Supported internal languages: "english", "spanish", "dutch", "french", "german", and "italian".
      */
-    fun toSan(language: String = "english", pieces: Array<String>? = null): String{
+    fun toSan(language: String = "english", pieces: Array<String>? = null): String {
         return backedNode.toSan(language, pieces)
     }
 }
