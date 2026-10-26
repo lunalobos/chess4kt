@@ -961,52 +961,170 @@ fun Position.flipSide(): Position {
 }
 
 /**
- * Generates a unique string identifier for the current position, suitable for use as a key
- * in a transposition table.
+ * Generates a highly compressed, dynamic-sized byte array identifier for the current position,
+ * ideal for efficient serialization.
  *
- * The identifier encodes all position-defining state that is relevant for transposition detection,
- * including the piece distribution (as hexadecimal bitboard values), the side to move,
- * the en passant target square, the castling rights for both sides, and the half-move clock.
+ * The identifier encodes all position-defining state relevant for transposition detection
+ * using a lossless sparse array encoding (occupancy bitboard + 4-bit piece nibbles).
  * The full-move counter is intentionally excluded, since two positions that differ only in
  * that counter are considered the same transposition.
  *
- * The resulting string has the following format (each segment separated by `-`):
- * 1. Twelve hexadecimal bitboard values, one per piece type (in [Piece] ordinal order, excluding [Piece.EMPTY]).
- * 2. Side to move: `"w"` for White, `"b"` for Black.
- * 3. En passant target square index (`-1` if none).
- * 4. White kingside castling right: `"K"` if available, `"x"` otherwise.
- * 5. White queenside castling right: `"Q"` if available, `"x"` otherwise.
- * 6. Black kingside castling right: `"k"` if available, `"x"` otherwise.
- * 7. Black queenside castling right: `"q"` if available, `"x"` otherwise.
- * 8. Half-move clock value.
- *
- * Example output:
- * ```
- * ff00000000000000-000000000000ff00-...w-(-1)-K-Q-k-q-0
- * ```
+ * The resulting [ByteArray] has a dynamic length (ranging from 27 bytes in the starting
+ * position down to 13 bytes in bare king endgames) with the following structure:
+ * 1. **Bytes 0-7 (8 bytes):** A 64-bit occupancy bitboard, where a `1` indicates the presence of a piece on that square.
+ * 2. **Variable Bytes:** The exact pieces occupying the board, stored consecutively in ascending square order.
+ *    Each piece type (1 to 12, matching its [Piece] ordinal) is encoded in 4 bits (a nibble),
+ *    allowing two pieces to be packed securely into a single byte.
+ * 3. **Metadata (Last 3 bytes):**
+ *    - **Flags Byte:** A bitmask packing the side to move and all castling rights:
+ *      `bit 0` = White to move, `bit 1` = White Kingside, `bit 2` = White Queenside,
+ *      `bit 3` = Black Kingside, `bit 4` = Black Queenside.
+ *    - **En Passant Byte:** The target square index (`-1` if none is available).
+ *    - **Half-Move Byte:** The current half-move clock value (used for the 50-move rule).
  *
  * @receiver The [Position] for which the transposition identifier is computed.
- * @return A [String] that uniquely identifies the position for transposition-table purposes.
+ * @return A dynamically sized [ByteArray] that uniquely identifies the position for transposition-table purposes.
  *
- * @since 1.0.0-beta.9
+ * @since 1.0.0-beta.13
  * @author lunalobos
  */
-fun Position.transpositionId(): String {
-    val sb = StringBuilder()
-    for(bitboard in bitboards){
-        sb.append(bitboard.toHexString()).append("-")
+fun Position.transpositionId(): ByteArray {
+    var occupancy = 0L
+    for (bb in this.bitboards) {
+        occupancy = occupancy or bb
     }
-    sb.append(if(whiteMove) "w" else "b").append("-")
-    if(enPassant == -1){
-        sb.append("(").append(enPassant).append(")-")
+    val pieceCount = occupancy.countOneBits()
+    val piecesBytesLength = (pieceCount + 1) / 2
+    val totalSize = 8 + piecesBytesLength + 3
+    val bytes = ByteArray(totalSize)
+    bytes[0] = (occupancy ushr 56).toByte()
+    bytes[1] = (occupancy ushr 48).toByte()
+    bytes[2] = (occupancy ushr 40).toByte()
+    bytes[3] = (occupancy ushr 32).toByte()
+    bytes[4] = (occupancy ushr 24).toByte()
+    bytes[5] = (occupancy ushr 16).toByte()
+    bytes[6] = (occupancy ushr 8).toByte()
+    bytes[7] = occupancy.toByte()
+    var pieceIndex = 0
+    for (i in 0 until 64) {
+        if ((occupancy and (1L shl i)) != 0L) {
+            var pieceType = 0
+            for (j in 0 until 12) {
+                if ((this.bitboards[j] and (1L shl i)) != 0L) {
+                    pieceType = j + 1
+                    break
+                }
+            }
+            val bytePos = 8 + (pieceIndex / 2)
+            if (pieceIndex % 2 == 0) {
+                bytes[bytePos] = (pieceType shl 4).toByte()
+            } else {
+                bytes[bytePos] = ((bytes[bytePos].toInt() and 0xF0) or pieceType).toByte()
+            }
+            pieceIndex++
+        }
     }
-    sb.append(enPassant).append("-")
-    sb.append(if(whiteCastleKingside) "K" else "x").append("-")
-    sb.append(if(whiteCastleQueenside) "Q" else "x").append("-")
-    sb.append(if(blackCastleKingside) "k" else "x").append("-")
-    sb.append(if(blackCastleQueenside) "q" else "x").append("-")
-    sb.append(halfMovesCounter)
-    return sb.toString()
+    val metaOffset = 8 + piecesBytesLength
+
+    var flags = 0
+    if (this.whiteMove) flags = flags or 1
+    if (this.whiteCastleKingside) flags = flags or 2
+    if (this.whiteCastleQueenside) flags = flags or 4
+    if (this.blackCastleKingside) flags = flags or 8
+    if (this.blackCastleQueenside) flags = flags or 16
+
+    bytes[metaOffset] = flags.toByte()
+    bytes[metaOffset + 1] = this.enPassant.toByte()
+    bytes[metaOffset + 2] = this.halfMovesCounter.toByte()
+
+    return bytes
+}
+
+/**
+ * Reconstructs a [Position] instance from a dynamically sized, compressed [ByteArray]
+ * generated by the [Position.transpositionId] extension function.
+ *
+ * This function reverses the lossless sparse array encoding by performing the following steps:
+ * 1. Extracts the 64-bit occupancy bitboard from the first 8 bytes.
+ * 2. Calculates the expected array length based on the active piece count and validates [data].
+ * 3. Unpacks the piece types (stored as 4-bit nibbles) sequentially to rebuild the 12 distinct piece bitboards.
+ * 4. Restores the side to move, castling rights, en passant target square, and half-move clock
+ *    from the trailing metadata bytes.
+ *
+ * Because the full-move counter is intentionally omitted from the transposition identifier
+ * (as it does not affect position equivalency for repetition purposes), it must be provided
+ * separately to fully restore the position's true state (e.g., for accurate FEN string generation).
+ *
+ * @param movesCounter The full-move number to assign to the reconstructed position.
+ * @param data The compressed byte array containing the serialized position data.
+ * @return A fully reconstructed [Position] object (either [WhitePosition] or [BlackPosition]).
+ * @throws IllegalArgumentException if the size of [data] does not strictly match the expected
+ *         size derived from the decoded occupancy bitboard.
+ *
+ * @since 1.0.0-beta.13
+ * @author lunalobos
+ */
+fun positionFromTranspositionId(movesCounter: Short, data: ByteArray): Position {
+    var occupancy = 0L
+    occupancy = occupancy or ((data[0].toLong() and 0xFFL) shl 56)
+    occupancy = occupancy or ((data[1].toLong() and 0xFFL) shl 48)
+    occupancy = occupancy or ((data[2].toLong() and 0xFFL) shl 40)
+    occupancy = occupancy or ((data[3].toLong() and 0xFFL) shl 32)
+    occupancy = occupancy or ((data[4].toLong() and 0xFFL) shl 24)
+    occupancy = occupancy or ((data[5].toLong() and 0xFFL) shl 16)
+    occupancy = occupancy or ((data[6].toLong() and 0xFFL) shl 8)
+    occupancy = occupancy or  (data[7].toLong() and 0xFFL)
+    val pieceCount = occupancy.countOneBits()
+    val piecesBytesLength = (pieceCount + 1) / 2
+    val expectedSize = 8 + piecesBytesLength + 3
+    require(data.size == expectedSize) {
+        "Invalid ByteArray size. Expected occupancy: $expectedSize, actual: ${data.size}."
+    }
+    val bitboards = LongArray(12)
+    var pieceIndex = 0
+
+    for (i in 0 until 64) {
+        if ((occupancy and (1L shl i)) != 0L) {
+            val bytePos = 8 + (pieceIndex / 2)
+            val b = data[bytePos].toInt() and 0xFF
+            val pieceType = if (pieceIndex % 2 == 0) (b ushr 4) else (b and 0x0F)
+            bitboards[pieceType - 1] = bitboards[pieceType - 1] or (1L shl i)
+            pieceIndex++
+        }
+    }
+    val metaOffset = 8 + piecesBytesLength
+    val flags = data[metaOffset].toInt()
+    val whiteMove = (flags and 1) != 0
+    val wk = (flags and 2) != 0
+    val wq = (flags and 4) != 0
+    val bk = (flags and 8) != 0
+    val bq = (flags and 16) != 0
+    val enPassant = data[metaOffset + 1].toInt()
+    val halfMoves = data[metaOffset + 2].toInt()
+    val mc = movesCounter.toInt()
+    return if (whiteMove) {
+        WhitePosition(
+            bitboards = bitboards,
+            enPassant = enPassant,
+            whiteCastleKingside = wk,
+            whiteCastleQueenside = wq,
+            blackCastleKingside = bk,
+            blackCastleQueenside = bq,
+            mc = mc,
+            hm = halfMoves
+        )
+    } else {
+        BlackPosition(
+            bitboards = bitboards,
+            enPassant = enPassant,
+            whiteCastleKingside = wk,
+            whiteCastleQueenside = wq,
+            blackCastleKingside = bk,
+            blackCastleQueenside = bq,
+            mc = mc,
+            hm = halfMoves
+        )
+    }
 }
 
 /**

@@ -246,32 +246,32 @@ class Position internal constructor(internal val backedPosition: io.github.lunal
 
 
     /**
-     * Generates a unique string identifier for the current position, suitable for use as a key
-     * in a transposition table.
+     * Generates a highly compressed, dynamic-sized byte array identifier for the current position,
+     * ideal for efficient serialization.
      *
-     * The identifier encodes all position-defining state that is relevant for transposition detection,
-     * including the piece distribution (as hexadecimal bitboard values), the side to move,
-     * the en passant target square, the castling rights for both sides, and the half-move clock.
+     * The identifier encodes all position-defining state relevant for transposition detection
+     * using a lossless sparse array encoding (occupancy bitboard + 4-bit piece nibbles).
      * The full-move counter is intentionally excluded, since two positions that differ only in
      * that counter are considered the same transposition.
      *
-     * The resulting string has the following format (each segment separated by `-`):
-     * 1. Twelve hexadecimal bitboard values, one per piece type (in [Piece] ordinal order, excluding [Piece.EMPTY]).
-     * 2. Side to move: `"w"` for White, `"b"` for Black.
-     * 3. En passant target square index (`-1` if none).
-     * 4. White kingside castling right: `"K"` if available, `"x"` otherwise.
-     * 5. White queenside castling right: `"Q"` if available, `"x"` otherwise.
-     * 6. Black kingside castling right: `"k"` if available, `"x"` otherwise.
-     * 7. Black queenside castling right: `"q"` if available, `"x"` otherwise.
-     * 8. Half-move clock value.
+     * The resulting [ByteArray] has a dynamic length (ranging from 27 bytes in the starting
+     * position down to 13 bytes in bare king endgames) with the following structure:
+     * 1. **Bytes 0-7 (8 bytes):** A 64-bit occupancy bitboard, where a `1` indicates the presence of a piece on that square.
+     * 2. **Variable Bytes:** The exact pieces occupying the board, stored consecutively in ascending square order.
+     *    Each piece type (1 to 12, matching its [Piece] ordinal) is encoded in 4 bits (a nibble),
+     *    allowing two pieces to be packed securely into a single byte.
+     * 3. **Metadata (Last 3 bytes):**
+     *    - **Flags Byte:** A bitmask packing the side to move and all castling rights:
+     *      `bit 0` = White to move, `bit 1` = White Kingside, `bit 2` = White Queenside,
+     *      `bit 3` = Black Kingside, `bit 4` = Black Queenside.
+     *    - **En Passant Byte:** The target square index (`-1` if none is available).
+     *    - **Half-Move Byte:** The current half-move clock value (used for the 50-move rule).
      *
-     * Example output:
-     * ```
-     * ff00000000000000-000000000000ff00-...w-(-1)-K-Q-k-q-0-
-     * ```
+     * @receiver The [Position] for which the transposition identifier is computed.
+     * @return A dynamically sized [ByteArray] that uniquely identifies the position for transposition-table purposes.
      *
      */
-    fun transpositionId(): String {
+    fun transpositionId(): ByteArray {
         return backedPosition.transpositionId()
     }
 
