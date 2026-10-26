@@ -71,7 +71,7 @@ internal class BlackPosition(
 private val emptyPossibilities = listOf('1', '2', '3', '4', '5', '6', '7', '8')
 
 
-fun positionFromFenUnsafe(fen: String): Position{
+internal fun positionFromFenUnsafe(fen: String): Position{
     val sqrs = IntArray(64)
     val parts = fen.split(" ")
     val rows = parts[0].split("/")

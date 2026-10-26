@@ -47,7 +47,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${1} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    //@Ignore
+    @Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun position1() {
@@ -62,7 +62,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${1} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    //@Ignore
+    @Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions2() {
@@ -77,7 +77,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${2} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    //@Ignore
+    @Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions3() {
@@ -93,7 +93,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${3} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    //@Ignore
+    @Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions4() {
@@ -108,7 +108,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${4} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    //@Ignore
+    @Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions5() {
@@ -123,7 +123,7 @@ class GeneratorTest {
         logger.debug("GeneratorTest-Position${5} time[ms]: ${d2.toEpochMilliseconds() - d1.toEpochMilliseconds()}")
     }
 
-    //@Ignore
+    @Ignore
     @OptIn(ExperimentalTime::class)
     @Test
     fun numberOfPositions6() {

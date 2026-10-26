@@ -15,9 +15,6 @@
  */
 package io.github.lunalobos.chess4kt
 
-import kotlin.time.Clock.System.now
-import kotlin.time.ExperimentalTime
-
 internal class Parser(val tokens: List<Token>) {
     internal companion object {
         private val logger = getLogger("io.github.lunalobos.chess4kt.Parser")

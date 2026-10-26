@@ -15,7 +15,6 @@
  */
 package io.github.lunalobos.chess4kt
 
-import io.github.lunalobos.chess4kt.Piece.*
 import io.github.lunalobos.chess4kt.Square.*
 
 /**
